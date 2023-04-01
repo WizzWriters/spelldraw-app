@@ -21,7 +21,7 @@ jobs:
         run: |
           npm install
       - run: echo "🖥️ The workflow is now ready to test your code on the runner."
-      - name: List files in the repository
+      - name: Run lint
         run: |
-          ls ${{ github.workspace }}
+          npm run lint
       - run: echo "🍏 This job's status is ${{ job.status }}."
