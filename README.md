@@ -26,13 +26,19 @@ npm run build
 npm run lint
 ```
 
-### Format with
+### Format
 
-
+To format:
 ```sh
 npm run format
 ```
-Please run format before each commit.
+
+To check formating:
+```sh
+npm run format-check
+```
+
+Please run format, lint and type checks before each commit.
 
 ## Recommended IDE Setup
 
