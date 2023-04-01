@@ -1,8 +1,8 @@
 import { createApp } from 'vue'
 import App from './App.vue'
-import LoggerService from './services/LoggerService'
+import LoggerHelper from './helpers/LoggerHelper'
 
 import './assets/main.scss'
-LoggerService.initializeLogger()
+LoggerHelper.initializeLogger()
 
 createApp(App).mount('#app')
