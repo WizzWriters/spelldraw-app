@@ -6,15 +6,17 @@
 @import '~/bulma/sass/elements/button.sass';
 
 html {
+  height: 100%;
   overflow-y: unset;
   overflow-x: unset;
 }
 
-// body {
-//     margin: 0;
-//     height: 100%;
-// }
+body {
+  height: 100%;
+}
 
-// #app {
-//     height: 100%;
-// }
+#app {
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+}

@@ -56,5 +56,6 @@ onMounted(initializeComponent)
 <style scoped lang="scss">
 #canvas-wrapper {
   display: flex;
+  flex: 1 1 auto;
 }
 </style>

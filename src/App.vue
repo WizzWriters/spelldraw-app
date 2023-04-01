@@ -9,3 +9,11 @@ import MainNavbar from './components/navbar/MainNavbar.vue'
     <MainWhiteboard></MainWhiteboard>
   </main>
 </template>
+
+<style lang="scss">
+main {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+}
+</style>
