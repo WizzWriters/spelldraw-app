@@ -1,0 +1,20 @@
+@import '~/bulma/sass/utilities/_all.sass';
+@import '~/bulma/sass/base/_all.sass';
+@import '~/bulma/sass/helpers/typography.sass';
+@import '~/bulma/sass/helpers/spacing.sass';
+@import '~/bulma/sass/components/navbar.sass';
+@import '~/bulma/sass/elements/button.sass';
+
+html {
+  overflow-y: unset;
+  overflow-x: unset;
+}
+
+// body {
+//     margin: 0;
+//     height: 100%;
+// }
+
+// #app {
+//     height: 100%;
+// }
