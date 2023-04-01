@@ -20,8 +20,14 @@ jobs:
       - name: Install npm dependencies
         run: |
           npm install
-      - run: echo "🖥️ The workflow is now ready to test your code on the runner."
+      - run: echo "🖥️ The runner is now ready to test your code."
       - name: Run lint
         run: |
           npm run lint
+      - name: Run formatter check
+        run: |
+          npm run format-check
+      - name: Perform type checking
+        run: |
+          npm run type-check
       - run: echo "🍏 This job's status is ${{ job.status }}."

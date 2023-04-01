@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import MainCanvas from './components/canvas/MainCanvas.vue'
-import Navbar from './components/navbar/Navbar.vue'
+import MainNavbar from './components/navbar/MainNavbar.vue'
 </script>
 
 <template>
-  <Navbar></Navbar>
+  <MainNavbar></MainNavbar>
   <main>
     <MainCanvas></MainCanvas>
   </main>
