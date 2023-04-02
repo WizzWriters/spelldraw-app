@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Logger from 'js-logger'
-import { HTMLCanvas } from '@/models/Canvas'
-import type { Canvas } from '@/models/Canvas'
+import { HTMLCanvas } from './Canvas'
+import type { ICanvas } from './Canvas'
 
 const logger = Logger.get('WhiteboardCanvas.vue')
 const canvasElementRef = ref<HTMLCanvasElement | null>(null)
@@ -11,7 +11,7 @@ const canvasWrapperElementRef = ref<HTMLDivElement | null>(null)
 let canvas: HTMLCanvas
 
 const emit = defineEmits<{
-  (e: 'canvasReady', canvas: Canvas): void
+  (e: 'canvasReady', canvas: ICanvas): void
 }>()
 
 function initializeComponent() {

@@ -12,10 +12,6 @@ const navbarBurger = ref<HTMLAnchorElement | null>(null)
 const navbarMenu = ref<HTMLDivElement | null>(null)
 
 function initializeComponent() {
-  initializeNavbarBurger()
-}
-
-function initializeNavbarBurger() {
   let burger = navbarBurger.value
   let menu = navbarMenu.value
   if (!burger || !menu) {
@@ -23,9 +19,16 @@ function initializeNavbarBurger() {
     return
   }
 
+  initializeNavbarBurger(burger, menu)
+}
+
+function initializeNavbarBurger(
+  burger: HTMLAnchorElement,
+  menu: HTMLDivElement
+) {
   burger.addEventListener('click', () => {
-    burger?.classList.toggle('is-active')
-    menu?.classList.toggle('is-active')
+    burger.classList.toggle('is-active')
+    menu.classList.toggle('is-active')
   })
 }
 
@@ -70,3 +73,9 @@ onMounted(initializeComponent)
     </div>
   </nav>
 </template>
+
+<style scoped lang="scss">
+.navbar {
+  box-shadow: 0px -4px 7px 1px;
+}
+</style>
