@@ -14,7 +14,7 @@ export type PointerEvent = MouseEvent
 
 export interface ICanvas {
   resize(width: number, height: number): void
-  getCoordinates(absoluteMousePosition: IPointerPosition): Point
+  getPointFromPointerPosition(absoluteMousePosition: IPointerPosition): Point
   atPointerEvent(
     eventType: ECanvasPointerEvent,
     callback: (event: PointerEvent) => void
@@ -38,7 +38,9 @@ export class HTMLCanvas implements ICanvas {
     this.context2d = context2d
   }
 
-  public getCoordinates(absolutePointerPosition: IPointerPosition): Point {
+  public getPointFromPointerPosition(
+    absolutePointerPosition: IPointerPosition
+  ): Point {
     const absoluteX = absolutePointerPosition.xCoordinate
     const absoluteY = absolutePointerPosition.yCoordinate
     const boundingRect = this.canvas.getBoundingClientRect()

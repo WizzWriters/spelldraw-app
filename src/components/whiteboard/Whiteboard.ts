@@ -1,8 +1,13 @@
 import Logger from 'js-logger'
 import type { ILogger } from 'js-logger'
-import { ECanvasPointerEvent, type ICanvas } from './canvas/Canvas'
+import {
+  ECanvasPointerEvent,
+  type ICanvas,
+  type PointerEvent
+} from './canvas/Canvas'
 import { PointCollector } from './PointCollector'
 import { Shape, type Point } from './canvas/Geometry'
+import type { IPointerPosition } from './PointerTracker'
 
 export default class Whiteboard {
   private logger: ILogger
@@ -17,47 +22,51 @@ export default class Whiteboard {
     this.pointCollector.atPointCollected((point) => {
       this.handlePointCollected(point)
     })
-    this.installPointerEventsHandlers()
+    this.installPointerEventHandlers()
   }
 
   private handlePointCollected(newPoint: Point) {
-    if (!this.drawnShape) {
-      this.drawnShape = new Shape()
-    }
-    this.drawnShape.addPoint(newPoint)
+    const currentlyDrawnShape = this.getOrCreateDrawnShape()
+    currentlyDrawnShape.addPoint(newPoint)
   }
 
-  private handlePointerReleased() {
+  private handlePointerReleased(point: Point) {
+    this.handlePointCollected(point)
     this.pointCollector.stopCollecting()
-
-    if (!this.drawnShape) {
-      this.logger.warn('No shape drawn')
-      return
-    }
-
-    this.canvas.drawShape(this.drawnShape)
+    const currentlyDrawnShape = this.getOrCreateDrawnShape()
+    this.canvas.drawShape(currentlyDrawnShape)
     this.drawnShape = undefined
   }
 
-  private handlePointerPressed() {
+  private handlePointerPressed(point: Point) {
+    this.handlePointCollected(point)
     this.pointCollector.startCollecting()
   }
 
-  private handlePointerEvent(event: ECanvasPointerEvent) {
-    switch (event) {
+  private handlePointerEvent(
+    eventType: ECanvasPointerEvent,
+    event: PointerEvent
+  ) {
+    const pointerPosition: IPointerPosition = {
+      xCoordinate: event.clientX,
+      yCoordinate: event.clientY
+    }
+    const point = this.canvas.getPointFromPointerPosition(pointerPosition)
+
+    switch (eventType) {
       case ECanvasPointerEvent.POINTER_DOWN:
-        this.handlePointerPressed()
+        this.handlePointerPressed(point)
         break
       case ECanvasPointerEvent.POINTER_UP:
       case ECanvasPointerEvent.POINTER_LEFT:
-        this.handlePointerReleased()
+        this.handlePointerReleased(point)
     }
   }
 
-  private installPointerEventsHandlers() {
-    const callPointerEventHandler = (event: ECanvasPointerEvent) => () => {
-      this.handlePointerEvent(event)
-    }
+  private installPointerEventHandlers() {
+    const callPointerEventHandler =
+      (eventType: ECanvasPointerEvent) => (event: PointerEvent) =>
+        this.handlePointerEvent(eventType, event)
 
     const handledEvents = [
       ECanvasPointerEvent.POINTER_DOWN,
@@ -68,5 +77,13 @@ export default class Whiteboard {
     for (const event of handledEvents) {
       this.canvas.atPointerEvent(event, callPointerEventHandler(event))
     }
+  }
+
+  private getOrCreateDrawnShape(): Shape {
+    if (!this.drawnShape) {
+      this.drawnShape = new Shape()
+      return this.drawnShape
+    }
+    return this.drawnShape
   }
 }

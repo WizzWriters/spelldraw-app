@@ -22,18 +22,16 @@ export class PointCollector {
   }
 
   public startCollecting() {
-    this.collectPoint()
     this.interval = setInterval(() => this.collectPoint(), 20)
   }
 
   public stopCollecting() {
     clearInterval(this.interval)
-    this.collectPoint()
   }
 
   private collectPoint() {
     const pointerPosition = this.pointerTracker.getPointerPosition()
-    const newPoint = this.canvas.getCoordinates(pointerPosition)
+    const newPoint = this.canvas.getPointFromPointerPosition(pointerPosition)
     for (const callback of this.callbackArray) {
       callback(newPoint)
     }

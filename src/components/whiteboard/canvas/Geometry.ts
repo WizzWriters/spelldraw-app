@@ -19,4 +19,8 @@ export class Shape {
   public getPointList(): Array<Point> {
     return this.pointList
   }
+
+  public isEmpty(): Boolean {
+    return this.pointList.length == 0
+  }
 }
