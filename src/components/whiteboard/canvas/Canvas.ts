@@ -1,6 +1,7 @@
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
 import { Point, Shape } from './Geometry'
+import type { IPointerPosition } from '../PointerTracker'
 
 export enum ECanvasPointerEvent {
   POINTER_DOWN = 'mousedown',
@@ -10,11 +11,6 @@ export enum ECanvasPointerEvent {
 }
 
 export type PointerEvent = MouseEvent
-
-export interface IPointerPosition {
-  yCoordinate: number
-  xCoordinate: number
-}
 
 export interface ICanvas {
   resize(width: number, height: number): void

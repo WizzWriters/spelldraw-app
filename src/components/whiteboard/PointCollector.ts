@@ -12,7 +12,7 @@ export class PointCollector {
 
   constructor(canvas: ICanvas) {
     this.canvas = canvas
-    this.pointerTracker = new PointerTracker(this.canvas)
+    this.pointerTracker = new PointerTracker()
     this.pointerTracker.startPointerTracking()
     this.callbackArray = []
   }

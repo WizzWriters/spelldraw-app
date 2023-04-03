@@ -1,23 +1,19 @@
-import {
-  ECanvasPointerEvent,
-  type ICanvas,
-  type IPointerPosition,
-  type PointerEvent
-} from './canvas/Canvas'
+export interface IPointerPosition {
+  yCoordinate: number
+  xCoordinate: number
+}
 
 export class PointerTracker {
   private pointerPosition: IPointerPosition
-  private canvas: ICanvas
   private isTracking: Boolean
 
-  constructor(canvas: ICanvas) {
-    this.canvas = canvas
+  constructor() {
     this.pointerPosition = { xCoordinate: 0, yCoordinate: 0 }
     this.isTracking = false
   }
 
   public startPointerTracking() {
-    this.canvas.atPointerEvent(ECanvasPointerEvent.POINTER_MOVED, (event) =>
+    document.addEventListener('mousemove', (event) =>
       this.updatePointerPosition(event)
     )
     this.isTracking = true
@@ -30,7 +26,7 @@ export class PointerTracker {
     return this.pointerPosition
   }
 
-  private updatePointerPosition(event: PointerEvent) {
+  private updatePointerPosition(event: MouseEvent) {
     this.pointerPosition = {
       xCoordinate: event.clientX,
       yCoordinate: event.clientY

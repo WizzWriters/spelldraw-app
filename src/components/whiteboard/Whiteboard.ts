@@ -17,18 +17,7 @@ export default class Whiteboard {
     this.pointCollector.atPointCollected((point) => {
       this.handlePointCollected(point)
     })
-
-    this.canvas.atPointerEvent(ECanvasPointerEvent.POINTER_DOWN, () => {
-      this.handlePointerPressed()
-    })
-
-    this.canvas.atPointerEvent(ECanvasPointerEvent.POINTER_UP, () => {
-      this.handlePointerReleased()
-    })
-
-    this.canvas.atPointerEvent(ECanvasPointerEvent.POINTER_LEFT, () => {
-      this.handlePointerReleased()
-    })
+    this.installPointerEventsHandlers()
   }
 
   private handlePointCollected(newPoint: Point) {
@@ -52,5 +41,32 @@ export default class Whiteboard {
 
   private handlePointerPressed() {
     this.pointCollector.startCollecting()
+  }
+
+  private handlePointerEvent(event: ECanvasPointerEvent) {
+    switch (event) {
+      case ECanvasPointerEvent.POINTER_DOWN:
+        this.handlePointerPressed()
+        break
+      case ECanvasPointerEvent.POINTER_UP:
+      case ECanvasPointerEvent.POINTER_LEFT:
+        this.handlePointerReleased()
+    }
+  }
+
+  private installPointerEventsHandlers() {
+    const callPointerEventHandler = (event: ECanvasPointerEvent) => () => {
+      this.handlePointerEvent(event)
+    }
+
+    const handledEvents = [
+      ECanvasPointerEvent.POINTER_DOWN,
+      ECanvasPointerEvent.POINTER_UP,
+      ECanvasPointerEvent.POINTER_LEFT
+    ]
+
+    for (const event of handledEvents) {
+      this.canvas.atPointerEvent(event, callPointerEventHandler(event))
+    }
   }
 }
