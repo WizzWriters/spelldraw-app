@@ -1,5 +1,5 @@
-name: Check stage
-run-name: Performing static code analysis 🚀
+name: Build stage
+run-name: Build project for production 🚀
 on:
   - push
   - pull_request
@@ -20,11 +20,11 @@ jobs:
       - name: Install npm dependencies
         run: |
           npm install
-      - run: echo "🖥️ The runner is now ready to test your code."
-      - name: Run lint
+      - run: echo "🖥️ The runner is now ready to build your code."
+      - name: Perform type-checking
         run: |
-          npm run lint
-      - name: Run formatter check
+          npm run type-check
+      - name: Build the project
         run: |
-          npm run format-check
+          npm run build-only
       - run: echo "🍏 This job's status is ${{ job.status }}."
