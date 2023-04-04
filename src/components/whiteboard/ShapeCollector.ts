@@ -6,18 +6,22 @@ import {
   type PointerEvent
 } from './canvas/Canvas'
 import { Shape, type Point } from './canvas/Geometry'
+import lodash from 'lodash'
 
 export type ShapeCollectedCallback = (shape: Shape) => void
+export type DrawingStartedCallback = () => void
 
 export class ShapeCollector {
   private canvas: ICanvas
   private pointCollector: PointCollector
-  private callbackArray: Array<ShapeCollectedCallback>
+  private shapeCollectedCallbacks: Array<ShapeCollectedCallback>
+  private drawingStartedCallbacks: Array<DrawingStartedCallback>
   private drawnShape?: Shape
 
   constructor(canvas: ICanvas) {
     this.canvas = canvas
-    this.callbackArray = []
+    this.shapeCollectedCallbacks = []
+    this.drawingStartedCallbacks = []
     this.pointCollector = new PointCollector(this.canvas)
     this.pointCollector.atPointCollected((point) => {
       this.handlePointCollected(point)
@@ -28,12 +32,29 @@ export class ShapeCollector {
     this.installPointerEventHandlers()
   }
 
+  public atDrawingStarted(callback: DrawingStartedCallback) {
+    this.drawingStartedCallbacks.push(callback)
+  }
+
   public atShapeCollected(callback: ShapeCollectedCallback) {
-    this.callbackArray.push(callback)
+    this.shapeCollectedCallbacks.push(callback)
+  }
+
+  public getCurrentlyDrawnShape(): Shape | undefined {
+    let currentlyDrawnShape = lodash.cloneDeep(this.drawnShape)
+    let currentPointUnderCursor = this.pointCollector.getPointUnderCursor()
+    currentlyDrawnShape?.addPoint(currentPointUnderCursor)
+    return currentlyDrawnShape
+  }
+
+  private drawingStarted() {
+    for (const callback of this.drawingStartedCallbacks) {
+      callback()
+    }
   }
 
   private shapeCollected(shape: Shape) {
-    for (const callback of this.callbackArray) {
+    for (const callback of this.shapeCollectedCallbacks) {
       callback(shape)
     }
   }
@@ -44,14 +65,16 @@ export class ShapeCollector {
   }
 
   private handlePointerReleased(point: Point) {
+    if (!this.drawnShape) return
     this.handlePointCollected(point)
     this.pointCollector.stopCollecting()
-    const currentlyDrawnShape = this.getOrCreateDrawnShape()
-    this.shapeCollected(currentlyDrawnShape)
+    let collectedShape = this.drawnShape
     this.drawnShape = undefined
+    this.shapeCollected(collectedShape)
   }
 
   private handlePointerPressed(point: Point) {
+    this.drawingStarted()
     this.handlePointCollected(point)
     this.pointCollector.startCollecting()
   }

@@ -76,6 +76,6 @@ onMounted(initializeComponent)
 
 <style scoped lang="scss">
 .navbar {
-  box-shadow: 0px -4px 7px 1px;
+  box-shadow: 0px -4px 4px 1px;
 }
 </style>

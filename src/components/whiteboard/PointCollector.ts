@@ -2,6 +2,8 @@ import { PointerTracker } from './PointerTracker'
 import type { ICanvas } from './canvas/Canvas'
 import type { Point } from './canvas/Geometry'
 
+const POINT_COLLECTION_INTERVAL = 30
+
 export type PointCollectedCallback = (point: Point) => void
 
 export class PointCollector {
@@ -22,16 +24,25 @@ export class PointCollector {
   }
 
   public startCollecting() {
-    this.interval = setInterval(() => this.collectPoint(), 20)
+    this.interval = setInterval(
+      () => this.collectPoint(),
+      POINT_COLLECTION_INTERVAL
+    )
   }
 
   public stopCollecting() {
     clearInterval(this.interval)
   }
 
-  private collectPoint() {
+  public getPointUnderCursor(): Point {
     const pointerPosition = this.pointerTracker.getPointerPosition()
-    const newPoint = this.canvas.getPointFromPointerPosition(pointerPosition)
+    const pointUnderCursor =
+      this.canvas.getPointFromPointerPosition(pointerPosition)
+    return pointUnderCursor
+  }
+
+  private collectPoint() {
+    let newPoint = this.getPointUnderCursor()
     for (const callback of this.callbackArray) {
       callback(newPoint)
     }

@@ -20,6 +20,7 @@ export interface ICanvas {
     callback: (event: PointerEvent) => void
   ): void
   drawShape(shape: Shape): void
+  clear(): void
 }
 
 export class HTMLCanvas implements ICanvas {
@@ -78,5 +79,9 @@ export class HTMLCanvas implements ICanvas {
       this.context2d.lineTo(point.xCoordinate, point.yCoordinate)
     }
     this.context2d.stroke()
+  }
+
+  public clear() {
+    this.context2d.clearRect(0, 0, this.canvas.width, this.canvas.height)
   }
 }
