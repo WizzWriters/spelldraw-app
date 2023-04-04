@@ -2,12 +2,12 @@ import { PointerTracker } from './PointerTracker'
 import type { ICanvas } from './canvas/Canvas'
 import type { Point } from './canvas/Geometry'
 
-export type PointCallectedCallback = (point: Point) => void
+export type PointCollectedCallback = (point: Point) => void
 
 export class PointCollector {
   private canvas: ICanvas
   private pointerTracker: PointerTracker
-  private callbackArray: Array<PointCallectedCallback>
+  private callbackArray: Array<PointCollectedCallback>
   private interval?: number
 
   constructor(canvas: ICanvas) {
@@ -17,7 +17,7 @@ export class PointCollector {
     this.callbackArray = []
   }
 
-  public atPointCollected(callback: PointCallectedCallback) {
+  public atPointCollected(callback: PointCollectedCallback) {
     this.callbackArray.push(callback)
   }
 
