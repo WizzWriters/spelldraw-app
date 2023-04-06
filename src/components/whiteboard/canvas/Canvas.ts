@@ -4,13 +4,11 @@ import { Point, Shape } from './Geometry'
 import type { IPointerPosition } from '../PointerTracker'
 
 export enum ECanvasPointerEvent {
-  POINTER_DOWN = 'mousedown',
-  POINTER_UP = 'mouseup',
-  POINTER_MOVED = 'mousemove',
-  POINTER_LEFT = 'mouseleave'
+  POINTER_DOWN = 'pointerdown',
+  POINTER_UP = 'pointerup',
+  POINTER_MOVED = 'pointermove',
+  POINTER_LEFT = 'pointerleave'
 }
-
-export type PointerEvent = MouseEvent
 
 export interface ICanvas {
   resize(width: number, height: number): void

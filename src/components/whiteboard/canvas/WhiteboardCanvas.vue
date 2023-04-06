@@ -58,4 +58,8 @@ onMounted(initializeComponent)
   display: flex;
   flex: 1 1 auto;
 }
+
+#main-canvas {
+  touch-action: none;
+}
 </style>
