@@ -1,10 +1,26 @@
-name: Build stage
-run-name: Build project for production 🚀
+name: Deploy stage
+run-name: Deploy application to github Pages 🚀
+
 on:
-  - push
-  - pull_request
+  push:
+    branches: ['main']
+
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: 'pages'
+  cancel-in-progress: true
+
 jobs:
-  build:
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     env:
       NODE_VERSION: 19
@@ -21,11 +37,19 @@ jobs:
       - name: Install npm dependencies
         run: |
           npm install
-      - run: echo "🖥️ The runner is now ready to build your code."
-      - name: Perform type-checking
+      - name: Copy environment file
         run: |
-          npm run type-check
+          cp ./.env.development ./.env.production
       - name: Build the project
         run: |
-          npm run build-only
+          npm run build
+      - name: Setup Pages
+        uses: actions/configure-pages@v3
+      - name: Upload artifact 🗿
+        uses: actions/upload-pages-artifact@v1
+        with:
+          path: './dist'
+      - name: Deploy to GitHub Pages ⚡
+        id: deployment
+        uses: actions/deploy-pages@v1
       - run: echo "🍏 This job's status is ${{ job.status }}."
