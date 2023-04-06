@@ -37,6 +37,7 @@ export class HTMLCanvas implements ICanvas {
       throw Error('Unable to retrieve 2d context')
     }
     this.context2d = context2d
+    this.context2d.imageSmoothingEnabled = true
   }
 
   public getPointFromPointerPosition(
