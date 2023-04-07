@@ -37,8 +37,8 @@ export class ShapeCollector {
   }
 
   public getCurrentlyDrawnShape(): Shape | undefined {
-    let currentlyDrawnShape = lodash.cloneDeep(this.drawnShape)
-    let currentPointUnderCursor = this.pointCollector.getPointUnderCursor()
+    const currentlyDrawnShape = lodash.cloneDeep(this.drawnShape)
+    const currentPointUnderCursor = this.pointCollector.getPointUnderCursor()
     currentlyDrawnShape?.addPoint(currentPointUnderCursor)
     return currentlyDrawnShape
   }
@@ -64,7 +64,7 @@ export class ShapeCollector {
     if (!this.drawnShape) return
     this.handlePointCollected(point)
     this.pointCollector.stopCollecting()
-    let collectedShape = this.drawnShape
+    const collectedShape = this.drawnShape
     this.drawnShape = undefined
     this.shapeCollected(collectedShape)
   }

@@ -42,7 +42,7 @@ export class PointCollector {
   }
 
   private collectPoint() {
-    let newPoint = this.getPointUnderCursor()
+    const newPoint = this.getPointUnderCursor()
     for (const callback of this.callbackArray) {
       callback(newPoint)
     }

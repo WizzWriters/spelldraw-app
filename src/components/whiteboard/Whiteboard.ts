@@ -37,11 +37,11 @@ export default class Whiteboard {
 
   public render() {
     this.canvas.clear()
-    let currentlyDrawnShape = this.shapeCollector.getCurrentlyDrawnShape()
+    const currentlyDrawnShape = this.shapeCollector.getCurrentlyDrawnShape()
     if (currentlyDrawnShape) {
       this.canvas.drawShape(currentlyDrawnShape)
     }
-    for (let shape of this.shapeCollection) {
+    for (const shape of this.shapeCollection) {
       this.canvas.drawShape(shape)
     }
   }
