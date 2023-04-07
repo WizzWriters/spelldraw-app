@@ -22,9 +22,9 @@ jobs:
         run: |
           npm install
       - run: echo "🖥️ The runner is now ready to test your code."
-      - name: Run lint
+      - name: Run lint check
         run: |
-          npm run lint
+          npm run lint-check
       - name: Run formatter check
         run: |
           npm run format-check
