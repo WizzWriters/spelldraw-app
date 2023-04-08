@@ -4,7 +4,7 @@ import Logger from 'js-logger'
 import { HTMLCanvas } from '../html/HtmlCanvas'
 import type { ICanvas } from '../Canvas'
 
-const logger = Logger.get('WhiteboardCanvas.vue')
+const logger = Logger.get('HtmlCanvas.vue')
 const canvasElementRef = ref<HTMLCanvasElement | null>(null)
 const canvasWrapperElementRef = ref<HTMLDivElement | null>(null)
 

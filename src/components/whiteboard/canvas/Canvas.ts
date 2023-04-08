@@ -10,7 +10,7 @@ export enum ECanvasPointerEvent {
 
 export interface ICanvas {
   resize(width: number, height: number): void
-  getPointFromPointerPosition(absoluteMousePosition: IPointerPosition): Point
+  getPointFromPointerPosition(absolutePointerPosition: IPointerPosition): Point
   atPointerEvent(
     eventType: ECanvasPointerEvent,
     callback: (event: PointerEvent) => void
