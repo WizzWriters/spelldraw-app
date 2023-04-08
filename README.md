@@ -14,10 +14,22 @@ npm install
 npm run dev
 ```
 
+Sometimes it's useful to expose the project in local network (for example to test
+it on mobile). In that case run:
+```sh
+npm run dev-expose
+```
+and enter the 'Network' addres on any device.
+
 ### Type-Check, Compile and Minify for Production
 
 ```sh
 npm run build
+```
+
+To perform only type checking you can run:
+```sh
+npm run type-check
 ```
 
 ### Lint with [ESLint](https://eslint.org/)
@@ -27,7 +39,7 @@ To validate:
 npm run lint-check
 ```
 
-To try to fix:
+To run lint and fix:
 ```sh
 npm run lint
 ```

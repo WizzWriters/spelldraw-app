@@ -2,7 +2,7 @@
 import type { ICanvas } from './canvas/Canvas'
 import Whiteboard from './Whiteboard'
 import Logger from 'js-logger'
-import WhiteboardCanvas from './canvas/WhiteboardCanvas.vue'
+import SvgCanvas from './canvas/svg/SvgCanvas.vue'
 
 const logger = Logger.get('MainWhiteboard.vue')
 
@@ -14,5 +14,5 @@ function handleCanvasReady(canvas: ICanvas) {
 </script>
 
 <template>
-  <WhiteboardCanvas @canvas-ready="handleCanvasReady"></WhiteboardCanvas>
+  <SvgCanvas @canvas-ready="handleCanvasReady"></SvgCanvas>
 </template>
