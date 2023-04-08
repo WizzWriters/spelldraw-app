@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { ref, onMounted } from 'vue'
 import Logger from 'js-logger'
-import { HTMLCanvas } from './Canvas'
-import type { ICanvas } from './Canvas'
+import { HTMLCanvas } from '../html/HtmlCanvas'
+import type { ICanvas } from '../Canvas'
 
 const logger = Logger.get('WhiteboardCanvas.vue')
 const canvasElementRef = ref<HTMLCanvasElement | null>(null)
