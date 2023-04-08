@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import MainWhiteboard from './components/whiteboard/MainWhiteboard.vue'
 import MainNavbar from './components/navbar/MainNavbar.vue'
-import './services/magic/ShapeWizard'
 </script>
 
 <template>

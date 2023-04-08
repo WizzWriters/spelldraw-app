@@ -1,64 +1,76 @@
 import Logger from 'js-logger'
 import type { ILogger } from 'js-logger'
+import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
+import _ from 'lodash'
 
 const shapes = ['other', 'ellipse', 'rectangle', 'triangle']
 
+class NotInitializedError extends Error {
+  constructor() {
+    super('Model not initialized')
+  }
+}
+
 class TfModel {
   private logger: ILogger
-  private layers: tf.LayersModel
+  private name: string
+  protected layers: tf.LayersModel | undefined
 
-  constructor(name) {
-    return (async () => {
-      this.logger = Logger.get(name)
-      this.layers = await tf.loadLayersModel(
-        `./models/ShapeWizard/${name}/model.json`
-      )
-      this.logger.debug('Model initialized!', this.layers)
-      return this
-    })()
+  constructor(name: string) {
+    this.logger = Logger.get(name)
+    this.name = name
+  }
+
+  public async init() {
+    this.layers = await tf.loadLayersModel(
+      `./models/ShapeWizard/${this.name}/model.json`
+    )
+    this.logger.debug('Model initialized!', this.layers)
+    return this
   }
 }
 
 class Classifier extends TfModel {
   public classify(image: tf.Tensor4D) {
-    const dist = this.layers.call(image)
+    if (!this.layers) throw new NotInitializedError()
+    const dist = this.layers.call(image, {}) as tf.Tensor2D
     return shapes[tf.argMax(dist).dataSync()[0]]
   }
 }
 
 class Regressor extends TfModel {
-  public vertices(image: tf.Tensor4D) {
-    return Array.from(this.layers.call(image)[0].reshape([2, -1]).dataSync())
+  public async vertices(image: tf.Tensor4D) {
+    if (!this.layers) throw new NotInitializedError()
+    const vs = this.layers.call(image, {}) as tf.Tensor2D[]
+    return vs[0].reshape([-1, 2]).array() as unknown as Array<[number, number]>
   }
 }
 
 class ShapeWizard {
-  public classifier: TfModel
-  public regressors: { [index: string]: TfModel }
+  public classifier: Classifier | undefined
+  public regressors: { [index: string]: Regressor } | undefined
 
-  constructor() {
-    return (async () => {
-      this.classifier = await new Classifier('classifier')
-      this.regressors = Object.fromEntries(
-        await Promise.all(
-          shapes
-            .slice(1)
-            .map(async (shape) => [shape, await new Regressor(shape)])
-        )
+  public async init(): Promise<ShapeWizard> {
+    pin('shapes', this)
+    this.classifier = await new Classifier('classifier').init()
+    this.regressors = _.fromPairs(
+      await Promise.all(
+        shapes
+          .slice(1)
+          .map(async (shape) => [shape, await new Regressor(shape).init()])
       )
-      return this
-    })()
+    )
+    return this
   }
 
-  public call(image: tf.Tensor3D): Array<[number, number]> {
-    const batch = tf.expandDims(image)
+  public async call(image: tf.Tensor3D): Promise<Array<[number, number]>> {
+    if (!this.classifier || !this.regressors) throw new NotInitializedError()
+    const batch = tf.expandDims(image) as tf.Tensor4D
     const shape = this.classifier.classify(batch)
-    return this.regressors[shape]?.vertices(batch) || []
+    return (await this.regressors[shape]?.vertices(batch)) || []
   }
 }
 
-const model = await new ShapeWizard()
-window.shapes = model
-window.tf = tf
-export default model
+pin('tf', tf) //TODO: move this somewhere else in the future
+export default await new ShapeWizard().init()
