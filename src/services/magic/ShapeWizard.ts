@@ -73,4 +73,4 @@ class ShapeWizard {
 }
 
 pin('tf', tf) //TODO: move this somewhere else in the future
-export default await new ShapeWizard().init()
+export default (async () => await new ShapeWizard().init())()
