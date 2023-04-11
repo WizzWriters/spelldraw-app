@@ -22,6 +22,11 @@ class TfModel {
     this.name = name
   }
 
+  public get meta() {
+    if (!this.layers) throw new NotInitializedError()
+    return this.layers.getConfig().name
+  }
+
   public async init() {
     this.layers = await tf.loadLayersModel(
       `./models/ShapeWizard/${this.name}/model.json`
