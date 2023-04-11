@@ -1,42 +1,13 @@
-import Logger from 'js-logger'
-import type { ILogger } from 'js-logger'
 import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
 import _ from 'lodash'
+import { NotInitializedError } from './utils'
+import TensorflowModel from './TensorflowModel'
 
 const shapes = ['other', 'ellipse', 'rectangle', 'triangle']
+const path_name = 'ShapeWizard'
 
-class NotInitializedError extends Error {
-  constructor() {
-    super('Model not initialized')
-  }
-}
-
-class TfModel {
-  private logger: ILogger
-  private name: string
-  protected layers: tf.LayersModel | undefined
-
-  constructor(name: string) {
-    this.logger = Logger.get(name)
-    this.name = name
-  }
-
-  public get meta() {
-    if (!this.layers) throw new NotInitializedError()
-    return this.layers.getConfig().name
-  }
-
-  public async init() {
-    this.layers = await tf.loadLayersModel(
-      `./models/ShapeWizard/${this.name}/model.json`
-    )
-    this.logger.debug('Model initialized!', this.layers)
-    return this
-  }
-}
-
-class Classifier extends TfModel {
+class Classifier extends TensorflowModel {
   public classify(image: tf.Tensor4D) {
     if (!this.layers) throw new NotInitializedError()
     const dist = this.layers.call(image, {}) as tf.Tensor2D
@@ -44,7 +15,7 @@ class Classifier extends TfModel {
   }
 }
 
-class Regressor extends TfModel {
+class Regressor extends TensorflowModel {
   public async vertices(image: tf.Tensor4D) {
     if (!this.layers) throw new NotInitializedError()
     const vs = this.layers.call(image, {}) as tf.Tensor2D[]
@@ -58,12 +29,15 @@ class ShapeWizard {
 
   public async init(): Promise<ShapeWizard> {
     pin('shapes', this)
-    this.classifier = await new Classifier('classifier').init()
+    this.classifier = await new Classifier(`${path_name}/classifier`).init()
     this.regressors = _.fromPairs(
       await Promise.all(
         shapes
           .slice(1)
-          .map(async (shape) => [shape, await new Regressor(shape).init()])
+          .map(async (shape) => [
+            shape,
+            await new Regressor(`${path_name}/${shape}`).init()
+          ])
       )
     )
     return this
