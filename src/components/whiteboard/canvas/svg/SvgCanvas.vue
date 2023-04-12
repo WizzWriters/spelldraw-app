@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import Logger from 'js-logger'
 import { ref, onMounted, type Ref } from 'vue'
-import type { IPointerPosition } from '../../PointerTracker'
-import type { ECanvasPointerEvent, ICanvas } from '../Canvas'
-import { Point, Shape } from '../Geometry'
+import type { IPointerPosition } from '@/services/whiteboard/PointerTracker'
+import type { ECanvasPointerEvent, ICanvas } from '@/services/canvas/Canvas'
+import { Point, Shape } from '@/services/canvas/Geometry'
 import SvgShape from './SvgShape.vue'
 
 type CavasElement = HTMLElement & SVGElement

@@ -1,6 +1,6 @@
 import { PointerTracker } from './PointerTracker'
-import type { ICanvas } from './canvas/Canvas'
-import type { Point } from './canvas/Geometry'
+import type { ICanvas } from '../canvas/Canvas'
+import type { Point } from '../canvas/Geometry'
 
 const POINT_COLLECTION_INTERVAL = 30
 

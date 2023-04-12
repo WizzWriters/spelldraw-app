@@ -1,5 +1,5 @@
 import type { Point, Shape } from './Geometry'
-import type { IPointerPosition } from '../PointerTracker'
+import type { IPointerPosition } from '../whiteboard/PointerTracker'
 
 export enum ECanvasPointerEvent {
   POINTER_DOWN = 'pointerdown',
