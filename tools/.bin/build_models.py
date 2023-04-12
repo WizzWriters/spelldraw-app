@@ -13,6 +13,8 @@ CACHE_PATH = f"{SCRIPT_PATH}/.cache"
 DOWNLOAD_PATH = f"{CACHE_PATH}/download"
 BUILD_PATH = f"{SCRIPT_PATH}/../../public/models"
 
+NUMBER_OF_REQUEST_RETRIES = 3
+
 model_config_file = open(SCRIPT_PATH + "/../../src/assets/models.json","r")
 model_config = json.load(model_config_file)
 
@@ -23,14 +25,19 @@ parser.add_argument("--clean", help="clean cache and builds",
                     action="store_true")
 args = parser.parse_args()
 
+def request(url):
+  for i in range(NUMBER_OF_REQUEST_RETRIES):
+    response = requests.get(url)
+
+    if response.status_code != 200:
+      continue
+
+    return response
+  raise Exception(f"Request for {url} failed!")
+
 def getAssetsList(owner, repo, tag):
   releaseUrl = GITHUB_API_URL + f'/repos/{owner}/{repo}/releases/tags/{tag}'
-  response = requests.get(releaseUrl)
-
-  if response.status_code != 200:
-    print("Response status: " + response.status_code)
-    return []
-
+  response = request(releaseUrl)
   response = response.json()
   return response['assets']
 
@@ -56,7 +63,8 @@ def download_assets(model):
   assetsList = model_assets[model_name]
   for asset in assetsList:
     print(f"Downloading {asset['name']} from {model_name}...")
-    downloaded_asset = requests.get(asset['browser_download_url'])
+    downloaded_asset = request(asset['browser_download_url'])
+
     output_file_path = os.path.join(assets_download_path, asset['name'])
     with open(output_file_path, "wb") as output_file:
       output_file.truncate(0)
