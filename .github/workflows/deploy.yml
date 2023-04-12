@@ -33,6 +33,12 @@ jobs:
       - run: echo "💡 The ${{ github.repository }} repository has been cloned to the runner."
       - uses: actions/cache@v2
         with:
+          path: ./tools/.bin/.cache
+          key: ${{ runner.os }}-tf-${{ hashFiles('./src/assets/models.json') }}
+          restore-keys: |
+            ${{ runner.os }}-tf-
+      - uses: actions/cache@v2
+        with:
           path: ~/.cache/pip
           key: ${{ runner.os }}-pip-${{ hashFiles('**/requirements.txt') }}
           restore-keys: |
