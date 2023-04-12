@@ -11,15 +11,13 @@ For now we only support running this project under Linux operating system.
 Because we are using TensorFlow.js which requires specific version of Tensorflow
 and python, there are some additional steps needed first.
 
-1. Make sure that you are using `python 3.6.8`. This can be done with `pyenv`
-```sh
-pyenv install 3.6.8
-pyenv local 3.6.8
-```
-2. Create and activate virtual environment and install python dependencies
+1. Create and activate virtual environment
 ```sh
 virtualenv venv
 . venv/bin/activate
+```
+2. Install python dependencies
+```
 pip install -r requirements.txt
 ```
 3. Run script to download and build tensorflow models
