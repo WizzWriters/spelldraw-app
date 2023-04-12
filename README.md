@@ -16,7 +16,7 @@ and python, there are some additional steps needed first.
 pyenv install 3.6.8
 pyenv local 3.6.8
 ```
-2. Create and activate virtual envirtonment and install python dependencies
+2. Create and activate virtual environment and install python dependencies
 ```sh
 virtualenv venv
 . venv/bin/activate
