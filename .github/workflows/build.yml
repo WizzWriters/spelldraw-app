@@ -5,9 +5,9 @@ on:
   - pull_request
 jobs:
   build:
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     env:
-      PYTHON_VERSION: 3.6.8
+      PYTHON_VERSION: 3.10.10
       NODE_VERSION: 19
     steps:
       - run: echo "🎉 The job was automatically triggered by a ${{ github.event_name }} event."
