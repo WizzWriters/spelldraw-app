@@ -1,0 +1,4 @@
+#!/bin/bash
+
+BASE_PATH=$(dirname "${BASH_SOURCE[0]}")
+python $BASE_PATH/.bin/build_models.py "$@"

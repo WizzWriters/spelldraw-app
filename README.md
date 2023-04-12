@@ -4,9 +4,36 @@ Frontend for our whiteboard.
 
 ## Project Setup
 
+For now we only support running this project under Linux operating system.
+
+### Environment setup
+
+Because we are using TensorFlow.js which requires specific version of Tensorflow
+and python, there are some additional steps needed first.
+
+1. Make sure that you are using `python 3.6.8`. This can be done with `pyenv`
 ```sh
-npm install
+pyenv install 3.6.8
+pyenv local 3.6.8
 ```
+2. Create and activate virtual envirtonment and install python dependencies
+```sh
+virtualenv venv
+. venv/bin/activate
+pip install -r requirements.txt
+```
+3. Run script to download and build tensorflow models
+```sh
+./tools/build-models
+```
+4. Install node dependencies
+```sh
+npm ci
+```
+
+From now on you can run the project. For example with `npm run dev`.
+
+## NPM Scripts
 
 ### Compile and Hot-Reload for Development
 
