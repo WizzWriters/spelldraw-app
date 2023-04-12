@@ -27,3 +27,13 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+
+# tools cache
+tools/.bin/.cache
+
+# model binaries
+public/models
+
+# python related files
+.python-version
+venv

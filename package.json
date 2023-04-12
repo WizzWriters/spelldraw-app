@@ -19,6 +19,7 @@
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
+    "@tensorflow/tfjs": "^4.4.0",
     "js-logger": "^1.6.1",
     "lodash": "^4.17.21",
     "vue": "^3.2.47"
