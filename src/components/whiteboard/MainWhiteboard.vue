@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import type { ICanvas } from './canvas/Canvas'
-import Whiteboard from './Whiteboard'
+import type { ICanvas } from '@/services/canvas/Canvas'
+import Whiteboard from '@/services/whiteboard/Whiteboard'
 import Logger from 'js-logger'
 import SvgCanvas from './canvas/svg/SvgCanvas.vue'
 

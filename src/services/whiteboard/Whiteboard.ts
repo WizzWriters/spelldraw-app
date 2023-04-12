@@ -1,8 +1,8 @@
 import Logger from 'js-logger'
 import type { ILogger } from 'js-logger'
-import type { ICanvas } from './canvas/Canvas'
+import type { ICanvas } from '../canvas/Canvas'
 import { ShapeCollector } from './ShapeCollector'
-import type { Shape } from './canvas/Geometry'
+import type { Shape } from '../canvas/Geometry'
 
 const FRAME_INTERVAL = (1 / 50) * 1000
 

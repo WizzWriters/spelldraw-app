@@ -1,7 +1,7 @@
 import { PointCollector } from './PointCollector'
 import type { IPointerPosition } from './PointerTracker'
-import { ECanvasPointerEvent, type ICanvas } from './canvas/Canvas'
-import { Shape, type Point } from './canvas/Geometry'
+import { ECanvasPointerEvent, type ICanvas } from '../canvas/Canvas'
+import { Shape, type Point } from '../canvas/Geometry'
 import lodash from 'lodash'
 
 export type ShapeCollectedCallback = (shape: Shape) => void

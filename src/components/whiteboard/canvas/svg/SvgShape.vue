@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Shape } from '../Geometry'
+import type { Shape } from '@/services/canvas/Geometry'
 
 const props = defineProps<{
   shape: Shape
