@@ -1,15 +1,36 @@
+import lodash from 'lodash'
+
 export class Point {
   constructor(public xCoordinate: number, public yCoordinate: number) {}
 }
 
-export class Segment {
-  constructor(public endpoint1: Point, public endpoint2: Point) {}
+export abstract class Shape {}
+
+export class Rectangle extends Shape {
+  constructor(
+    public left: number,
+    public right: number,
+    public buttom: number,
+    public top: number
+  ) {
+    super()
+  }
+
+  public get width(): number {
+    return this.right - this.left
+  }
+
+  public get height(): number {
+    return this.buttom - this.top
+  }
 }
 
-export class Shape {
+export class PolyLineShape extends Shape {
   private pointList: Array<Point>
+
   constructor(pointList: Array<Point> = []) {
-    this.pointList = structuredClone(pointList)
+    super()
+    this.pointList = lodash.cloneDeep(pointList)
   }
 
   public addPoint(point: Point) {
@@ -20,7 +41,32 @@ export class Shape {
     return this.pointList
   }
 
-  public isEmpty(): Boolean {
-    return this.pointList.length == 0
+  public move(xOffset: number, yOffset: number) {
+    this.pointList.map((point) => {
+      point.xCoordinate += xOffset
+      point.yCoordinate += yOffset
+      return point
+    })
+  }
+
+  public getBoundingRectangle(): Rectangle {
+    const pointList = this.getPointList()
+    if (pointList.length == 0) return new Rectangle(0, 0, 0, 0)
+    const firstPoint = pointList[0]
+
+    const boundingRectangle = new Rectangle(
+      firstPoint.xCoordinate,
+      firstPoint.xCoordinate,
+      firstPoint.yCoordinate,
+      firstPoint.yCoordinate
+    )
+
+    return pointList.reduce((rect, point) => {
+      rect.left = Math.min(rect.left, point.xCoordinate)
+      rect.right = Math.max(rect.right, point.xCoordinate)
+      rect.buttom = Math.max(rect.buttom, point.yCoordinate)
+      rect.top = Math.min(rect.top, point.yCoordinate)
+      return rect
+    }, boundingRectangle)
   }
 }

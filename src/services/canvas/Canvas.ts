@@ -1,4 +1,4 @@
-import type { Point, Shape } from './Geometry'
+import type { Point, PolyLineShape } from './Geometry'
 import type { IPointerPosition } from '../whiteboard/PointerTracker'
 
 export enum ECanvasPointerEvent {
@@ -15,6 +15,6 @@ export interface ICanvas {
     eventType: ECanvasPointerEvent,
     callback: (event: PointerEvent) => void
   ): void
-  drawShape(shape: Shape): void
+  drawShape(shape: PolyLineShape): void
   clear(): void
 }

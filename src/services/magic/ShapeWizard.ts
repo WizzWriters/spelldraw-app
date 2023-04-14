@@ -23,11 +23,11 @@ class Regressor extends TensorflowModel {
   }
 }
 
-class ShapeWizard {
+export default class ShapeWizard {
   public classifier: Classifier | undefined
   public regressors: { [index: string]: Regressor } | undefined
 
-  public async init(): Promise<ShapeWizard> {
+  public async init() {
     pin('shapes', this)
     this.classifier = await new Classifier(`${path_name}/classifier`).init()
     this.regressors = _.fromPairs(
@@ -40,7 +40,6 @@ class ShapeWizard {
           ])
       )
     )
-    return this
   }
 
   public async call(image: tf.Tensor3D): Promise<Array<[number, number]>> {
@@ -52,4 +51,3 @@ class ShapeWizard {
 }
 
 pin('tf', tf) //TODO: move this somewhere else in the future
-export default (async () => await new ShapeWizard().init())()

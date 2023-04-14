@@ -3,7 +3,7 @@ import Logger from 'js-logger'
 import { ref, onMounted, type Ref } from 'vue'
 import type { IPointerPosition } from '@/services/whiteboard/PointerTracker'
 import type { ECanvasPointerEvent, ICanvas } from '@/services/canvas/Canvas'
-import { Point, Shape } from '@/services/canvas/Geometry'
+import { Point, PolyLineShape } from '@/services/canvas/Geometry'
 import SvgShape from './SvgShape.vue'
 
 type CavasElement = HTMLElement & SVGElement
@@ -14,7 +14,7 @@ const canvasWrapperElementRef = ref<HTMLDivElement | null>(null)
 
 const canvasWidth = ref<number>(0)
 const canvasHeight = ref<number>(0)
-const drawnShapes = ref<Array<Shape>>([]) as Ref<Array<Shape>>
+const drawnShapes = ref<Array<PolyLineShape>>([]) as Ref<Array<PolyLineShape>>
 
 const emit = defineEmits<{
   (e: 'canvasReady', canvas: ICanvas): void
@@ -52,7 +52,7 @@ class SvgCanvas implements ICanvas {
     this.canvasElement.addEventListener(eventType, callback)
   }
 
-  public drawShape(shape: Shape): void {
+  public drawShape(shape: PolyLineShape): void {
     drawnShapes.value.push(shape)
   }
 

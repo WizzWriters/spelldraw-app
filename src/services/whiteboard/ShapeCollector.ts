@@ -1,10 +1,10 @@
 import { PointCollector } from './PointCollector'
 import type { IPointerPosition } from './PointerTracker'
 import { ECanvasPointerEvent, type ICanvas } from '../canvas/Canvas'
-import { Shape, type Point } from '../canvas/Geometry'
+import { PolyLineShape, type Point } from '../canvas/Geometry'
 import lodash from 'lodash'
 
-export type ShapeCollectedCallback = (shape: Shape) => void
+export type ShapeCollectedCallback = (shape: PolyLineShape) => void
 export type DrawingStartedCallback = () => void
 
 export class ShapeCollector {
@@ -12,7 +12,7 @@ export class ShapeCollector {
   private pointCollector: PointCollector
   private shapeCollectedCallbacks: Array<ShapeCollectedCallback>
   private drawingStartedCallbacks: Array<DrawingStartedCallback>
-  private drawnShape?: Shape
+  private drawnShape?: PolyLineShape
 
   constructor(canvas: ICanvas) {
     this.canvas = canvas
@@ -36,7 +36,7 @@ export class ShapeCollector {
     this.shapeCollectedCallbacks.push(callback)
   }
 
-  public getCurrentlyDrawnShape(): Shape | undefined {
+  public getCurrentlyDrawnShape(): PolyLineShape | undefined {
     const currentlyDrawnShape = lodash.cloneDeep(this.drawnShape)
     const currentPointUnderCursor = this.pointCollector.getPointUnderCursor()
     currentlyDrawnShape?.addPoint(currentPointUnderCursor)
@@ -49,7 +49,7 @@ export class ShapeCollector {
     }
   }
 
-  private shapeCollected(shape: Shape) {
+  private shapeCollected(shape: PolyLineShape) {
     for (const callback of this.shapeCollectedCallbacks) {
       callback(shape)
     }
@@ -110,9 +110,9 @@ export class ShapeCollector {
       this.canvas.atPointerEvent(event, callPointerEventHandler(event))
     }
   }
-  private getOrCreateDrawnShape(): Shape {
+  private getOrCreateDrawnShape(): PolyLineShape {
     if (!this.drawnShape) {
-      this.drawnShape = new Shape()
+      this.drawnShape = new PolyLineShape()
       return this.drawnShape
     }
     return this.drawnShape

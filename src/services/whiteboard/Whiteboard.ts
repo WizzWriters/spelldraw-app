@@ -2,7 +2,8 @@ import Logger from 'js-logger'
 import type { ILogger } from 'js-logger'
 import type { ICanvas } from '../canvas/Canvas'
 import { ShapeCollector } from './ShapeCollector'
-import type { Shape } from '../canvas/Geometry'
+import type { PolyLineShape } from '../canvas/Geometry'
+import ShapeCorrector from '../correction/ShapeCorrector'
 
 const FRAME_INTERVAL = (1 / 50) * 1000
 
@@ -10,7 +11,8 @@ export default class Whiteboard {
   private logger: ILogger
   private canvas: ICanvas
   private shapeCollector: ShapeCollector
-  private shapeCollection: Array<Shape>
+  private shapeCollection: Array<PolyLineShape>
+  private shapeCorrector: ShapeCorrector
   private renderInterval?: number
 
   constructor(canvas: ICanvas) {
@@ -18,6 +20,11 @@ export default class Whiteboard {
     this.shapeCollection = []
     this.logger = Logger.get('Whiteboard')
     this.shapeCollector = new ShapeCollector(this.canvas)
+    this.shapeCorrector = new ShapeCorrector()
+  }
+
+  public async init() {
+    await this.shapeCorrector.init()
     this.shapeCollector.atShapeCollected((shape) =>
       this.handleShapeCollected(shape)
     )
@@ -29,7 +36,8 @@ export default class Whiteboard {
     this.renderInterval = setInterval(() => this.render(), FRAME_INTERVAL)
   }
 
-  private handleShapeCollected(shape: Shape) {
+  private handleShapeCollected(shape: PolyLineShape) {
+    this.shapeCorrector.correct(shape)
     this.shapeCollection.push(shape)
     clearInterval(this.renderInterval)
     this.render()
