@@ -1,14 +1,26 @@
 import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
-import lodash from 'lodash'
 import { NotInitializedError } from './utils'
 import TensorflowModel from './TensorflowModel'
+import { Point } from '../canvas/Geometry'
 
-const shapes = ['other', 'ellipse', 'rectangle', 'triangle']
+export enum ShapeClassification {
+  OTHER = 'other',
+  ELLIPSE = 'ellipse',
+  RECTANGLE = 'rectangle',
+  TRIANGLE = 'triangle'
+}
+
+const shapes = [
+  ShapeClassification.OTHER,
+  ShapeClassification.ELLIPSE,
+  ShapeClassification.RECTANGLE,
+  ShapeClassification.TRIANGLE
+]
 const path_name = 'ShapeWizard'
 
 class Classifier extends TensorflowModel {
-  public classify(image: tf.Tensor4D) {
+  public classify(image: tf.Tensor4D): ShapeClassification {
     if (!this.layers) throw new NotInitializedError()
     const dist = this.call(image)
     return shapes[tf.argMax(dist[0], 1).dataSync()[0]]
@@ -16,37 +28,40 @@ class Classifier extends TensorflowModel {
 }
 
 class Regressor extends TensorflowModel {
-  public async vertices(image: tf.Tensor4D) {
+  public async vertices(image: tf.Tensor4D): Promise<Array<[number, number]>> {
     if (!this.layers) throw new NotInitializedError()
     const vs = this.call(image)
-    return vs[0].reshape([-1, 2]).array() as unknown as Array<[number, number]>
+    return (await vs[0].reshape([-1, 2]).array()) as Array<[number, number]>
   }
 }
 
 export default class ShapeWizard {
-  public classifier: Classifier | undefined
-  public regressors: { [index: string]: Regressor } | undefined
+  private classifier: Classifier
+  private regressors: { [index: string]: Regressor }
 
-  public async init() {
+  constructor() {
     pin('shapes', this)
-    this.classifier = await new Classifier(`${path_name}/classifier`).init()
-    this.regressors = lodash.fromPairs(
-      await Promise.all(
-        shapes
-          .slice(1)
-          .map(async (shape) => [
-            shape,
-            await new Regressor(`${path_name}/${shape}`).init()
-          ])
-      )
-    )
+    this.classifier = new Classifier(`${path_name}/classifier`)
+
+    this.regressors = {}
+    shapes.slice(1).forEach((shape) => {
+      this.regressors[shape] = new Regressor(`${path_name}/${shape}`)
+    })
   }
 
-  public async call(image: tf.Tensor3D): Promise<Array<[number, number]>> {
-    if (!this.classifier || !this.regressors) throw new NotInitializedError()
+  public async call(
+    image: tf.Tensor3D
+  ): Promise<[ShapeClassification, Array<Point>]> {
     const batch = tf.expandDims(image) as tf.Tensor4D
+    await this.classifier.ready
     const shape = this.classifier.classify(batch)
-    return (await this.regressors[shape]?.vertices(batch)) || []
+
+    if (!this.regressors[shape]) return [shape, []]
+
+    await this.regressors[shape].ready
+    const vertices = await this.regressors[shape].vertices(batch)
+    const points = vertices.map((vertice) => new Point(vertice[0], vertice[1]))
+    return [shape, points]
   }
 }
 

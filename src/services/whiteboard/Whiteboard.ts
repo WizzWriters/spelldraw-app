@@ -23,8 +23,7 @@ export default class Whiteboard {
     this.shapeCorrector = new ShapeCorrector()
   }
 
-  public async init() {
-    await this.shapeCorrector.init()
+  public init() {
     this.shapeCollector.atShapeCollected((shape) =>
       this.handleShapeCollected(shape)
     )
@@ -36,8 +35,8 @@ export default class Whiteboard {
     this.renderInterval = setInterval(() => this.render(), FRAME_INTERVAL)
   }
 
-  private handleShapeCollected(shape: PolyLineShape) {
-    this.shapeCorrector.correct(shape)
+  private async handleShapeCollected(shape: PolyLineShape) {
+    await this.shapeCorrector.correct(shape)
     this.shapeCollection.push(shape)
     clearInterval(this.renderInterval)
     this.render()

@@ -4,6 +4,7 @@ import * as tf from '@tensorflow/tfjs'
 import { NotInitializedError } from './utils'
 
 export default class TensorflowModel {
+  public ready: Promise<void>
   private logger: ILogger
   private name: string
   protected layers: tf.LayersModel | undefined
@@ -11,6 +12,16 @@ export default class TensorflowModel {
   constructor(name: string) {
     this.logger = Logger.get(name)
     this.name = name
+
+    this.ready = new Promise((resolve, reject) => {
+      tf.loadLayersModel(`./models/${this.name}/model.json`)
+        .then((layers) => {
+          this.layers = layers
+          this.logger.debug('Model initialized!', this.layers)
+          resolve()
+        })
+        .catch(reject)
+    })
   }
 
   public call(x: tf.Tensor<tf.Rank>) {
@@ -21,11 +32,5 @@ export default class TensorflowModel {
   public get meta() {
     if (!this.layers) throw new NotInitializedError()
     return this.layers.getConfig().name
-  }
-
-  public async init() {
-    this.layers = await tf.loadLayersModel(`./models/${this.name}/model.json`)
-    this.logger.debug('Model initialized!', this.layers)
-    return this
   }
 }

@@ -22,16 +22,12 @@ export default class ShapeCorrector {
     if (import.meta.env.VITE_SHOW_SHAPE_CANVAS === 'TRUE') {
       this.showCanvas()
     }
-  }
-
-  public async init() {
-    await this.shapeWizard.init()
     this.hiddenCanvas.resize(CANVAS_WIDTH, CANVAS_HEIGHT)
     this.hiddenCanvas.setLineWidth(CANVAS_LINE_WIDTH)
     this.hiddenCanvas.clear()
   }
 
-  public correct(shape: PolyLineShape): PolyLineShape {
+  public async correct(shape: PolyLineShape): Promise<PolyLineShape> {
     const normalizedShape = this.shapeTranslator.normalize(
       shape,
       CANVAS_WIDTH,
@@ -49,15 +45,8 @@ export default class ShapeCorrector {
     // Normalize to [0, 1]
     const imageNormalized = image.div(tf.tensor(255.0)) as tf.Tensor3D
 
-    // Feed it to the shape classifier (for testing purposes only)
-    console.log(
-      this.shapeWizard.classifier?.classify(
-        tf.reshape(imageNormalized, [1, 70, 70, 1])
-      )
-    )
-
     // Shape wizard usage example
-    this.shapeWizard.call(imageNormalized)
+    console.log(await this.shapeWizard.call(imageNormalized))
 
     return shape
   }
