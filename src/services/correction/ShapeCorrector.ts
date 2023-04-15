@@ -2,6 +2,7 @@ import type { PolyLineShape } from '../canvas/Geometry'
 import ShapeWizard from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
+import * as tf from '@tensorflow/tfjs'
 
 const CANVAS_WIDTH = 70
 const CANVAS_HEIGHT = 70
@@ -41,6 +42,22 @@ export default class ShapeCorrector {
     this.hiddenCanvas.drawShape(normalizedShape)
 
     /* Magic goes here, use this.hiddenCanvas.htmlCanvas */
+
+    // Load grayscale tensor from html canvas
+    const image = tf.browser.fromPixels(this.hiddenCanvas.htmlCanvas, 1)
+
+    // Normalize to [0, 1]
+    const imageNormalized = image.div(tf.tensor(255.0)) as tf.Tensor3D
+
+    // Feed it to the shape classifier (for testing purposes only)
+    console.log(
+      this.shapeWizard.classifier?.classify(
+        tf.reshape(imageNormalized, [1, 70, 70, 1])
+      )
+    )
+
+    // Shape wizard usage example
+    this.shapeWizard.call(imageNormalized)
 
     return shape
   }
