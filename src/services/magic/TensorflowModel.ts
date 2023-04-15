@@ -13,6 +13,11 @@ export default class TensorflowModel {
     this.name = name
   }
 
+  public call(x: tf.Tensor<tf.Rank>) {
+    if (!this.layers) throw new NotInitializedError()
+    return this.layers.call(x, {}) as [tf.Tensor<tf.Rank>]
+  }
+
   public get meta() {
     if (!this.layers) throw new NotInitializedError()
     return this.layers.getConfig().name
