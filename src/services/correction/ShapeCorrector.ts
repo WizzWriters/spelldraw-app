@@ -1,3 +1,8 @@
+import {
+  AsyncInit,
+  AsyncInitialized,
+  RequiresAsyncInit
+} from '@/utils/decorators/AsyncInit'
 import type { PolyLineShape } from '../canvas/Geometry'
 import ShapeWizard from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
@@ -9,6 +14,7 @@ const CANVAS_HEIGHT = 70
 const CANVAS_PADDING = 0.15
 const CANVAS_LINE_WIDTH = 2
 
+@AsyncInitialized
 export default class ShapeCorrector {
   private hiddenCanvas: HiddenCanvas
   private shapeWizard: ShapeWizard
@@ -27,6 +33,12 @@ export default class ShapeCorrector {
     this.hiddenCanvas.clear()
   }
 
+  @AsyncInit
+  public async init() {
+    await this.shapeWizard.init()
+  }
+
+  @RequiresAsyncInit
   public async correct(shape: PolyLineShape): Promise<PolyLineShape> {
     const normalizedShape = this.shapeTranslator.normalize(
       shape,

@@ -11,8 +11,7 @@ let whiteboard: Whiteboard
 async function handleCanvasReady(canvas: ICanvas) {
   logger.debug('Canvas ready indication received!')
   whiteboard = new Whiteboard(canvas)
-  whiteboard.init()
-  logger.debug('Whiteboard initialized!')
+  await whiteboard.init()
 }
 </script>
 
