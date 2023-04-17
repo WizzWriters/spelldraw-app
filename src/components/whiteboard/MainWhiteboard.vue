@@ -6,10 +6,12 @@ import SvgCanvas from './canvas/svg/SvgCanvas.vue'
 
 const logger = Logger.get('MainWhiteboard.vue')
 
-function handleCanvasReady(canvas: ICanvas) {
+let whiteboard: Whiteboard
+
+async function handleCanvasReady(canvas: ICanvas) {
   logger.debug('Canvas ready indication received!')
-  new Whiteboard(canvas)
-  logger.debug('Whiteboard initialized!')
+  whiteboard = new Whiteboard(canvas)
+  await whiteboard.init()
 }
 </script>
 

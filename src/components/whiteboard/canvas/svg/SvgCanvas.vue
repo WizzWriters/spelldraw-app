@@ -3,8 +3,16 @@ import Logger from 'js-logger'
 import { ref, onMounted, type Ref } from 'vue'
 import type { IPointerPosition } from '@/services/whiteboard/PointerTracker'
 import type { ECanvasPointerEvent, ICanvas } from '@/services/canvas/Canvas'
-import { Point, Shape } from '@/services/canvas/Geometry'
-import SvgShape from './SvgShape.vue'
+import {
+  RoundShape,
+  Point,
+  Polygon,
+  Polyline,
+  Shape
+} from '@/services/canvas/Geometry'
+import SvgPolylineShape from './SvgPolylineShape.vue'
+import SvgPolygonShape from './SvgPolygonShape.vue'
+import SvgEllipse from './SvgEllipse.vue'
 
 type CavasElement = HTMLElement & SVGElement
 
@@ -14,7 +22,9 @@ const canvasWrapperElementRef = ref<HTMLDivElement | null>(null)
 
 const canvasWidth = ref<number>(0)
 const canvasHeight = ref<number>(0)
-const drawnShapes = ref<Array<Shape>>([]) as Ref<Array<Shape>>
+const drawnPolylineShapes = ref<Array<Polyline>>([]) as Ref<Array<Polyline>>
+const drawnPolygonShapes = ref<Array<Polygon>>([]) as Ref<Array<Polygon>>
+const drawnRoundShapes = ref<Array<RoundShape>>([]) as Ref<Array<RoundShape>>
 
 const emit = defineEmits<{
   (e: 'canvasReady', canvas: ICanvas): void
@@ -53,11 +63,15 @@ class SvgCanvas implements ICanvas {
   }
 
   public drawShape(shape: Shape): void {
-    drawnShapes.value.push(shape)
+    if (shape instanceof Polyline) drawnPolylineShapes.value.push(shape)
+    if (shape instanceof Polygon) drawnPolygonShapes.value.push(shape)
+    if (shape instanceof RoundShape) drawnRoundShapes.value.push(shape)
   }
 
   public clear(): void {
-    drawnShapes.value = []
+    drawnPolylineShapes.value = []
+    drawnPolygonShapes.value = []
+    drawnRoundShapes.value = []
   }
 }
 
@@ -104,11 +118,21 @@ onMounted(initializeComponent)
       :width="canvasWidth"
       :height="canvasHeight"
     >
-      <SvgShape
-        v-for="(shape, idx) in drawnShapes"
-        :shape="shape"
+      <SvgPolylineShape
+        v-for="(shape, idx) in drawnPolylineShapes"
         :key="idx"
-      ></SvgShape>
+        :shape="shape"
+      ></SvgPolylineShape>
+      <SvgPolygonShape
+        v-for="(shape, idx) in drawnPolygonShapes"
+        :key="idx"
+        :shape="shape"
+      ></SvgPolygonShape>
+      <SvgEllipse
+        v-for="(shape, idx) in drawnRoundShapes"
+        :key="idx"
+        :shape="shape"
+      ></SvgEllipse>
     </svg>
   </div>
 </template>
