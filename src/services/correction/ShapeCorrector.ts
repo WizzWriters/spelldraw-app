@@ -3,16 +3,11 @@ import {
   AsyncInitialized,
   RequiresAsyncInit
 } from '@/utils/decorators/AsyncInit'
-import type { PolyLineShape } from '../canvas/Geometry'
-import ShapeWizard from '../magic/ShapeWizard'
+import { Point, Polyline, Polygon, Shape, RoundShape } from '../canvas/Geometry'
+import ShapeWizard, { ShapeClassification } from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
 import * as tf from '@tensorflow/tfjs'
-
-const CANVAS_WIDTH = 70
-const CANVAS_HEIGHT = 70
-const CANVAS_PADDING = 0.15
-const CANVAS_LINE_WIDTH = 2
 
 @AsyncInitialized
 export default class ShapeCorrector {
@@ -28,8 +23,8 @@ export default class ShapeCorrector {
     if (import.meta.env.VITE_SHOW_SHAPE_CANVAS === 'TRUE') {
       this.showCanvas()
     }
-    this.hiddenCanvas.resize(CANVAS_WIDTH, CANVAS_HEIGHT)
-    this.hiddenCanvas.setLineWidth(CANVAS_LINE_WIDTH)
+    this.hiddenCanvas.resize(ShapeWizard.INPUT_WIDTH, ShapeWizard.INPUT_HEIGHT)
+    this.hiddenCanvas.setLineWidth(ShapeWizard.INPUT_LINE_WIDTH)
     this.hiddenCanvas.clear()
   }
 
@@ -39,17 +34,15 @@ export default class ShapeCorrector {
   }
 
   @RequiresAsyncInit
-  public async correct(shape: PolyLineShape): Promise<PolyLineShape> {
+  public async correct(shape: Polyline): Promise<Shape> {
     const normalizedShape = this.shapeTranslator.normalize(
       shape,
-      CANVAS_WIDTH,
-      CANVAS_HEIGHT,
-      CANVAS_PADDING
+      ShapeWizard.INPUT_WIDTH,
+      ShapeWizard.INPUT_HEIGHT,
+      ShapeWizard.INPUT_PADDING
     )
     this.hiddenCanvas.clear()
-    this.hiddenCanvas.drawShape(normalizedShape)
-
-    /* Magic goes here, use this.hiddenCanvas.htmlCanvas */
+    this.hiddenCanvas.drawShape(normalizedShape.shape)
 
     // Load grayscale tensor from html canvas
     const image = tf.browser.fromPixels(this.hiddenCanvas.htmlCanvas, 1)
@@ -57,10 +50,35 @@ export default class ShapeCorrector {
     // Normalize to [0, 1]
     const imageNormalized = image.div(tf.tensor(255.0)) as tf.Tensor3D
 
-    // Shape wizard usage example
-    console.log(await this.shapeWizard.call(imageNormalized))
+    const [shapeLabel, newPoints] = await this.shapeWizard.call(imageNormalized)
 
+    if (shapeLabel != ShapeClassification.OTHER) {
+      const newShape = new Polyline(newPoints)
+      normalizedShape.shape = newShape
+      const denormalizedShape =
+        this.shapeTranslator.denormalize(normalizedShape)
+      return this.recognitionToShape(
+        shapeLabel,
+        denormalizedShape.getPointList()
+      )
+    }
     return shape
+  }
+
+  private recognitionToShape(
+    shapeLabel: ShapeClassification,
+    points: Point[]
+  ): Shape {
+    switch (shapeLabel) {
+      case ShapeClassification.RECTANGLE:
+      case ShapeClassification.TRIANGLE:
+        return new Polygon(points)
+      case ShapeClassification.ELLIPSE: {
+        return new RoundShape(points)
+      }
+      default:
+        return new Polygon(points)
+    }
   }
 
   /* for debugging purposes only */

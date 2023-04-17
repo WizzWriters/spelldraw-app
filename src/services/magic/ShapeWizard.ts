@@ -29,12 +29,19 @@ class Classifier extends TensorflowModel {
 class Regressor extends TensorflowModel {
   public async vertices(image: tf.Tensor4D) {
     const vs = this.call(image)
-    return (await vs[0].reshape([-1, 2]).array()) as Array<[number, number]>
+    return (await vs[0].reshape([-1, 2]).mul(tf.scalar(70)).array()) as Array<
+      [number, number]
+    >
   }
 }
 
 @AsyncInitialized
 export default class ShapeWizard {
+  public static readonly INPUT_WIDTH = 70
+  public static readonly INPUT_HEIGHT = 70
+  public static readonly INPUT_PADDING = 0.15
+  public static readonly INPUT_LINE_WIDTH = 2
+
   private classifier: Classifier
   private regressors: { [index: string]: Regressor }
 

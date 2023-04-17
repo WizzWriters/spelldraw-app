@@ -2,7 +2,7 @@ import Logger from 'js-logger'
 import type { ILogger } from 'js-logger'
 import type { ICanvas } from '../canvas/Canvas'
 import { ShapeCollector } from './ShapeCollector'
-import type { PolyLineShape } from '../canvas/Geometry'
+import type { Polyline, Shape } from '../canvas/Geometry'
 import ShapeCorrector from '../correction/ShapeCorrector'
 import {
   AsyncInit,
@@ -17,7 +17,7 @@ export default class Whiteboard {
   private logger: ILogger
   private canvas: ICanvas
   private shapeCollector: ShapeCollector
-  private shapeCollection: Array<PolyLineShape>
+  private shapeCollection: Array<Shape>
   private shapeCorrector: ShapeCorrector
   private renderInterval?: number
 
@@ -45,9 +45,9 @@ export default class Whiteboard {
   }
 
   @RequiresAsyncInit
-  private async handleShapeCollected(shape: PolyLineShape) {
-    await this.shapeCorrector.correct(shape)
-    this.shapeCollection.push(shape)
+  private async handleShapeCollected(shape: Polyline) {
+    const correctedShape = await this.shapeCorrector.correct(shape)
+    this.shapeCollection.push(correctedShape)
     clearInterval(this.renderInterval)
     this.render()
   }

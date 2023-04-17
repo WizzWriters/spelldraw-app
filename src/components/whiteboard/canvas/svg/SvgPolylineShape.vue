@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { PolyLineShape } from '@/services/canvas/Geometry'
+import type { Polyline } from '@/services/canvas/Geometry'
 
 const props = defineProps<{
-  shape: PolyLineShape
+  shape: Polyline
 }>()
 
 let pointsListStr = computed(() => {

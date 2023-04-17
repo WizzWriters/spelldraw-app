@@ -4,17 +4,19 @@ export class Point {
   constructor(public xCoordinate: number, public yCoordinate: number) {}
 }
 
+export class Segment {
+  constructor(public start: Point, public end: Point) {}
+}
+
 export abstract class Shape {}
 
-export class Rectangle extends Shape {
+export class Rectangle {
   constructor(
     public left: number,
     public right: number,
     public buttom: number,
     public top: number
-  ) {
-    super()
-  }
+  ) {}
 
   public get width(): number {
     return this.right - this.left
@@ -25,7 +27,7 @@ export class Rectangle extends Shape {
   }
 }
 
-export class PolyLineShape extends Shape {
+export class Polyline extends Shape {
   private pointList: Array<Point>
 
   constructor(pointList: Array<Point> = []) {
@@ -68,5 +70,34 @@ export class PolyLineShape extends Shape {
       rect.top = Math.min(rect.top, point.yCoordinate)
       return rect
     }, boundingRectangle)
+  }
+}
+
+export class Polygon extends Shape {
+  private pointList: Array<Point>
+
+  constructor(pointList: Array<Point> = []) {
+    super()
+    this.pointList = lodash.cloneDeep(pointList)
+  }
+
+  public getPointList(): Array<Point> {
+    return this.pointList
+  }
+}
+
+export class RoundShape extends Shape {
+  public pointList: Array<Point>
+  public centroid: Point
+
+  constructor(points: Array<Point>) {
+    super()
+    this.pointList = points
+    const numberOfPoints = this.pointList.length
+    this.centroid = this.pointList.reduce((result, point) => {
+      result.xCoordinate += point.xCoordinate / numberOfPoints
+      result.yCoordinate += point.yCoordinate / numberOfPoints
+      return result
+    }, new Point(0, 0))
   }
 }

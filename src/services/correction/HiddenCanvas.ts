@@ -1,6 +1,6 @@
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
-import type { PolyLineShape } from '../canvas/Geometry'
+import type { Polyline } from '../canvas/Geometry'
 
 export class HiddenCanvas {
   public htmlCanvas: HTMLCanvasElement
@@ -20,7 +20,7 @@ export class HiddenCanvas {
     this.context2d.fillStyle = 'black'
   }
 
-  public drawShape(shape: PolyLineShape) {
+  public drawShape(shape: Polyline) {
     const pointList = shape.getPointList()
     if (pointList.length == 0) return
 
