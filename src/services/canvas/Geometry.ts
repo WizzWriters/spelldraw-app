@@ -14,7 +14,7 @@ export class Rectangle {
   constructor(
     public left: number,
     public right: number,
-    public buttom: number,
+    public bottom: number,
     public top: number
   ) {}
 
@@ -23,7 +23,7 @@ export class Rectangle {
   }
 
   public get height(): number {
-    return this.buttom - this.top
+    return this.bottom - this.top
   }
 }
 
@@ -66,7 +66,7 @@ export class Polyline extends Shape {
     return pointList.reduce((rect, point) => {
       rect.left = Math.min(rect.left, point.xCoordinate)
       rect.right = Math.max(rect.right, point.xCoordinate)
-      rect.buttom = Math.max(rect.buttom, point.yCoordinate)
+      rect.bottom = Math.max(rect.bottom, point.yCoordinate)
       rect.top = Math.min(rect.top, point.yCoordinate)
       return rect
     }, boundingRectangle)
