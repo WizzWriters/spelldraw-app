@@ -29,7 +29,9 @@ class Classifier extends TensorflowModel {
 class Regressor extends TensorflowModel {
   public async vertices(image: tf.Tensor4D) {
     const vs = this.call(image)
-    return (await vs[0].mul(tf.scalar(70)).array()) as Array<[number, number]>
+    return (await vs[0].squeeze().mul(tf.scalar(70)).array()) as Array<
+      [number, number]
+    >
   }
 }
 
