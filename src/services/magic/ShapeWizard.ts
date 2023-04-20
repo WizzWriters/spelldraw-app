@@ -16,6 +16,7 @@ export enum ShapeClassification {
   TRIANGLE = 'triangle'
 }
 
+type point = [number, number]
 const shapes = lodash.values(ShapeClassification)
 const path_name = 'ShapeWizard'
 
@@ -27,11 +28,25 @@ class Classifier extends TensorflowModel {
 }
 
 class Regressor extends TensorflowModel {
+  private sortByKeys(arr: point[], keys: number[]) {
+    const pairs = arr.map((a, i) => [a, keys[i]])
+    // @ts-ignore
+    pairs.sort((a, b) => a[1] - b[1])
+    return pairs.map((pair) => pair[0])
+  }
+
+  private async sortClockwise(vs: tf.Tensor2D) {
+    const vcount = tf.scalar(vs.shape[0])
+    const centroid = tf.sum(vs, 0).div(vcount)
+    const [X, Y] = vs.sub(centroid).split(2, 1)
+    const angles = await tf.atan2(X, Y).flatten().array()
+    const vsarr = (await vs.array()) as point[]
+    return this.sortByKeys(vsarr, angles)
+  }
+
   public async vertices(image: tf.Tensor4D) {
-    const vs = this.call(image)
-    return (await vs[0].squeeze().mul(tf.scalar(70)).array()) as Array<
-      [number, number]
-    >
+    const vs = this.call(image)[0].squeeze().mul(tf.scalar(70)) as tf.Tensor2D
+    return (await this.sortClockwise(vs)) as point[]
   }
 }
 
