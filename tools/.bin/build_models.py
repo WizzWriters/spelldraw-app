@@ -84,7 +84,7 @@ def build_models(model):
     os.makedirs(outputdir, exist_ok=True)
 
     print(f"Building {asset_name}");
-    tfjs.converters.save_keras_model(keras_model, outputdir)
+    tfjs.converters.save_keras_model(keras_model, outputdir, quantization_dtype_map={'uint8': True})
 
 def clean_cache():
   shutil.rmtree(CACHE_PATH, ignore_errors=True)
