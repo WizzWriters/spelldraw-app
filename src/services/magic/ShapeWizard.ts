@@ -20,9 +20,14 @@ const shapes = lodash.values(ShapeClassification)
 const path_name = 'ShapeWizard'
 
 class Classifier extends TensorflowModel {
-  public classify(image: tf.Tensor4D): ShapeClassification {
-    const dist = this.call(image)
-    return shapes[tf.argMax(dist[0], 1).dataSync()[0]]
+  public classify(image: tf.Tensor4D): [ShapeClassification, number] {
+    const dist = this.call(image)[0]
+    const shape = shapes[tf.argMax(dist, 1).dataSync()[0]]
+    const certainty = tf.max(dist).dataSync()[0]
+    this.logger.debug(
+      `Classified as ${shape} with ${(100 * certainty).toFixed(2)} certainty`
+    )
+    return [shape, certainty]
   }
 }
 
@@ -42,10 +47,12 @@ export default class ShapeWizard {
   public static readonly INPUT_PADDING = 0.15
   public static readonly INPUT_LINE_WIDTH = 2
 
+  public uncertaintyTolerance: number
   private classifier: Classifier
   private regressors: { [index: string]: Regressor }
 
-  constructor() {
+  constructor(uncertaintyTolerance = 0.7) {
+    this.uncertaintyTolerance = uncertaintyTolerance
     this.classifier = new Classifier(`${path_name}/classifier`)
 
     this.regressors = {}
@@ -70,9 +77,11 @@ export default class ShapeWizard {
     image: tf.Tensor3D
   ): Promise<[ShapeClassification, Array<Point>]> {
     const batch = tf.expandDims(image) as tf.Tensor4D
-    const shape = this.classifier.classify(batch)
+    const [shape, certainty] = this.classifier.classify(batch)
 
     if (!this.regressors[shape]) return [shape, []]
+    if (certainty < this.uncertaintyTolerance)
+      return [ShapeClassification.OTHER, []]
 
     const vertices = await this.regressors[shape].vertices(batch)
     const points = vertices.map((vertice) => new Point(vertice[0], vertice[1]))
