@@ -29,8 +29,7 @@ class Classifier extends TensorflowModel {
 
 class Regressor extends TensorflowModel {
   private sortByKeys(arr: point[], keys: number[]) {
-    const pairs = arr.map((a, i) => [a, keys[i]])
-    // @ts-ignore
+    const pairs: Array<[point, number]> = arr.map((a, i) => [a, keys[i]])
     pairs.sort((a, b) => a[1] - b[1])
     return pairs.map((pair) => pair[0])
   }
@@ -46,7 +45,7 @@ class Regressor extends TensorflowModel {
 
   public async vertices(image: tf.Tensor4D) {
     const vs = this.call(image)[0].squeeze().mul(tf.scalar(70)) as tf.Tensor2D
-    return (await this.sortClockwise(vs)) as point[]
+    return await this.sortClockwise(vs)
   }
 }
 
