@@ -46,8 +46,8 @@ export default class Whiteboard {
 
   @RequiresAsyncInit
   private async handleShapeCollected(shape: Polyline) {
-    // const correctedShape = await this.shapeCorrector.correct(shape)
-    this.shapeCollection.push(/*correctedShape*/ shape)
+    const correctedShape = await this.shapeCorrector.correct(shape)
+    this.shapeCollection.push(correctedShape)
     clearInterval(this.renderInterval)
     this.render()
   }

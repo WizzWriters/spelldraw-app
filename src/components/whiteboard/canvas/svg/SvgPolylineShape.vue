@@ -52,5 +52,4 @@ let pathCommand = computed(() => {
 
 <template>
   <path :d="pathCommand" fill="none" stroke="black" />
-  <!-- <circle v-for="(point, idx) in props.shape.getPointList()" :key="idx" :cx="point.xCoordinate" :cy="point.yCoordinate" r="2"></circle> -->
 </template>
