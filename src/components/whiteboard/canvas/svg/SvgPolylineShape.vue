@@ -14,18 +14,18 @@ function pointToString(point: Point) {
 }
 
 function nextBezierSegment(bezierCurve: BezierCurve) {
-  switch (bezierCurve.constrolPoints.length) {
+  switch (bezierCurve.controlPoints.length) {
     case 0:
       return ` L ${pointToString(bezierCurve.end)}`
     case 1:
       return (
-        ` Q ${pointToString(bezierCurve.constrolPoints[0])},` +
+        ` Q ${pointToString(bezierCurve.controlPoints[0])},` +
         ` ${pointToString(bezierCurve.end)}`
       )
     case 2:
       return (
-        ` C ${pointToString(bezierCurve.constrolPoints[0])},` +
-        ` ${pointToString(bezierCurve.constrolPoints[1])},` +
+        ` C ${pointToString(bezierCurve.controlPoints[0])},` +
+        ` ${pointToString(bezierCurve.controlPoints[1])},` +
         ` ${pointToString(bezierCurve.end)}`
       )
     default:

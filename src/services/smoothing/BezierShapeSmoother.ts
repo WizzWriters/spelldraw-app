@@ -4,7 +4,7 @@ import lodash from 'lodash'
 abstract class AbstractBezierCurve<ControlPointType> {
   constructor(
     public start: Point,
-    public constrolPoints: ControlPointType,
+    public controlPoints: ControlPointType,
     public end: Point
   ) {}
 }
