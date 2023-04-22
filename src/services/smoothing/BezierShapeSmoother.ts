@@ -56,7 +56,10 @@ export default class BezierShapeSmoother {
           pointList[3]
         )
       default:
-        throw Error('Wrong length of bezier segment')
+        throw Error(
+          'Wrong length of bezier segment point list. Expected 2-4' +
+            `got ${pointListLength}`
+        )
     }
   }
 
