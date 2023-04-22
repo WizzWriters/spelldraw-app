@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import { Segment, type Point, type Polyline } from '@/services/canvas/Geometry'
-import lodash from 'lodash'
+import type { Point, Polyline } from '@/services/canvas/Geometry'
+import BezierShapeSmoother, {
+  type BezierCurve
+} from '@/services/smoothing/BezierShapeSmoother'
 
 const props = defineProps<{
   shape: Polyline
@@ -11,30 +13,20 @@ function pointToString(point: Point) {
   return `${point.xCoordinate} ${point.yCoordinate}`
 }
 
-function makeSmoothBezierTransitions(pointList: Array<Point>) {
-  let pointListLength = pointList.length
-
-  for (let i = 3; i < pointListLength; i += 3) {
-    if (!pointList[i + 1]) break
-
-    pointList[i] = new Segment(pointList[i - 1], pointList[i + 1]).midpoint
-  }
-}
-
-function nextBezierSegment(pointList: Array<Point>) {
-  let listLength = pointList.length
-  switch (listLength) {
+function nextBezierSegment(bezierCurve: BezierCurve) {
+  switch (bezierCurve.constrolPoints.length) {
     case 0:
-      return ''
+      return ` L ${pointToString(bezierCurve.end)}`
     case 1:
-      return ` L ${pointToString(pointList[0])}`
-    case 2:
-      return ` Q ${pointToString(pointList[0])}, ${pointToString(pointList[1])}`
-    case 3:
       return (
-        ` C ${pointToString(pointList[0])},` +
-        ` ${pointToString(pointList[1])},` +
-        ` ${pointToString(pointList[2])}`
+        ` Q ${pointToString(bezierCurve.constrolPoints[0])},` +
+        ` ${pointToString(bezierCurve.end)}`
+      )
+    case 2:
+      return (
+        ` C ${pointToString(bezierCurve.constrolPoints[0])},` +
+        ` ${pointToString(bezierCurve.constrolPoints[1])},` +
+        ` ${pointToString(bezierCurve.end)}`
       )
     default:
       return ''
@@ -42,28 +34,19 @@ function nextBezierSegment(pointList: Array<Point>) {
 }
 
 let pathCommand = computed(() => {
-  let pointList = lodash.cloneDeep(props.shape.getPointList())
-  makeSmoothBezierTransitions(pointList)
+  let pointList = props.shape.getPointList()
+  let bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
   let result = ''
 
-  if (pointList.length == 0) {
-    return result
+  if (bezierCurves.length == 0) {
+    return ''
   }
 
-  result += `M ${pointList[0].xCoordinate} ${pointList[0].yCoordinate}`
-  let pointListLength = pointList.length
-  let bezieredPoints = 1
-
-  for (let i = 3; i <= pointListLength - 1; i += 3) {
-    result += nextBezierSegment([
-      pointList[i - 2],
-      pointList[i - 1],
-      pointList[i]
-    ])
-    bezieredPoints += 3
+  result += `M ${pointToString(bezierCurves[0].start)}`
+  for (let bezierCurve of bezierCurves) {
+    result += nextBezierSegment(bezierCurve)
   }
-
-  return result + nextBezierSegment(pointList.slice(bezieredPoints))
+  return result
 })
 </script>
 
