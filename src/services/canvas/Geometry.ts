@@ -6,6 +6,13 @@ export class Point {
 
 export class Segment {
   constructor(public start: Point, public end: Point) {}
+
+  public get midpoint() {
+    return new Point(
+      (this.start.xCoordinate + this.end.xCoordinate) / 2,
+      (this.start.yCoordinate + this.end.yCoordinate) / 2
+    )
+  }
 }
 
 export abstract class Shape {}
