@@ -1,8 +1,13 @@
 import { createApp } from 'vue'
+import { createPinia } from 'pinia'
 import App from './App.vue'
 import LoggerHelper from './helpers/LoggerHelper'
 
 import './assets/main.scss'
 LoggerHelper.initializeLogger()
 
-createApp(App).mount('#app')
+const pinia = createPinia()
+const app = createApp(App)
+
+app.use(pinia)
+app.mount('#app')
