@@ -1,20 +1,62 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Polyline } from '@/services/canvas/Geometry'
+import type { Point, Polyline } from '@/services/canvas/Geometry'
+import BezierShapeSmoother, {
+  type BezierCurve
+} from '@/services/smoothing/BezierShapeSmoother'
 
 const props = defineProps<{
   shape: Polyline
 }>()
 
-let pointsListStr = computed(() => {
-  let pointList = props.shape.getPointList()
-  let pointListstr = pointList.reduce((prev, point) => {
-    return prev + ' ' + point.xCoordinate + ',' + point.yCoordinate
-  }, '')
-  return pointListstr
+function pointToString(point: Point) {
+  return `${point.xCoordinate} ${point.yCoordinate}`
+}
+
+function nextBezierSegment(bezierCurve: BezierCurve) {
+  switch (bezierCurve.controlPoints.length) {
+    case 0:
+      return ` L ${pointToString(bezierCurve.end)}`
+    case 1:
+      return (
+        ` Q ${pointToString(bezierCurve.controlPoints[0])},` +
+        ` ${pointToString(bezierCurve.end)}`
+      )
+    case 2:
+      return (
+        ` C ${pointToString(bezierCurve.controlPoints[0])},` +
+        ` ${pointToString(bezierCurve.controlPoints[1])},` +
+        ` ${pointToString(bezierCurve.end)}`
+      )
+    default:
+      return ''
+  }
+}
+
+let pathCommand = computed(() => {
+  let pointList = props.shape.pointList
+  let bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
+  let result = ''
+
+  if (bezierCurves.length == 0) {
+    return ''
+  }
+
+  result += `M ${pointToString(bezierCurves[0].start)}`
+  for (let bezierCurve of bezierCurves) {
+    result += nextBezierSegment(bezierCurve)
+  }
+  return result
 })
 </script>
 
 <template>
-  <polyline :points="pointsListStr" fill="none" stroke="black" />
+  <circle
+    v-if="props.shape.pointList.length == 1"
+    :cx="props.shape.pointList[0].xCoordinate"
+    :cy="props.shape.pointList[0].yCoordinate"
+    r="1"
+  >
+  </circle>
+  <path v-else :d="pathCommand" fill="none" stroke="black" />
 </template>

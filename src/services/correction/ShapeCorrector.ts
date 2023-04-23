@@ -57,10 +57,7 @@ export default class ShapeCorrector {
       normalizedShape.shape = newShape
       const denormalizedShape =
         this.shapeTranslator.denormalize(normalizedShape)
-      return this.recognitionToShape(
-        shapeLabel,
-        denormalizedShape.getPointList()
-      )
+      return this.recognitionToShape(shapeLabel, denormalizedShape.pointList)
     }
     return shape
   }

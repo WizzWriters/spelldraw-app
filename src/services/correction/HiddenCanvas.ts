@@ -1,6 +1,12 @@
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
 import type { Polyline } from '../canvas/Geometry'
+import BezierShapeSmoother, {
+  LinearBezierCurve,
+  type BezierCurve,
+  QuadraticBezierCurve,
+  CubicBezierCurve
+} from '../smoothing/BezierShapeSmoother'
 
 export class HiddenCanvas {
   public htmlCanvas: HTMLCanvasElement
@@ -21,19 +27,70 @@ export class HiddenCanvas {
   }
 
   public drawShape(shape: Polyline) {
-    const pointList = shape.getPointList()
+    const pointList = shape.pointList
     if (pointList.length == 0) return
 
     this.context2d.beginPath()
-    const startingPoint = pointList[0]
-    this.context2d.moveTo(startingPoint.xCoordinate, startingPoint.yCoordinate)
+    const bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
 
-    for (const point of pointList.slice(1)) {
-      this.context2d.lineTo(point.xCoordinate, point.yCoordinate)
+    if (bezierCurves.length == 0) {
+      return
     }
+
+    const startingPoint = bezierCurves[0].start
+    this.context2d.moveTo(startingPoint.xCoordinate, startingPoint.yCoordinate)
+    this.traceBezierCurves(bezierCurves)
+
     this.context2d.lineWidth = this.lineWidth
     this.context2d.strokeStyle = 'white'
     this.context2d.stroke()
+  }
+
+  private traceBezierCurves(bezierCurves: BezierCurve[]) {
+    for (const bezierCurve of bezierCurves) {
+      if (bezierCurve instanceof LinearBezierCurve) {
+        this.traceLinearBezierCurve(bezierCurve)
+        continue
+      }
+      if (bezierCurve instanceof QuadraticBezierCurve) {
+        this.traceQuadraticBezierCurve(bezierCurve)
+        continue
+      }
+      if (bezierCurve instanceof CubicBezierCurve) {
+        this.traceCubicBezierCurve(bezierCurve)
+        continue
+      }
+    }
+  }
+
+  private traceLinearBezierCurve(curve: LinearBezierCurve) {
+    const endPoint = curve.end
+    this.context2d.lineTo(endPoint.xCoordinate, endPoint.yCoordinate)
+  }
+
+  private traceQuadraticBezierCurve(curve: QuadraticBezierCurve) {
+    const endPoint = curve.end
+    const controlPoint = curve.controlPoints[0]
+    this.context2d.quadraticCurveTo(
+      controlPoint.xCoordinate,
+      controlPoint.yCoordinate,
+      endPoint.xCoordinate,
+      endPoint.yCoordinate
+    )
+  }
+
+  private traceCubicBezierCurve(curve: CubicBezierCurve) {
+    const endPoint = curve.end
+    const controlPoint1 = curve.controlPoints[0]
+    const controlPoint2 = curve.controlPoints[1]
+    this.context2d.bezierCurveTo(
+      controlPoint1.xCoordinate,
+      controlPoint1.yCoordinate,
+      controlPoint2.xCoordinate,
+      controlPoint2.yCoordinate,
+      endPoint.xCoordinate,
+      endPoint.yCoordinate
+    )
   }
 
   public resize(width: number, height: number): void {

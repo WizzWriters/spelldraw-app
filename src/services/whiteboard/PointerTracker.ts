@@ -13,9 +13,10 @@ export class PointerTracker {
   }
 
   public startPointerTracking() {
-    document.addEventListener('pointermove', (event) =>
+    const positionUpdate = (event: PointerEvent) =>
       this.updatePointerPosition(event)
-    )
+    document.addEventListener('pointermove', positionUpdate)
+    document.addEventListener('pointerdown', positionUpdate)
     this.isTracking = true
   }
 

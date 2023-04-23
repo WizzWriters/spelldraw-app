@@ -6,6 +6,13 @@ export class Point {
 
 export class Segment {
   constructor(public start: Point, public end: Point) {}
+
+  public get midpoint() {
+    return new Point(
+      (this.start.xCoordinate + this.end.xCoordinate) / 2,
+      (this.start.yCoordinate + this.end.yCoordinate) / 2
+    )
+  }
 }
 
 export abstract class Shape {}
@@ -28,7 +35,7 @@ export class Rectangle {
 }
 
 export class Polyline extends Shape {
-  private pointList: Array<Point>
+  public pointList: Array<Point>
 
   constructor(pointList: Array<Point> = []) {
     super()
@@ -36,11 +43,8 @@ export class Polyline extends Shape {
   }
 
   public addPoint(point: Point) {
+    if (lodash.isEqual(point, lodash.last(this.pointList))) return
     this.pointList.push(point)
-  }
-
-  public getPointList(): Array<Point> {
-    return this.pointList
   }
 
   public move(xOffset: number, yOffset: number) {
@@ -52,9 +56,8 @@ export class Polyline extends Shape {
   }
 
   public getBoundingRectangle(): Rectangle {
-    const pointList = this.getPointList()
-    if (pointList.length == 0) return new Rectangle(0, 0, 0, 0)
-    const firstPoint = pointList[0]
+    if (this.pointList.length == 0) return new Rectangle(0, 0, 0, 0)
+    const firstPoint = this.pointList[0]
 
     const boundingRectangle = new Rectangle(
       firstPoint.xCoordinate,
@@ -63,7 +66,7 @@ export class Polyline extends Shape {
       firstPoint.yCoordinate
     )
 
-    return pointList.reduce((rect, point) => {
+    return this.pointList.reduce((rect, point) => {
       rect.left = Math.min(rect.left, point.xCoordinate)
       rect.right = Math.max(rect.right, point.xCoordinate)
       rect.bottom = Math.max(rect.bottom, point.yCoordinate)
