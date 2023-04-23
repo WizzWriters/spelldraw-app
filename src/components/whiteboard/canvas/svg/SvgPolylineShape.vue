@@ -34,11 +34,11 @@ function nextBezierSegment(bezierCurve: BezierCurve) {
 }
 
 let pathCommand = computed(() => {
-  let pointList = props.shape.getPointList()
+  let pointList = props.shape.pointList
   let bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
   let result = ''
 
-  if (bezierCurves.length == 0) {
+  if (bezierCurves.length < 2) {
     return ''
   }
 
@@ -51,5 +51,12 @@ let pathCommand = computed(() => {
 </script>
 
 <template>
-  <path :d="pathCommand" fill="none" stroke="black" />
+  <circle
+    v-if="props.shape.pointList.length == 1"
+    :cx="props.shape.pointList[0].xCoordinate"
+    :cy="props.shape.pointList[0].yCoordinate"
+    r="1"
+  >
+  </circle>
+  <path v-else :d="pathCommand" fill="none" stroke="black" />
 </template>
