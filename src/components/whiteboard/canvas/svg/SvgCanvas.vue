@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import Logger from 'js-logger'
 import { ref, onMounted, type Ref } from 'vue'
-import type { IPointerPosition } from '@/services/whiteboard/PointerTracker'
 import type { ECanvasPointerEvent, ICanvas } from '@/services/canvas/Canvas'
 import {
   RoundShape,
@@ -13,6 +12,8 @@ import {
 import SvgPolylineShape from './SvgPolylineShape.vue'
 import SvgPolygonShape from './SvgPolygonShape.vue'
 import SvgEllipse from './SvgEllipse.vue'
+import { usePointerTracker } from '@/composables/PointerTracker'
+import type { IPointerPosition } from '@/services/canvas/Pointer'
 
 type CavasElement = HTMLElement & SVGElement
 
@@ -30,6 +31,8 @@ const emit = defineEmits<{
   (e: 'canvasReady', canvas: ICanvas): void
 }>()
 
+let pointerPosition = usePointerTracker()
+
 class SvgCanvas implements ICanvas {
   private canvasElement: CavasElement
 
@@ -43,9 +46,10 @@ class SvgCanvas implements ICanvas {
     logger.debug('Canvas resized to x:' + width + ' y:' + height)
   }
 
-  public getPointFromPointerPosition(
-    absolutePointerPosition: IPointerPosition
-  ): Point {
+  public getPointerPosition(absolutePointerPosition?: IPointerPosition): Point {
+    if (!absolutePointerPosition) {
+      absolutePointerPosition = pointerPosition.value
+    }
     const absoluteX = absolutePointerPosition.xCoordinate
     const absoluteY = absolutePointerPosition.yCoordinate
     const boundingRect = this.canvasElement.getBoundingClientRect()

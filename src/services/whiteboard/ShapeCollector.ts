@@ -1,8 +1,8 @@
 import { PointCollector } from './PointCollector'
-import type { IPointerPosition } from './PointerTracker'
 import { ECanvasPointerEvent, type ICanvas } from '../canvas/Canvas'
 import { Polyline, type Point } from '../canvas/Geometry'
 import lodash from 'lodash'
+import type { IPointerPosition } from '../canvas/Pointer'
 
 export type ShapeCollectedCallback = (shape: Polyline) => void
 export type DrawingStartedCallback = () => void
@@ -79,11 +79,11 @@ export class ShapeCollector {
     eventType: ECanvasPointerEvent,
     event: PointerEvent
   ) {
-    const pointerPosition: IPointerPosition = {
+    const absolutePointerPosition: IPointerPosition = {
       xCoordinate: event.clientX,
       yCoordinate: event.clientY
     }
-    const point = this.canvas.getPointFromPointerPosition(pointerPosition)
+    const point = this.canvas.getPointerPosition(absolutePointerPosition)
 
     switch (eventType) {
       case ECanvasPointerEvent.POINTER_DOWN:
