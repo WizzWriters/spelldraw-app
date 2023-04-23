@@ -62,7 +62,7 @@ export default class ShapeNormalizer {
 
   private resize(shape: Polyline, xfrac: number, yfrac: number) {
     return new Polyline(
-      shape.getPointList().map((point) => {
+      shape.pointList.map((point) => {
         point.xCoordinate *= xfrac
         point.yCoordinate *= yfrac
         return point

@@ -27,7 +27,7 @@ export class HiddenCanvas {
   }
 
   public drawShape(shape: Polyline) {
-    const pointList = shape.getPointList()
+    const pointList = shape.pointList
     if (pointList.length == 0) return
 
     this.context2d.beginPath()
