@@ -38,7 +38,7 @@ let pathCommand = computed(() => {
   let bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
   let result = ''
 
-  if (bezierCurves.length < 2) {
+  if (bezierCurves.length == 0) {
     return ''
   }
 
