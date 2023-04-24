@@ -49,7 +49,7 @@ class Regressor extends TensorflowModel {
   }
 
   public async vertices(image: tf.Tensor4D) {
-    const vs = this.call(image)[0].squeeze().mul(tf.scalar(70)) as tf.Tensor2D
+    const vs = this.call(image)[0].squeeze() as tf.Tensor2D
     return await this.sortClockwise(vs)
   }
 }
@@ -65,7 +65,7 @@ export default class ShapeWizard {
   private classifier: Classifier
   private regressors: { [index: string]: Regressor }
 
-  constructor(uncertaintyTolerance = 0.7) {
+  constructor(uncertaintyTolerance = 0) {
     this.uncertaintyTolerance = uncertaintyTolerance
     this.classifier = new Classifier(`${path_name}/classifier`)
 
@@ -98,7 +98,13 @@ export default class ShapeWizard {
       return [ShapeClassification.OTHER, []]
 
     const vertices = await this.regressors[shape].vertices(batch)
-    const points = vertices.map((vertice) => new Point(vertice[0], vertice[1]))
+    const points = vertices.map(
+      (vertice) =>
+        new Point(
+          vertice[0] * ShapeWizard.INPUT_WIDTH,
+          vertice[1] * ShapeWizard.INPUT_HEIGHT
+        )
+    )
     return [shape, points]
   }
 }
