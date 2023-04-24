@@ -10,8 +10,8 @@ import type { Dictionary } from 'lodash'
 
 @AsyncInitialized
 export default class TensorflowModel {
-  private logger: ILogger
   private name: string
+  protected logger: ILogger
   protected layers!: tf.LayersModel
 
   constructor(name: string) {
