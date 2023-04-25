@@ -1,24 +1,28 @@
 import { PointCollector } from './PointCollector'
-import { ECanvasPointerEvent, type ICanvas } from '../canvas/Canvas'
+import { ECanvasPointerEvent } from '../canvas/Canvas'
 import { Polyline, type Point } from '../canvas/Geometry'
-import lodash from 'lodash'
-import type { IPointerPosition } from '../canvas/Pointer'
+//import lodash from 'lodash'
+import { useCanvasStore } from '@/store/CanvasStore'
+import type { ILogger } from 'js-logger'
+import Logger from 'js-logger'
 
 export type ShapeCollectedCallback = (shape: Polyline) => void
 export type DrawingStartedCallback = () => void
 
-export class ShapeCollector {
-  private canvas: ICanvas
+export default class ShapeCollector {
+  private logger: ILogger
+  private canvas: HTMLElement
+  private canvasStore = useCanvasStore()
   private pointCollector: PointCollector
   private shapeCollectedCallbacks: Array<ShapeCollectedCallback>
   private drawingStartedCallbacks: Array<DrawingStartedCallback>
-  private drawnShape?: Polyline
 
-  constructor(canvas: ICanvas) {
+  constructor(canvas: HTMLElement) {
+    this.logger = Logger.get('ShapeCollector')
     this.canvas = canvas
     this.shapeCollectedCallbacks = []
     this.drawingStartedCallbacks = []
-    this.pointCollector = new PointCollector(this.canvas)
+    this.pointCollector = new PointCollector()
     this.pointCollector.atPointCollected((point) => {
       this.handlePointCollected(point)
     })
@@ -34,13 +38,6 @@ export class ShapeCollector {
 
   public atShapeCollected(callback: ShapeCollectedCallback) {
     this.shapeCollectedCallbacks.push(callback)
-  }
-
-  public getCurrentlyDrawnShape(): Polyline | undefined {
-    const currentlyDrawnShape = lodash.cloneDeep(this.drawnShape)
-    const currentPointUnderCursor = this.pointCollector.getPointUnderCursor()
-    currentlyDrawnShape?.addPoint(currentPointUnderCursor)
-    return currentlyDrawnShape
   }
 
   private drawingStarted() {
@@ -61,29 +58,28 @@ export class ShapeCollector {
   }
 
   private handlePointerReleased(point: Point) {
-    if (!this.drawnShape) return
+    if (!this.canvasStore.currentlyDrawnShape) return
     this.handlePointCollected(point)
     this.pointCollector.stopCollecting()
-    const collectedShape = this.drawnShape
-    this.drawnShape = undefined
+    const collectedShape = this.canvasStore.currentlyDrawnShape
+    this.canvasStore.currentlyDrawnShape = null
     this.shapeCollected(collectedShape)
   }
 
   private handlePointerPressed(point: Point) {
-    this.drawingStarted()
     this.handlePointCollected(point)
+    this.drawingStarted()
     this.pointCollector.startCollecting()
   }
 
-  private handlePointerEvent(
+  public handlePointerEvent(
     eventType: ECanvasPointerEvent,
     event: PointerEvent
   ) {
-    const absolutePointerPosition: IPointerPosition = {
+    const point = this.canvasStore.getPositionOnCanvasFromPointerPosition({
       xCoordinate: event.clientX,
       yCoordinate: event.clientY
-    }
-    const point = this.canvas.getPointerPosition(absolutePointerPosition)
+    })
 
     switch (eventType) {
       case ECanvasPointerEvent.POINTER_DOWN:
@@ -92,6 +88,9 @@ export class ShapeCollector {
       case ECanvasPointerEvent.POINTER_UP:
       case ECanvasPointerEvent.POINTER_LEFT:
         this.handlePointerReleased(point)
+        break
+      default:
+        this.logger.warn(`Unknown pointer event received: ${eventType}`)
     }
   }
 
@@ -107,14 +106,14 @@ export class ShapeCollector {
     ]
 
     for (const event of handledEvents) {
-      this.canvas.atPointerEvent(event, callPointerEventHandler(event))
+      this.canvas.addEventListener(event, callPointerEventHandler(event))
     }
   }
   private getOrCreateDrawnShape(): Polyline {
-    if (!this.drawnShape) {
-      this.drawnShape = new Polyline()
-      return this.drawnShape
+    if (!this.canvasStore.currentlyDrawnShape) {
+      this.canvasStore.currentlyDrawnShape = new Polyline()
+      return this.canvasStore.currentlyDrawnShape
     }
-    return this.drawnShape
+    return this.canvasStore.currentlyDrawnShape
   }
 }

@@ -1,19 +1,12 @@
 <script setup lang="ts">
 import Logger from 'js-logger'
-import { ref, onMounted, type Ref } from 'vue'
-import type { ECanvasPointerEvent, ICanvas } from '@/services/canvas/Canvas'
-import {
-  RoundShape,
-  Point,
-  Polygon,
-  Polyline,
-  Shape
-} from '@/services/canvas/Geometry'
-import SvgPolylineShape from './SvgPolylineShape.vue'
-import SvgPolygonShape from './SvgPolygonShape.vue'
-import SvgEllipse from './SvgEllipse.vue'
+import { ref, onMounted, watch, computed } from 'vue'
 import { usePointerTracker } from '@/composables/PointerTracker'
-import type { IPointerPosition } from '@/services/canvas/Pointer'
+import { useCanvasStore } from '@/store/CanvasStore'
+import SvgShapeDrawer from './SvgShapeDrawer.vue'
+import SvgPolylineShape from './SvgPolylineShape.vue'
+import ShapeCollector from '@/services/whiteboard/ShapeCollector'
+import lodash from 'lodash'
 
 type CavasElement = HTMLElement & SVGElement
 
@@ -23,63 +16,19 @@ const canvasWrapperElementRef = ref<HTMLDivElement | null>(null)
 
 const canvasWidth = ref<number>(0)
 const canvasHeight = ref<number>(0)
-const drawnPolylineShapes = ref<Array<Polyline>>([]) as Ref<Array<Polyline>>
-const drawnPolygonShapes = ref<Array<Polygon>>([]) as Ref<Array<Polygon>>
-const drawnRoundShapes = ref<Array<RoundShape>>([]) as Ref<Array<RoundShape>>
 
-const emit = defineEmits<{
-  (e: 'canvasReady', canvas: ICanvas): void
-}>()
+const emit = defineEmits<{ (e: 'canvasReady'): void }>()
 
+let canvasStore = useCanvasStore()
 let pointerPosition = usePointerTracker()
+let currentlyDrawnShape = computed(() => {
+  if (!canvasStore.currentlyDrawnShape) return null
+  let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
+  shapeCopy.addPoint(canvasStore.pointerPosition)
+  return shapeCopy
+})
 
-class SvgCanvas implements ICanvas {
-  private canvasElement: CavasElement
-
-  constructor(canvasElement: CavasElement) {
-    this.canvasElement = canvasElement
-  }
-
-  public resize(width: number, height: number): void {
-    canvasWidth.value = width
-    canvasHeight.value = height
-    logger.debug('Canvas resized to x:' + width + ' y:' + height)
-  }
-
-  public getPointerPosition(absolutePointerPosition?: IPointerPosition): Point {
-    if (!absolutePointerPosition) {
-      absolutePointerPosition = pointerPosition.value
-    }
-    const absoluteX = absolutePointerPosition.xCoordinate
-    const absoluteY = absolutePointerPosition.yCoordinate
-    const boundingRect = this.canvasElement.getBoundingClientRect()
-    return new Point(
-      absoluteX - boundingRect.left,
-      absoluteY - boundingRect.top
-    )
-  }
-
-  public atPointerEvent(
-    eventType: ECanvasPointerEvent,
-    callback: (event: PointerEvent) => void
-  ): void {
-    this.canvasElement.addEventListener(eventType, callback)
-  }
-
-  public drawShape(shape: Shape): void {
-    if (shape instanceof Polyline) drawnPolylineShapes.value.push(shape)
-    if (shape instanceof Polygon) drawnPolygonShapes.value.push(shape)
-    if (shape instanceof RoundShape) drawnRoundShapes.value.push(shape)
-  }
-
-  public clear(): void {
-    drawnPolylineShapes.value = []
-    drawnPolygonShapes.value = []
-    drawnRoundShapes.value = []
-  }
-}
-
-let canvas: SvgCanvas
+let shapeCollector: ShapeCollector
 
 function initializeComponent() {
   let canvasElement = canvasElementRef.value
@@ -89,26 +38,45 @@ function initializeComponent() {
     return
   }
 
-  canvas = initializeCanvas(canvasElement, wrapperElement)
+  initializeCanvas(canvasElement, wrapperElement)
+  shapeCollector = new ShapeCollector(canvasElement)
+  shapeCollector.atShapeCollected((shape) => {
+    canvasStore.drawnShapes.push(shape)
+  })
+  shapeCollector.startCollectingShapes()
   logger.debug('Canvas ready!')
-  emit('canvasReady', canvas)
+  emit('canvasReady')
 }
 
 function initializeCanvas(
   canvasElement: CavasElement,
   wrapperElement: HTMLDivElement
-): SvgCanvas {
-  let canvas = new SvgCanvas(canvasElement)
-
+) {
   function resizeCallback() {
-    const displayedWidth = wrapperElement!.clientWidth
-    const displayedHeight = wrapperElement!.clientHeight
-    canvas.resize(displayedWidth, displayedHeight)
+    canvasWidth.value = wrapperElement.clientWidth
+    canvasHeight.value = wrapperElement.clientHeight
+    logger.debug(
+      `Canvas resized to w: ${canvasWidth.value} y:${canvasHeight.value}`
+    )
   }
+
+  const canvasBoundingRect = canvasElement.getBoundingClientRect()
+  canvasStore.canvasPosition = {
+    left: canvasBoundingRect.left,
+    top: canvasBoundingRect.top
+  }
+
+  watch(
+    pointerPosition,
+    (newValue) => {
+      canvasStore.pointerPosition =
+        canvasStore.getPositionOnCanvasFromPointerPosition(newValue)
+    },
+    { deep: true }
+  )
 
   resizeCallback()
   new ResizeObserver(resizeCallback).observe(wrapperElement)
-  return canvas
 }
 
 onMounted(initializeComponent)
@@ -122,21 +90,11 @@ onMounted(initializeComponent)
       :width="canvasWidth"
       :height="canvasHeight"
     >
+      <SvgShapeDrawer :shapes="canvasStore.drawnShapes"></SvgShapeDrawer>
       <SvgPolylineShape
-        v-for="(shape, idx) in drawnPolylineShapes"
-        :key="idx"
-        :shape="shape"
+        v-if="currentlyDrawnShape"
+        :shape="currentlyDrawnShape"
       ></SvgPolylineShape>
-      <SvgPolygonShape
-        v-for="(shape, idx) in drawnPolygonShapes"
-        :key="idx"
-        :shape="shape"
-      ></SvgPolygonShape>
-      <SvgEllipse
-        v-for="(shape, idx) in drawnRoundShapes"
-        :key="idx"
-        :shape="shape"
-      ></SvgEllipse>
     </svg>
   </div>
 </template>

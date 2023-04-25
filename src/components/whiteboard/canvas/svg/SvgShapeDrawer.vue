@@ -1,0 +1,50 @@
+<script setup lang="ts">
+import {
+  Polygon,
+  Polyline,
+  RoundShape,
+  Shape
+} from '@/services/canvas/Geometry'
+import { computed } from 'vue'
+import SvgPolylineShape from './SvgPolylineShape.vue'
+import SvgPolygonShape from './SvgPolygonShape.vue'
+import SvgEllipse from './SvgEllipse.vue'
+
+const props = defineProps<{
+  shapes: Array<Shape>
+}>()
+
+let polylineShapes = computed(() => {
+  let polylines = props.shapes.filter((shape) => shape instanceof Polyline)
+  /* Typescript cannot tell that we filtered out other types of shapes */
+  return polylines as unknown as Polyline[]
+})
+
+let polygonShapes = computed(() => {
+  let polygons = props.shapes.filter((shape) => shape instanceof Polygon)
+  return polygons as unknown as Polygon[]
+})
+
+let roundShapes = computed(() => {
+  let rounds = props.shapes.filter((shape) => shape instanceof RoundShape)
+  return rounds as unknown as RoundShape[]
+})
+</script>
+
+<template>
+  <SvgPolylineShape
+    v-for="(shape, idx) in polylineShapes"
+    :key="idx"
+    :shape="shape"
+  ></SvgPolylineShape>
+  <SvgPolygonShape
+    v-for="(shape, idx) in polygonShapes"
+    :key="idx"
+    :shape="shape"
+  ></SvgPolygonShape>
+  <SvgEllipse
+    v-for="(shape, idx) in roundShapes"
+    :key="idx"
+    :shape="shape"
+  ></SvgEllipse>
+</template>

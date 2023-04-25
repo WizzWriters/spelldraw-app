@@ -1,4 +1,4 @@
-import type { ICanvas } from '../canvas/Canvas'
+import { useCanvasStore } from '@/store/CanvasStore'
 import type { Point } from '../canvas/Geometry'
 
 const POINT_COLLECTION_INTERVAL = 30
@@ -6,12 +6,11 @@ const POINT_COLLECTION_INTERVAL = 30
 export type PointCollectedCallback = (point: Point) => void
 
 export class PointCollector {
-  private canvas: ICanvas
   private callbackArray: Array<PointCollectedCallback>
   private interval?: number
+  private canvasStore = useCanvasStore()
 
-  constructor(canvas: ICanvas) {
-    this.canvas = canvas
+  constructor() {
     this.callbackArray = []
   }
 
@@ -31,7 +30,7 @@ export class PointCollector {
   }
 
   public getPointUnderCursor(): Point {
-    const pointUnderCursor = this.canvas.getPointerPosition()
+    const pointUnderCursor = this.canvasStore.pointerPosition
     return pointUnderCursor
   }
 
