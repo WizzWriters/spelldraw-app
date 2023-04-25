@@ -1,4 +1,4 @@
-import { Segment, type Point } from '../canvas/Geometry'
+import { Segment, type Point } from '@/common/definitions/Geometry'
 import lodash from 'lodash'
 
 abstract class AbstractBezierCurve<ControlPointType> {

@@ -1,4 +1,4 @@
-import type { IPointerPosition } from '@/services/canvas/Pointer'
+import type { IPointerPosition } from '@/common/definitions/Pointer'
 import { onMounted, onUnmounted, ref, type Ref } from 'vue'
 
 export function usePointerTracker() {

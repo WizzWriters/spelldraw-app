@@ -1,5 +1,5 @@
-import type { IPointerPosition } from '@/services/canvas/Pointer'
-import type { Polyline, Shape } from '@/services/canvas/Geometry'
+import type { IPointerPosition } from '@/common/definitions/Pointer'
+import type { Polyline, Shape } from '@/common/definitions/Geometry'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 

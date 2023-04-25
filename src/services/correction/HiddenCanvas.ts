@@ -1,6 +1,6 @@
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
-import type { Polyline } from '../canvas/Geometry'
+import type { Polyline } from '@/common/definitions/Geometry'
 import BezierShapeSmoother, {
   LinearBezierCurve,
   type BezierCurve,

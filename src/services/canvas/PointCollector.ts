@@ -1,5 +1,5 @@
 import { useCanvasStore } from '@/store/CanvasStore'
-import type { Point } from '../canvas/Geometry'
+import type { Point } from '@/common/definitions/Geometry'
 
 const POINT_COLLECTION_INTERVAL = 30
 

@@ -1,11 +1,11 @@
 <script setup lang="ts">
 import Logger from 'js-logger'
 import { ref, onMounted, watch, computed } from 'vue'
-import { usePointerTracker } from '@/composables/PointerTracker'
+import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
 import SvgPolylineShape from './SvgPolylineShape.vue'
-import ShapeCollector from '@/services/whiteboard/ShapeCollector'
+import ShapeCollector from '@/services/canvas/ShapeCollector'
 import lodash from 'lodash'
 
 type CavasElement = HTMLElement & SVGElement
