@@ -5,13 +5,14 @@ import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
 import SvgPolylineShape from './SvgPolylineShape.vue'
-import ShapeCollector from '@/services/canvas/ShapeCollector'
 import lodash from 'lodash'
+import { useToolbarStore } from '@/store/ToolbarStore'
+import { EPointerEvent } from '@/common/definitions/Pointer'
 
-type CavasElement = HTMLElement & SVGElement
+type CanvasElement = HTMLElement & SVGElement
 
 const logger = Logger.get('SvgCanvas.vue')
-const canvasElementRef = ref<CavasElement | null>(null)
+const canvasElementRef = ref<CanvasElement | null>(null)
 const canvasWrapperElementRef = ref<HTMLDivElement | null>(null)
 
 const canvasWidth = ref<number>(0)
@@ -20,15 +21,24 @@ const canvasHeight = ref<number>(0)
 const emit = defineEmits<{ (e: 'canvasReady'): void }>()
 
 let canvasStore = useCanvasStore()
+let toolbarStore = useToolbarStore()
 let pointerPosition = usePointerTracker()
+
+watch(
+  pointerPosition,
+  (newValue) => {
+    canvasStore.pointerPosition =
+      canvasStore.getPositionOnCanvasFromPointerPosition(newValue)
+  },
+  { deep: true }
+)
+
 let currentlyDrawnShape = computed(() => {
   if (!canvasStore.currentlyDrawnShape) return null
   let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
   shapeCopy.addPoint(canvasStore.pointerPosition)
   return shapeCopy
 })
-
-let shapeCollector: ShapeCollector
 
 function initializeComponent() {
   let canvasElement = canvasElementRef.value
@@ -39,17 +49,12 @@ function initializeComponent() {
   }
 
   initializeCanvas(canvasElement, wrapperElement)
-  shapeCollector = new ShapeCollector(canvasElement)
-  shapeCollector.atShapeCollected((shape) => {
-    canvasStore.drawnShapes.push(shape)
-  })
-  shapeCollector.startCollectingShapes()
   logger.debug('Canvas ready!')
   emit('canvasReady')
 }
 
 function initializeCanvas(
-  canvasElement: CavasElement,
+  canvasElement: CanvasElement,
   wrapperElement: HTMLDivElement
 ) {
   function resizeCallback() {
@@ -66,17 +71,25 @@ function initializeCanvas(
     top: canvasBoundingRect.top
   }
 
-  watch(
-    pointerPosition,
-    (newValue) => {
-      canvasStore.pointerPosition =
-        canvasStore.getPositionOnCanvasFromPointerPosition(newValue)
-    },
-    { deep: true }
-  )
+  installPointerEventHandlers(canvasElement)
 
   resizeCallback()
   new ResizeObserver(resizeCallback).observe(wrapperElement)
+}
+
+function installPointerEventHandlers(canvasElement: CanvasElement) {
+  const handledPointerEvents = [
+    EPointerEvent.POINTER_DOWN,
+    EPointerEvent.POINTER_UP,
+    EPointerEvent.POINTER_LEFT
+  ]
+  const callPointerEventHandler =
+    (eventType: EPointerEvent) => (event: PointerEvent) =>
+      toolbarStore.activeTool?.handlePointerEvent(eventType, event)
+
+  for (const event of handledPointerEvents) {
+    canvasElement.addEventListener(event, callPointerEventHandler(event))
+  }
 }
 
 onMounted(initializeComponent)
