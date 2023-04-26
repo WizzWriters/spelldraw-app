@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Point, type RoundShape } from '@/services/canvas/Geometry'
+import { Point, type RoundShape } from '@/common/definitions/Geometry'
 import { computed } from 'vue'
 
 const props = defineProps<{

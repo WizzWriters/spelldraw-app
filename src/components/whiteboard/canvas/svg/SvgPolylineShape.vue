@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Point, Polyline } from '@/services/canvas/Geometry'
+import type { Point, Polyline } from '@/common/definitions/Geometry'
 import BezierShapeSmoother, {
   type BezierCurve
 } from '@/services/smoothing/BezierShapeSmoother'

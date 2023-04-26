@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { Polygon } from '@/services/canvas/Geometry'
+import type { Polygon } from '@/common/definitions/Geometry'
 
 const props = defineProps<{
   shape: Polygon

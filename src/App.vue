@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import MainWhiteboard from './components/whiteboard/MainWhiteboard.vue'
-import MainNavbar from './components/navbar/MainNavbar.vue'
+import TheWhiteboard from './components/whiteboard/TheWhiteboard.vue'
+import TheNavbar from './components/navbar/TheNavbar.vue'
 </script>
 
 <template>
-  <MainNavbar></MainNavbar>
+  <TheNavbar></TheNavbar>
   <main>
-    <MainWhiteboard></MainWhiteboard>
+    <TheWhiteboard></TheWhiteboard>
   </main>
 </template>
 

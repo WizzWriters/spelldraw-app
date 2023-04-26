@@ -3,7 +3,13 @@ import {
   AsyncInitialized,
   RequiresAsyncInit
 } from '@/utils/decorators/AsyncInit'
-import { Point, Polyline, Polygon, Shape, RoundShape } from '../canvas/Geometry'
+import {
+  Point,
+  Polyline,
+  Polygon,
+  Shape,
+  RoundShape
+} from '@/common/definitions/Geometry'
 import ShapeWizard, { ShapeClassification } from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
