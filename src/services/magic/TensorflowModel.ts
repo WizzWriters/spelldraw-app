@@ -6,11 +6,12 @@ import {
   RequiresAsyncInit,
   AsyncInitialized
 } from '@/utils/decorators/AsyncInit'
+import type { Dictionary } from 'lodash'
 
 @AsyncInitialized
 export default class TensorflowModel {
-  private logger: ILogger
   private name: string
+  protected logger: ILogger
   protected layers!: tf.LayersModel
 
   constructor(name: string) {
@@ -22,6 +23,11 @@ export default class TensorflowModel {
   public async init() {
     this.layers = await tf.loadLayersModel(`./models/${this.name}/model.json`)
     this.logger.debug('Model initialized!', this.layers)
+  }
+
+  @RequiresAsyncInit
+  public meta() {
+    return this.layers.getConfig().name as Dictionary<any>
   }
 
   @RequiresAsyncInit
