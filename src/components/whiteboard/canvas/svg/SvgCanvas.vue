@@ -109,6 +109,9 @@ onMounted(initializeComponent)
 #canvas-wrapper {
   display: flex;
   flex: 1 1 auto;
+  &:hover {
+    cursor: url('pencil-solid.svg') 0 20, auto;
+  }
 }
 
 #main-canvas {
