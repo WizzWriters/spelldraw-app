@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import Logger from 'js-logger'
-import { ref, onMounted, watch, computed } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
@@ -8,6 +8,7 @@ import SvgPolylineShape from './SvgPolylineShape.vue'
 import lodash from 'lodash'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import { EPointerEvent } from '@/common/definitions/Pointer'
+import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 
 type CanvasElement = HTMLElement & SVGElement
 
@@ -24,19 +25,11 @@ let canvasStore = useCanvasStore()
 let toolbarStore = useToolbarStore()
 let pointerPosition = usePointerTracker()
 
-watch(
-  pointerPosition,
-  (newValue) => {
-    canvasStore.pointerPosition =
-      canvasStore.getPositionOnCanvasFromPointerPosition(newValue)
-  },
-  { deep: true }
-)
-
 let currentlyDrawnShape = computed(() => {
   if (!canvasStore.currentlyDrawnShape) return null
   let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
-  shapeCopy.addPoint(canvasStore.pointerPosition)
+  let positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
+  shapeCopy.addPoint(positionOnCanvas)
   return shapeCopy
 })
 
