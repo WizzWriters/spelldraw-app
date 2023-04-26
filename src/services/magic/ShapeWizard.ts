@@ -49,7 +49,7 @@ class Regressor extends TensorflowModel {
   }
 
   public async vertices(image: tf.Tensor4D) {
-    const vs = this.call(image)[0].squeeze() as tf.Tensor2D
+    const vs = this.call(image)[0].reshape([-1, 2]) as tf.Tensor2D
     return await this.sortClockwise(vs)
   }
 }
