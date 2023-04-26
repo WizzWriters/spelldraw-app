@@ -1,4 +1,4 @@
-import { Polyline } from '../canvas/Geometry'
+import { Polyline } from '@/common/definitions/Geometry'
 import lodash from 'lodash'
 
 export class NormalizedShape {

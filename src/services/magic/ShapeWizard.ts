@@ -2,7 +2,7 @@ import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
 import lodash from 'lodash'
 import TensorflowModel from './TensorflowModel'
-import { Point } from '../canvas/Geometry'
+import { Point } from '@/common/definitions/Geometry'
 import {
   AsyncInit,
   AsyncInitialized,
