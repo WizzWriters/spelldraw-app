@@ -3,7 +3,7 @@ import { EPointerEvent } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
 import { useCanvasStore } from '@/store/CanvasStore'
-import { EShapeCorrectionState, useMagicStore } from '@/store/MagicStore'
+import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { onMounted } from 'vue'
@@ -29,7 +29,7 @@ const handlePointerEvent =
         break
       case EPointerEvent.POINTER_UP:
       case EPointerEvent.POINTER_LEFT: {
-        magicStore.shapeCorrectionState = EShapeCorrectionState.IDLE
+        magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
         if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
         break

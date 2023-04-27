@@ -3,7 +3,7 @@ import { library } from '@fortawesome/fontawesome-svg-core'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { usePointerTracker } from '@/common/composables/PointerTracker'
-import { EShapeCorrectionState, useMagicStore } from '@/store/MagicStore'
+import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import Logger from 'js-logger'
@@ -20,33 +20,33 @@ const shapeCorrector = new ShapeCorrector()
 const magicStore = useMagicStore()
 const canvasStore = useCanvasStore()
 
-const tooltipRef: Ref<HTMLElement | null> = ref(null)
-const isTooltipShown = ref(false)
+const loaderRef: Ref<HTMLElement | null> = ref(null)
+const isLoaderShown = ref(false)
 const isStatusShown = ref(false)
-const isTooltipTracking = ref(false)
+const isLoaderTracking = ref(false)
 const wasCorrectionSuccessful = ref(true)
 
-const tooltipPosition = computed(() => {
-  if (!isTooltipTracking.value) {
-    const boundingRect = tooltipRef.value?.getBoundingClientRect()
+const loaderPosition = computed(() => {
+  if (!isLoaderTracking.value) {
+    const boundingRect = loaderRef.value?.getBoundingClientRect()
     if (!boundingRect) return { xCoordinate: 0, yCoordinate: 0 }
     return { xCoordinate: boundingRect.left, yCoordinate: boundingRect.top }
   }
 
   return {
     xCoordinate:
-      pointerPosition.value.xCoordinate - (tooltipRef?.value?.clientWidth || 0),
+      pointerPosition.value.xCoordinate - (loaderRef?.value?.clientWidth || 0),
     yCoordinate:
-      pointerPosition.value.yCoordinate - (tooltipRef?.value?.clientHeight || 0)
+      pointerPosition.value.yCoordinate - (loaderRef?.value?.clientHeight || 0)
   }
 })
 
 let correctionPromise: Promise<Shape | null>
 
 function startCorrection() {
-  isTooltipTracking.value = true
+  isLoaderTracking.value = true
   isStatusShown.value = false
-  isTooltipShown.value = true
+  isLoaderShown.value = true
   let currentlyDrawnShape = canvasStore.currentlyDrawnShape
   if (currentlyDrawnShape) {
     correctionPromise = shapeCorrector.correct(currentlyDrawnShape)
@@ -55,7 +55,7 @@ function startCorrection() {
 }
 
 async function commitCorrection() {
-  isTooltipTracking.value = false
+  isLoaderTracking.value = false
   isStatusShown.value = true
   let correction = await correctionPromise
 
@@ -71,52 +71,52 @@ async function commitCorrection() {
   logger.debug('Shape correction commited')
 }
 
-function hideTooltip() {
-  isTooltipShown.value = false
+function hideLoader() {
+  isLoaderShown.value = false
 }
 
 function handleUnexpectedTransition(
-  previousState: EShapeCorrectionState,
-  nextState: EShapeCorrectionState
+  previousState: ECorrectionRequestState,
+  nextState: ECorrectionRequestState
 ) {
   logger.warn(
-    `Unexpected state transition from ${previousState} to` + ` ${nextState}`
+    `Unexpected state transition from ${previousState} to ${nextState}`
   )
 }
 
-function handleTransitionFromIdle(nextState: EShapeCorrectionState) {
+function handleTransitionFromIdle(nextState: ECorrectionRequestState) {
   switch (nextState) {
-    case EShapeCorrectionState.STARTED:
+    case ECorrectionRequestState.START:
       startCorrection()
       break
     default:
-      handleUnexpectedTransition(EShapeCorrectionState.IDLE, nextState)
+      handleUnexpectedTransition(ECorrectionRequestState.IDLE, nextState)
       break
   }
 }
 
-function handleTransitionFromStarted(nextState: EShapeCorrectionState) {
+function handleTransitionFromStarted(nextState: ECorrectionRequestState) {
   switch (nextState) {
-    case EShapeCorrectionState.IDLE:
-      hideTooltip()
+    case ECorrectionRequestState.IDLE:
+      hideLoader()
       break
-    case EShapeCorrectionState.REQUESTED:
+    case ECorrectionRequestState.COMMIT:
       commitCorrection()
-      setTimeout(hideTooltip, 300)
+      setTimeout(hideLoader, 300)
       break
     default:
-      handleUnexpectedTransition(EShapeCorrectionState.STARTED, nextState)
+      handleUnexpectedTransition(ECorrectionRequestState.START, nextState)
       break
   }
 }
 
-function handleTransitionFromRequested(nextState: EShapeCorrectionState) {
+function handleTransitionFromRequested(nextState: ECorrectionRequestState) {
   switch (nextState) {
-    case EShapeCorrectionState.IDLE:
+    case ECorrectionRequestState.IDLE:
       /* Nothing to do here */
       break
     default:
-      handleUnexpectedTransition(EShapeCorrectionState.REQUESTED, nextState)
+      handleUnexpectedTransition(ECorrectionRequestState.COMMIT, nextState)
       break
   }
 }
@@ -125,13 +125,13 @@ function handleTransitionFromRequested(nextState: EShapeCorrectionState) {
 const { shapeCorrectionState } = storeToRefs(magicStore)
 watch(shapeCorrectionState, (nextState, previousState) => {
   switch (previousState) {
-    case EShapeCorrectionState.IDLE:
+    case ECorrectionRequestState.IDLE:
       handleTransitionFromIdle(nextState)
       break
-    case EShapeCorrectionState.STARTED:
+    case ECorrectionRequestState.START:
       handleTransitionFromStarted(nextState)
       break
-    case EShapeCorrectionState.REQUESTED:
+    case ECorrectionRequestState.COMMIT:
       handleTransitionFromRequested(nextState)
       break
     default:
@@ -146,7 +146,7 @@ onMounted(async () => {
   await shapeCorrector.init()
 
   /* Remove when the hunt ends */
-  tooltipRef.value?.addEventListener('*', (event) => {
+  loaderRef.value?.addEventListener('*', (event) => {
     console.log('Ladies and gentlemens, we got him:')
     console.error(event)
   })
@@ -156,13 +156,13 @@ onMounted(async () => {
 <template>
   <Transition>
     <div
-      v-if="isTooltipShown"
-      id="tooltip"
+      v-if="isLoaderShown"
+      id="loader"
       class="box p-2 has-text-centered"
-      ref="tooltipRef"
+      ref="loaderRef"
       :style="
-        `top: ${tooltipPosition.yCoordinate}px;` +
-        `left: ${tooltipPosition.xCoordinate}px;`
+        `top: ${loaderPosition.yCoordinate}px;` +
+        `left: ${loaderPosition.xCoordinate}px;`
       "
     >
       <p
@@ -188,7 +188,7 @@ onMounted(async () => {
 </template>
 
 <style lang="scss">
-#tooltip {
+#loader {
   position: fixed;
   pointer-events: none;
   user-select: none;

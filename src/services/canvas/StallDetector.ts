@@ -1,5 +1,5 @@
 import type { Point } from '@/common/definitions/Geometry'
-import { EShapeCorrectionState, useMagicStore } from '@/store/MagicStore'
+import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import Logger from 'js-logger'
 
 const STEP = 2
@@ -51,17 +51,17 @@ export default class StallDetector {
 
   private trigger() {
     this.logger.debug('Cursor stalling suspicion...')
-    this.magicStore.shapeCorrectionState = EShapeCorrectionState.STARTED
+    this.magicStore.shapeCorrectionState = ECorrectionRequestState.START
   }
 
   private stallDetected() {
     this.logger.debug('Cursor stalled!')
-    this.magicStore.shapeCorrectionState = EShapeCorrectionState.REQUESTED
+    this.magicStore.shapeCorrectionState = ECorrectionRequestState.COMMIT
   }
 
   private reset(lastPoint?: Point) {
     this.iterationsCount = 1
-    this.magicStore.shapeCorrectionState = EShapeCorrectionState.IDLE
+    this.magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
     this.lastPoint = lastPoint || null
   }
 }

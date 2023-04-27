@@ -1,14 +1,14 @@
 import { defineStore } from 'pinia'
 import { ref } from 'vue'
 
-export enum EShapeCorrectionState {
+export enum ECorrectionRequestState {
   IDLE,
-  STARTED,
-  REQUESTED
+  START,
+  COMMIT
 }
 
 export const useMagicStore = defineStore('magic', () => {
-  const shapeCorrectionState = ref(EShapeCorrectionState.IDLE)
+  const shapeCorrectionState = ref(ECorrectionRequestState.IDLE)
   const maxActivationStep = ref(0)
   const activationStep = ref(0)
 
