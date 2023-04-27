@@ -21,13 +21,15 @@ const magicStore = useMagicStore()
 const canvasStore = useCanvasStore()
 
 const loaderRef: Ref<HTMLElement | null> = ref(null)
-const isLoaderShown = ref(false)
-const isStatusShown = ref(false)
-const isLoaderTracking = ref(false)
-const wasCorrectionSuccessful = ref(true)
+const loaderState = ref({
+  isShown: false,
+  isStatusShown: false,
+  isTracking: false,
+  wasCorrectionSuccessful: false
+})
 
 const loaderPosition = computed(() => {
-  if (!isLoaderTracking.value) {
+  if (!loaderState.value.isTracking) {
     const boundingRect = loaderRef.value?.getBoundingClientRect()
     if (!boundingRect) return { xCoordinate: 0, yCoordinate: 0 }
     return { xCoordinate: boundingRect.left, yCoordinate: boundingRect.top }
@@ -44,9 +46,9 @@ const loaderPosition = computed(() => {
 let correctionPromise: Promise<Shape | null>
 
 function startCorrection() {
-  isLoaderTracking.value = true
-  isStatusShown.value = false
-  isLoaderShown.value = true
+  loaderState.value.isTracking = true
+  loaderState.value.isStatusShown = false
+  loaderState.value.isShown = true
   let currentlyDrawnShape = canvasStore.currentlyDrawnShape
   if (currentlyDrawnShape) {
     correctionPromise = shapeCorrector.correct(currentlyDrawnShape)
@@ -55,24 +57,24 @@ function startCorrection() {
 }
 
 async function commitCorrection() {
-  isLoaderTracking.value = false
-  isStatusShown.value = true
+  loaderState.value.isTracking = false
+  loaderState.value.isStatusShown = true
   let correction = await correctionPromise
 
   if (!correction) {
-    wasCorrectionSuccessful.value = false
+    loaderState.value.wasCorrectionSuccessful = false
     logger.debug('Shape correction failed successfully :)')
     return
   }
 
-  wasCorrectionSuccessful.value = true
+  loaderState.value.wasCorrectionSuccessful = true
   canvasStore.currentlyDrawnShape = null
   canvasStore.drawnShapes.push(correction)
   logger.debug('Shape correction commited')
 }
 
 function hideLoader() {
-  isLoaderShown.value = false
+  loaderState.value.isShown = false
 }
 
 function handleUnexpectedTransition(
@@ -156,7 +158,7 @@ onMounted(async () => {
 <template>
   <Transition>
     <div
-      v-if="isLoaderShown"
+      v-if="loaderState.isShown"
       id="loader"
       class="box p-2 has-text-centered"
       ref="loaderRef"
@@ -166,13 +168,15 @@ onMounted(async () => {
       "
     >
       <p
-        v-if="isStatusShown && wasCorrectionSuccessful"
+        v-if="loaderState.isStatusShown && loaderState.wasCorrectionSuccessful"
         class="has-text-success p-0"
       >
         <FontAwesomeIcon icon="fa-check"></FontAwesomeIcon>
       </p>
       <p
-        v-else-if="isStatusShown && !wasCorrectionSuccessful"
+        v-else-if="
+          loaderState.isStatusShown && !loaderState.wasCorrectionSuccessful
+        "
         class="has-text-danger p-0"
       >
         <FontAwesomeIcon icon="fa-times"></FontAwesomeIcon>
