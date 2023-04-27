@@ -110,7 +110,7 @@ onMounted(initializeComponent)
   display: flex;
   flex: 1 1 auto;
   &:hover {
-    cursor: url('pencil-solid.svg') 0 20, auto;
+    cursor: url('pencil-solid.svg') 0 0, auto;
   }
 }
 
