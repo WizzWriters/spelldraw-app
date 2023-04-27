@@ -3,6 +3,7 @@ import { EPointerEvent } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
 import { useCanvasStore } from '@/store/CanvasStore'
+import { EShapeCorrectionState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { onMounted } from 'vue'
@@ -10,6 +11,7 @@ import { onMounted } from 'vue'
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
+const magicStore = useMagicStore()
 
 const emit = defineEmits<{ (e: 'drawToolReady'): void }>()
 
@@ -27,6 +29,7 @@ const handlePointerEvent =
         break
       case EPointerEvent.POINTER_UP:
       case EPointerEvent.POINTER_LEFT: {
+        magicStore.shapeCorrectionState = EShapeCorrectionState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
         if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
         break
