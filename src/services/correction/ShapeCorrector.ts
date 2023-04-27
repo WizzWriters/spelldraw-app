@@ -40,7 +40,7 @@ export default class ShapeCorrector {
   }
 
   @RequiresAsyncInit
-  public async correct(shape: Polyline): Promise<Shape> {
+  public async correct(shape: Polyline): Promise<Shape | null> {
     const normalizedShape = this.shapeTranslator.normalize(
       shape,
       ShapeWizard.INPUT_WIDTH,
@@ -58,14 +58,12 @@ export default class ShapeCorrector {
 
     const [shapeLabel, newPoints] = await this.shapeWizard.call(imageNormalized)
 
-    if (shapeLabel != ShapeClassification.OTHER) {
-      const newShape = new Polyline(newPoints)
-      normalizedShape.shape = newShape
-      const denormalizedShape =
-        this.shapeTranslator.denormalize(normalizedShape)
-      return this.recognitionToShape(shapeLabel, denormalizedShape.pointList)
-    }
-    return shape
+    if (shapeLabel == ShapeClassification.OTHER) return null
+
+    const newShape = new Polyline(newPoints)
+    normalizedShape.shape = newShape
+    const denormalizedShape = this.shapeTranslator.denormalize(normalizedShape)
+    return this.recognitionToShape(shapeLabel, denormalizedShape.pointList)
   }
 
   private recognitionToShape(

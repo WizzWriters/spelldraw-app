@@ -21,16 +21,22 @@ export default class ShapeCollector {
   }
 
   private handlePointCollected(newPoint: Point) {
-    const currentlyDrawnShape = this.getOrCreateDrawnShape()
+    if (!this.canvasStore.currentlyDrawnShape) {
+      this.handleShapeNulled()
+      return
+    }
+    const currentlyDrawnShape = this.canvasStore.currentlyDrawnShape
     currentlyDrawnShape.addPoint(newPoint)
   }
 
   public collectShape(endpoint?: Point): Polyline | null {
-    if (!this.canvasStore.currentlyDrawnShape) return null
-    if (endpoint) this.handlePointCollected(endpoint)
+    if (!this.canvasStore.currentlyDrawnShape) {
+      this.handleShapeNulled()
+      return null
+    }
 
     this.pointCollector.stopCollecting()
-
+    if (endpoint) this.handlePointCollected(endpoint)
     const collectedShape = this.canvasStore.currentlyDrawnShape
     this.canvasStore.currentlyDrawnShape = null
 
@@ -38,15 +44,12 @@ export default class ShapeCollector {
   }
 
   public startCollecting(startpoint?: Point) {
+    this.canvasStore.currentlyDrawnShape = new Polyline()
     if (startpoint) this.handlePointCollected(startpoint)
     this.pointCollector.startCollecting()
   }
 
-  private getOrCreateDrawnShape(): Polyline {
-    if (!this.canvasStore.currentlyDrawnShape) {
-      this.canvasStore.currentlyDrawnShape = new Polyline()
-      return this.canvasStore.currentlyDrawnShape
-    }
-    return this.canvasStore.currentlyDrawnShape
+  private handleShapeNulled() {
+    this.pointCollector.stopCollecting()
   }
 }

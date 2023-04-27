@@ -4,16 +4,21 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { EShapeCorrectionState, useMagicStore } from '@/store/MagicStore'
-import { computed, ref, watch, type Ref } from 'vue'
+import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import Logger from 'js-logger'
+import type { Shape } from '@/common/definitions/Geometry'
+import ShapeCorrector from '@/services/correction/ShapeCorrector'
+import { useCanvasStore } from '@/store/CanvasStore'
 
 library.add(faCheck)
 library.add(faTimes)
 
 const logger = Logger.get('ShapeCorrection.vue')
+const shapeCorrector = new ShapeCorrector()
 
 const magicStore = useMagicStore()
+const canvasStore = useCanvasStore()
 
 const tooltipRef: Ref<HTMLElement | null> = ref(null)
 const isTooltipShown = ref(false)
@@ -36,10 +41,34 @@ const tooltipPosition = computed(() => {
   }
 })
 
+let correctionPromise: Promise<Shape | null>
+
 function startCorrection() {
   isTooltipTracking.value = true
   isStatusShown.value = false
   isTooltipShown.value = true
+  let currentlyDrawnShape = canvasStore.currentlyDrawnShape
+  if (currentlyDrawnShape) {
+    correctionPromise = shapeCorrector.correct(currentlyDrawnShape)
+    logger.debug('Shape correction started')
+  }
+}
+
+async function commitCorrection() {
+  isTooltipTracking.value = false
+  isStatusShown.value = true
+  let correction = await correctionPromise
+
+  if (!correction) {
+    wasCorrectionSuccessful.value = false
+    logger.debug('Shape correction failed successfully :)')
+    return
+  }
+
+  wasCorrectionSuccessful.value = true
+  canvasStore.currentlyDrawnShape = null
+  canvasStore.drawnShapes.push(correction)
+  logger.debug('Shape correction commited')
 }
 
 function hideTooltip() {
@@ -72,9 +101,8 @@ function handleTransitionFromStarted(nextState: EShapeCorrectionState) {
       hideTooltip()
       break
     case EShapeCorrectionState.REQUESTED:
-      isTooltipTracking.value = false
-      wasCorrectionSuccessful.value = false
-      isStatusShown.value = true
+      commitCorrection()
+      setTimeout(hideTooltip, 300)
       break
     default:
       handleUnexpectedTransition(EShapeCorrectionState.STARTED, nextState)
@@ -85,7 +113,7 @@ function handleTransitionFromStarted(nextState: EShapeCorrectionState) {
 function handleTransitionFromRequested(nextState: EShapeCorrectionState) {
   switch (nextState) {
     case EShapeCorrectionState.IDLE:
-      setTimeout(hideTooltip, 300)
+      /* Nothing to do here */
       break
     default:
       handleUnexpectedTransition(EShapeCorrectionState.REQUESTED, nextState)
@@ -93,6 +121,7 @@ function handleTransitionFromRequested(nextState: EShapeCorrectionState) {
   }
 }
 
+/* TODO: Draw states and transitions for this DFA */
 const { shapeCorrectionState } = storeToRefs(magicStore)
 watch(shapeCorrectionState, (nextState, previousState) => {
   switch (previousState) {
@@ -112,6 +141,16 @@ watch(shapeCorrectionState, (nextState, previousState) => {
 })
 
 const pointerPosition = usePointerTracker()
+
+onMounted(async () => {
+  await shapeCorrector.init()
+
+  /* Remove when the hunt ends */
+  tooltipRef.value?.addEventListener('*', (event) => {
+    console.log('Ladies and gentlemens, we got him:')
+    console.error(event)
+  })
+})
 </script>
 
 <template>
