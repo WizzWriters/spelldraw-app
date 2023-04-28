@@ -13,6 +13,12 @@ export class Segment {
       (this.start.yCoordinate + this.end.yCoordinate) / 2
     )
   }
+
+  public get length() {
+    const xDifference = this.start.xCoordinate - this.end.xCoordinate
+    const yDifference = this.start.yCoordinate - this.end.yCoordinate
+    return Math.sqrt(xDifference ** 2 + yDifference ** 2)
+  }
 }
 
 export abstract class Shape {}
