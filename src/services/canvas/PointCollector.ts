@@ -25,6 +25,7 @@ export class PointCollector {
   }
 
   public stopCollecting() {
+    this.stallDetector.reset()
     clearInterval(this.interval)
   }
 
