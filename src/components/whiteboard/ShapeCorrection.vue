@@ -1,7 +1,4 @@
 <script setup lang="ts">
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faCheck, faTimes } from '@fortawesome/free-solid-svg-icons'
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
@@ -10,9 +7,6 @@ import Logger from 'js-logger'
 import type { Shape } from '@/common/definitions/Geometry'
 import ShapeCorrector from '@/services/correction/ShapeCorrector'
 import { useCanvasStore } from '@/store/CanvasStore'
-
-library.add(faCheck)
-library.add(faTimes)
 
 const logger = Logger.get('ShapeCorrection.vue')
 const shapeCorrector = new ShapeCorrector()
