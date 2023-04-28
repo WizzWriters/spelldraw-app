@@ -4,6 +4,7 @@ import { usePointerStore } from '@/store/PointerStore'
 import Logger from 'js-logger'
 import { watch } from 'vue'
 import SvgCanvas from './canvas/svg/SvgCanvas.vue'
+import ShapeCorrection from './ShapeCorrection.vue'
 import TheToolbar from './toolbar/TheToolbar.vue'
 
 const logger = Logger.get('MainWhiteboard.vue')
@@ -29,4 +30,5 @@ async function handleCanvasReady() {
 <template>
   <SvgCanvas @canvas-ready="handleCanvasReady"></SvgCanvas>
   <TheToolbar></TheToolbar>
+  <ShapeCorrection></ShapeCorrection>
 </template>

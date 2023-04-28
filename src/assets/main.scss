@@ -2,8 +2,11 @@
 @import '~/bulma/sass/base/_all.sass';
 @import '~/bulma/sass/helpers/typography.sass';
 @import '~/bulma/sass/helpers/spacing.sass';
+@import '~/bulma/sass/helpers/color.sass';
 @import '~/bulma/sass/components/navbar.sass';
 @import '~/bulma/sass/elements/button.sass';
+@import '~/bulma/sass/elements/box.sass';
+@import '~/bulma/sass/elements/progress.sass';
 
 html {
   height: 100%;

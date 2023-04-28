@@ -2,18 +2,21 @@
 import { EPointerEvent } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
-import ShapeCorrector from '@/services/correction/ShapeCorrector'
 import { useCanvasStore } from '@/store/CanvasStore'
+import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
+import Logger from 'js-logger'
 import { onMounted } from 'vue'
 
+const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
+const magicStore = useMagicStore()
 
 const emit = defineEmits<{ (e: 'drawToolReady'): void }>()
 
 const handlePointerEvent =
-  (shapeCollector: ShapeCollector, shapeCorrector: ShapeCorrector) =>
+  (shapeCollector: ShapeCollector) =>
   async (eventType: EPointerEvent, event: PointerEvent) => {
     const point = getPositionOnCanvas({
       xCoordinate: event.clientX,
@@ -26,25 +29,21 @@ const handlePointerEvent =
         break
       case EPointerEvent.POINTER_UP:
       case EPointerEvent.POINTER_LEFT: {
+        magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
-        if (collectedShape) {
-          let correctedShape = await shapeCorrector.correct(collectedShape)
-          canvasStore.drawnShapes.push(correctedShape)
-        }
+        if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
         break
       }
       default:
-        console.log('Err')
+        logger.warn(`Received unexpected event: ${eventType}`)
     }
   }
 
-onMounted(async () => {
+onMounted(() => {
   let shapeCollector = new ShapeCollector()
-  let shapeCorrector = new ShapeCorrector()
-  await shapeCorrector.init()
   /* Hardcode as active tool for now */
   toolbarStore.activeTool = {
-    handlePointerEvent: handlePointerEvent(shapeCollector, shapeCorrector)
+    handlePointerEvent: handlePointerEvent(shapeCollector)
   }
   emit('drawToolReady')
 })
