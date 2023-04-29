@@ -8,9 +8,20 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   const canvasPosition = ref({ left: 0, top: 0 })
 
+  function removeDrawnShapeById(id: string) {
+    const drawnShapesLength = drawnShapes.value.length
+    for (let i = 0; i < drawnShapesLength; i++) {
+      if (drawnShapes.value[i].id == id) {
+        drawnShapes.value.splice(i, 1)
+        return
+      }
+    }
+  }
+
   return {
     drawnShapes,
     currentlyDrawnShape,
-    canvasPosition
+    canvasPosition,
+    removeDrawnShapeById
   }
 })

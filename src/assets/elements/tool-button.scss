@@ -1,0 +1,8 @@
+$tool-button-side-length: 2.5em;
+
+.tool-button {
+  box-shadow: 0 0 0.5em -0.125em rgba(10, 10, 10, 0.1);
+  width: $tool-button-side-length;
+  height: $tool-button-side-length;
+  pointer-events: auto;
+}

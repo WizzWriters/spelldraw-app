@@ -15,13 +15,29 @@ export class Segment {
   }
 
   public get length() {
-    const xDifference = this.start.xCoordinate - this.end.xCoordinate
-    const yDifference = this.start.yCoordinate - this.end.yCoordinate
-    return Math.sqrt(xDifference ** 2 + yDifference ** 2)
+    return Math.sqrt(this.getXDifference() ** 2 + this.getYDifference() ** 2)
+  }
+
+  public getPointAtLength(length: number) {
+    const lengthFraction = length / this.length
+    return new Point(
+      this.start.xCoordinate + lengthFraction * this.getXDifference(),
+      this.start.yCoordinate + lengthFraction * this.getYDifference()
+    )
+  }
+
+  private getXDifference() {
+    return this.end.xCoordinate - this.start.xCoordinate
+  }
+
+  private getYDifference() {
+    return this.end.yCoordinate - this.start.yCoordinate
   }
 }
 
-export abstract class Shape {}
+export abstract class Shape {
+  public readonly id = crypto.randomUUID()
+}
 
 export class Rectangle {
   constructor(

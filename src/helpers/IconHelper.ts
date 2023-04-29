@@ -1,7 +1,12 @@
 import { library } from '@fortawesome/fontawesome-svg-core'
-import { faCheck, faPencil, faTimes } from '@fortawesome/free-solid-svg-icons'
+import {
+  faCheck,
+  faEraser,
+  faPencil,
+  faTimes
+} from '@fortawesome/free-solid-svg-icons'
 
-const usedIcons = [faPencil, faCheck, faTimes]
+const usedIcons = [faPencil, faCheck, faTimes, faEraser]
 
 export default {
   initializeIcons() {

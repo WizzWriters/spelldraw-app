@@ -10,7 +10,7 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import { EPointerEvent } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 
-type CanvasElement = HTMLElement & SVGElement
+type CanvasElement = HTMLElement & SVGSVGElement
 
 const logger = Logger.get('SvgCanvas.vue')
 const canvasElementRef = ref<CanvasElement | null>(null)
@@ -21,11 +21,11 @@ const canvasHeight = ref<number>(0)
 
 const emit = defineEmits<{ (e: 'canvasReady'): void }>()
 
-let canvasStore = useCanvasStore()
-let toolbarStore = useToolbarStore()
-let pointerPosition = usePointerTracker()
+const canvasStore = useCanvasStore()
+const toolbarStore = useToolbarStore()
+const pointerPosition = usePointerTracker()
 
-let currentlyDrawnShape = computed(() => {
+const currentlyDrawnShape = computed(() => {
   if (!canvasStore.currentlyDrawnShape) return null
   let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
   let positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
@@ -71,11 +71,7 @@ function initializeCanvas(
 }
 
 function installPointerEventHandlers(canvasElement: CanvasElement) {
-  const handledPointerEvents = [
-    EPointerEvent.POINTER_DOWN,
-    EPointerEvent.POINTER_UP,
-    EPointerEvent.POINTER_LEFT
-  ]
+  const handledPointerEvents = lodash.values(EPointerEvent)
   const callPointerEventHandler =
     (eventType: EPointerEvent) => (event: PointerEvent) =>
       toolbarStore.activeTool?.handlePointerEvent(eventType, event)
@@ -109,9 +105,9 @@ onMounted(initializeComponent)
 #canvas-wrapper {
   display: flex;
   flex: 1 1 auto;
-  &:hover {
-    cursor: url('/pointers/pencil-solid.svg') 0 0, auto;
-  }
+  // &:hover {
+  //   // cursor: url('/pointers/pencil-solid.svg') 0 0, auto;
+  // }
 }
 
 #main-canvas {

@@ -6,7 +6,8 @@ import { useCanvasStore } from '@/store/CanvasStore'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
+import ToolButton from '../ToolButton.vue'
 
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
@@ -14,10 +15,13 @@ const canvasStore = useCanvasStore()
 const magicStore = useMagicStore()
 
 const emit = defineEmits<{ (e: 'drawToolReady'): void }>()
+const props = defineProps<{
+  isActive: Boolean
+}>()
 
 const handlePointerEvent =
   (shapeCollector: ShapeCollector) =>
-  async (eventType: EPointerEvent, event: PointerEvent) => {
+  (eventType: EPointerEvent, event: PointerEvent) => {
     const point = getPositionOnCanvas({
       xCoordinate: event.clientX,
       yCoordinate: event.clientY
@@ -34,6 +38,9 @@ const handlePointerEvent =
         if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
         break
       }
+      case EPointerEvent.POINTER_MOVED:
+        /* Nothing to do */
+        break
       default:
         logger.warn(`Received unexpected event: ${eventType}`)
     }
@@ -41,16 +48,25 @@ const handlePointerEvent =
 
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
-  /* Hardcode as active tool for now */
-  toolbarStore.activeTool = {
-    handlePointerEvent: handlePointerEvent(shapeCollector)
-  }
+
+  watch(
+    () => props.isActive,
+    (newValue, oldValue) => {
+      if (oldValue || !newValue) return
+      toolbarStore.activeTool = {
+        handlePointerEvent: handlePointerEvent(shapeCollector)
+      }
+      logger.debug('Tool activated')
+    },
+    { immediate: true }
+  )
+
   emit('drawToolReady')
 })
 </script>
 
 <template>
-  <div>
-    <!-- Empty for now -->
-  </div>
+  <ToolButton :is-active="props.isActive">
+    <FontAwesomeIcon icon="fa-pencil" />
+  </ToolButton>
 </template>
