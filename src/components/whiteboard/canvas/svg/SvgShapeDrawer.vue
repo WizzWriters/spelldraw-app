@@ -4,7 +4,7 @@ import {
   Polyline,
   RoundShape,
   Shape
-} from '@/common/definitions/Geometry'
+} from '@/common/definitions/Shape'
 import { computed } from 'vue'
 import SvgPolylineShape from './SvgPolylineShape.vue'
 import SvgPolygonShape from './SvgPolygonShape.vue'

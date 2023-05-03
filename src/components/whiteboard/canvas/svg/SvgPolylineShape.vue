@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, ref, toRef, type Ref } from 'vue'
-import type { Point, Polyline } from '@/common/definitions/Geometry'
+import type { Point } from '@/common/definitions/Geometry'
+import type { Polyline } from '@/common/definitions/Shape'
 import BezierShapeSmoother, {
   type BezierCurve
 } from '@/services/smoothing/BezierShapeSmoother'

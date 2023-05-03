@@ -1,4 +1,4 @@
-import type { Polyline, Shape } from '@/common/definitions/Geometry'
+import type { Polyline, Shape } from '@/common/definitions/Shape'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 

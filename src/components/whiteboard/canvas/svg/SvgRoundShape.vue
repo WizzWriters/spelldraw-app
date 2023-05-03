@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import type { Point, RoundShape } from '@/common/definitions/Geometry'
+import type { Point } from '@/common/definitions/Geometry'
+import type { RoundShape } from '@/common/definitions/Shape'
 import Logger from 'js-logger'
 import { computed, ref, toRef, type Ref } from 'vue'
 import { useIntersectionDetection } from './useIntersectionDetection'

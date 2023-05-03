@@ -4,16 +4,16 @@ import {
   RequiresAsyncInit
 } from '@/utils/decorators/AsyncInit'
 import {
-  Point,
   Polyline,
   Polygon,
   Shape,
   RoundShape
-} from '@/common/definitions/Geometry'
+} from '@/common/definitions/Shape'
 import ShapeWizard, { ShapeClassification } from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
 import * as tf from '@tensorflow/tfjs'
+import type { Point } from '@/common/definitions/Geometry'
 
 @AsyncInitialized
 export default class ShapeCorrector {

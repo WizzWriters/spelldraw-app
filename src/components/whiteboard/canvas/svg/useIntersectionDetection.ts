@@ -1,4 +1,5 @@
-import type { Point, Segment, Shape } from '@/common/definitions/Geometry'
+import type { Point, Segment } from '@/common/definitions/Geometry'
+import type { Shape } from '@/common/definitions/Shape'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import { storeToRefs } from 'pinia'
 import { watch, type Ref } from 'vue'
