@@ -28,10 +28,8 @@ const pointerPosition = usePointerTracker()
 const pointerIcon = computed(() => {
   let activeToolIcon = toolbarStore.activeTool?.pointerIcon
   if (!activeToolIcon) return 'auto'
-  return (
-    `url(${activeToolIcon.url}) ${activeToolIcon.hotspot.xCoordinate} ` +
-    `${activeToolIcon.hotspot.yCoordinate}, auto`
-  )
+  return `url(${activeToolIcon.url}) ${activeToolIcon.hotspot.xCoordinate}
+     ${activeToolIcon.hotspot.yCoordinate}, auto`
 })
 
 const currentlyDrawnShape = computed(() => {

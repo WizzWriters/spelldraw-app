@@ -15,22 +15,22 @@ export class Segment {
   }
 
   public get length() {
-    return Math.sqrt(this.getXDifference() ** 2 + this.getYDifference() ** 2)
+    return Math.sqrt(this.XDifference ** 2 + this.YDifference ** 2)
   }
 
   public getPointAtLength(length: number) {
     const lengthFraction = length / this.length
     return new Point(
-      this.start.xCoordinate + lengthFraction * this.getXDifference(),
-      this.start.yCoordinate + lengthFraction * this.getYDifference()
+      this.start.xCoordinate + lengthFraction * this.XDifference,
+      this.start.yCoordinate + lengthFraction * this.YDifference
     )
   }
 
-  private getXDifference() {
+  private get XDifference() {
     return this.end.xCoordinate - this.start.xCoordinate
   }
 
-  private getYDifference() {
+  private get YDifference() {
     return this.end.yCoordinate - this.start.yCoordinate
   }
 }

@@ -35,7 +35,7 @@ let pathCommand = computed(() => {
   command += `M ${pointToString(pointList[0])}`
   for (let i = 0; i < numberOfPoints; i++) {
     const startPoint = pointList[i]
-    const nextPoint = pointList[i + 1 == numberOfPoints ? 0 : i + 1]
+    const nextPoint = pointList[(i + 1) % numberOfPoints]
     const controlPoint = getControlPoint(startPoint, nextPoint)
     command += `Q ${pointToString(controlPoint)} ${pointToString(nextPoint)}`
   }
