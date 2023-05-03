@@ -1,5 +1,6 @@
 import { PointCollector } from './PointCollector'
-import { Polyline, type Point } from '@/common/definitions/Geometry'
+import type { Point } from '@/common/definitions/Geometry'
+import { Polyline } from '@/common/definitions/Shape'
 import { useCanvasStore } from '@/store/CanvasStore'
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'

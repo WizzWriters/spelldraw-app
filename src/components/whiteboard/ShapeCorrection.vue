@@ -4,7 +4,7 @@ import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { computed, onMounted, ref, watch, type Ref } from 'vue'
 import { storeToRefs } from 'pinia'
 import Logger from 'js-logger'
-import type { Shape } from '@/common/definitions/Geometry'
+import type { Shape } from '@/common/definitions/Shape'
 import ShapeCorrector from '@/services/correction/ShapeCorrector'
 import { useCanvasStore } from '@/store/CanvasStore'
 

@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { computed, ref, toRef, type Ref } from 'vue'
-import type { Polygon } from '@/common/definitions/Geometry'
+import type { Polygon } from '@/common/definitions/Shape'
 import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
