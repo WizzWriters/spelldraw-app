@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { Point, type RoundShape } from '@/common/definitions/Geometry'
 import Logger from 'js-logger'
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref, toRef, type Ref } from 'vue'
 import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
@@ -43,7 +43,7 @@ let pathCommand = computed(() => {
   return command
 })
 
-useIntersectionDetection(roundShapeElementRef, props.shape.id)
+useIntersectionDetection(roundShapeElementRef, toRef(props, 'shape'))
 </script>
 
 <template>

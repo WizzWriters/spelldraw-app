@@ -1,4 +1,4 @@
-import type { Point, Segment } from '@/common/definitions/Geometry'
+import type { Point, Segment, Shape } from '@/common/definitions/Geometry'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import { storeToRefs } from 'pinia'
 import { watch, type Ref } from 'vue'
@@ -20,7 +20,7 @@ function splitHitline(hitline: Segment) {
 
 export function useIntersectionDetection(
   elementRef: Ref<SVGGeometryElement | null>,
-  shapeId: string
+  shapeId: Ref<Shape>
 ) {
   const toolbarStore = useToolbarStore()
   const { pointerHitline } = storeToRefs(toolbarStore)
@@ -41,9 +41,9 @@ export function useIntersectionDetection(
 
     for (const point of splitHitline(newValue as Segment)) {
       if (!isPointInStroke(point, canvasElement)) continue
-      toolbarStore.addToIntersectingShapes(shapeId)
+      toolbarStore.addToIntersectingShapes(shapeId.value.id)
       return
     }
-    toolbarStore.removeFromIntersectingShapes(shapeId)
+    toolbarStore.removeFromIntersectingShapes(shapeId.value.id)
   })
 }

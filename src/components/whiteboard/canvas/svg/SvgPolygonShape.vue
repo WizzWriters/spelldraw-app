@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref, toRef, type Ref } from 'vue'
 import type { Polygon } from '@/common/definitions/Geometry'
 import { useIntersectionDetection } from './useIntersectionDetection'
 
@@ -17,7 +17,7 @@ let pointsListStr = computed(() => {
   return pointListstr
 })
 
-useIntersectionDetection(polygonElementRef, props.shape.id)
+useIntersectionDetection(polygonElementRef, toRef(props, 'shape'))
 </script>
 
 <template>

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, type Ref } from 'vue'
+import { computed, ref, toRef, type Ref } from 'vue'
 import type { Point, Polyline } from '@/common/definitions/Geometry'
 import BezierShapeSmoother, {
   type BezierCurve
@@ -52,7 +52,7 @@ let pathCommand = computed(() => {
   return result
 })
 
-useIntersectionDetection(polylineElementRef, props.shape.id)
+useIntersectionDetection(polylineElementRef, toRef(props, 'shape'))
 </script>
 
 <template>
