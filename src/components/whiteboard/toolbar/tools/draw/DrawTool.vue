@@ -24,10 +24,11 @@ const props = defineProps<{
 const handlePointerEvent =
   (shapeCollector: ShapeCollector) =>
   (eventType: EPointerEvent, event: PointerEvent) => {
-    const point = getPositionOnCanvas({
+    const pointerPosition = getPositionOnCanvas({
       xCoordinate: event.clientX,
       yCoordinate: event.clientY
     })
+    const point = Point.fromPointerPosition(pointerPosition)
 
     switch (eventType) {
       case EPointerEvent.POINTER_DOWN:

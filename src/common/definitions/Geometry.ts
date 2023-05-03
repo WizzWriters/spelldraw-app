@@ -1,17 +1,48 @@
 import lodash from 'lodash'
+import type { IPointerPosition } from './Pointer'
 
 export class Point {
   constructor(public xCoordinate: number, public yCoordinate: number) {}
+
+  public equals(point: Point) {
+    return (
+      this.xCoordinate == point.xCoordinate &&
+      this.yCoordinate == point.yCoordinate
+    )
+  }
+
+  public add(point: Point) {
+    return new Point(
+      this.xCoordinate + point.xCoordinate,
+      this.yCoordinate + point.yCoordinate
+    )
+  }
+
+  public subtract(point: Point) {
+    return new Point(
+      this.xCoordinate - point.xCoordinate,
+      this.yCoordinate - point.yCoordinate
+    )
+  }
+
+  public divide(scalar: number) {
+    return new Point(this.xCoordinate / scalar, this.yCoordinate / scalar)
+  }
+
+  public multiply(scalar: number) {
+    return new Point(this.xCoordinate * scalar, this.yCoordinate * scalar)
+  }
+
+  public static fromPointerPosition(pointerPosition: IPointerPosition) {
+    return new Point(pointerPosition.xCoordinate, pointerPosition.yCoordinate)
+  }
 }
 
 export class Segment {
   constructor(public start: Point, public end: Point) {}
 
   public get midpoint() {
-    return new Point(
-      (this.start.xCoordinate + this.end.xCoordinate) / 2,
-      (this.start.yCoordinate + this.end.yCoordinate) / 2
-    )
+    return this.start.add(this.end).divide(2)
   }
 
   public get length() {
@@ -120,9 +151,7 @@ export class RoundShape extends Shape {
     this.pointList = points
     const numberOfPoints = this.pointList.length
     this.centroid = this.pointList.reduce((result, point) => {
-      result.xCoordinate += point.xCoordinate / numberOfPoints
-      result.yCoordinate += point.yCoordinate / numberOfPoints
-      return result
+      return result.add(point.divide(numberOfPoints))
     }, new Point(0, 0))
   }
 }

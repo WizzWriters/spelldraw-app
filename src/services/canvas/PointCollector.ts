@@ -1,4 +1,4 @@
-import type { Point } from '@/common/definitions/Geometry'
+import { Point } from '@/common/definitions/Geometry'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import { usePointerStore } from '@/store/PointerStore'
 import StallDetector from './StallDetector'
@@ -30,9 +30,10 @@ export class PointCollector {
   }
 
   public getPointUnderCursor(): Point {
-    const pointUnderCursor = getPositionOnCanvas(
+    const positionOnCanvas = getPositionOnCanvas(
       this.pointerStore.pointerPosition
     )
+    const pointUnderCursor = Point.fromPointerPosition(positionOnCanvas)
     return pointUnderCursor
   }
 
