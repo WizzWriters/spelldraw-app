@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { onMounted, ref } from 'vue'
 import Logger from 'js-logger'
-import type { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 
 const logger = Logger.get('Navbar.vue')
 const navbarBurger = ref<HTMLAnchorElement | null>(null)

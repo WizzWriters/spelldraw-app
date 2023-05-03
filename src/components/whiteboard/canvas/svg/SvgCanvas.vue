@@ -25,6 +25,15 @@ const canvasStore = useCanvasStore()
 const toolbarStore = useToolbarStore()
 const pointerPosition = usePointerTracker()
 
+const pointerIcon = computed(() => {
+  let activeToolIcon = toolbarStore.activeTool?.pointerIcon
+  if (!activeToolIcon) return 'auto'
+  return (
+    `url(${activeToolIcon.url}) ${activeToolIcon.hotspot.xCoordinate} ` +
+    `${activeToolIcon.hotspot.yCoordinate}, auto`
+  )
+})
+
 const currentlyDrawnShape = computed(() => {
   if (!canvasStore.currentlyDrawnShape) return null
   let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
@@ -105,9 +114,10 @@ onMounted(initializeComponent)
 #canvas-wrapper {
   display: flex;
   flex: 1 1 auto;
-  // &:hover {
-  //   // cursor: url('/pointers/pencil-solid.svg') 0 0, auto;
-  // }
+  &:hover {
+    // cursor: url('/pointers/pencil-solid.svg') 0 0, auto;
+    cursor: v-bind(pointerIcon);
+  }
 }
 
 #main-canvas {

@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { Segment } from '@/common/definitions/Geometry'
+import { Point, Segment } from '@/common/definitions/Geometry'
 import {
   EPointerEvent,
+  type IPointerIcon,
   type IPointerPosition
 } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
@@ -74,11 +75,16 @@ watch(
 )
 
 onMounted(() => {
+  const pointerIcon: IPointerIcon = {
+    url: '/pointers/eraser-solid.svg',
+    hotspot: new Point(6, 3)
+  }
+
   watch(
     () => props.isActive,
     (newValue, oldValue) => {
       if (oldValue || !newValue) return
-      toolbarStore.activeTool = { handlePointerEvent }
+      toolbarStore.activeTool = { pointerIcon, handlePointerEvent }
       logger.debug('Tool activated')
     }
   )

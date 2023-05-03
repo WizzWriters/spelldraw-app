@@ -1,5 +1,6 @@
 <script setup lang="ts">
-import { EPointerEvent } from '@/common/definitions/Pointer'
+import { Point } from '@/common/definitions/Geometry'
+import { EPointerEvent, type IPointerIcon } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
 import { useCanvasStore } from '@/store/CanvasStore'
@@ -48,12 +49,17 @@ const handlePointerEvent =
 
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
+  const pointerIcon: IPointerIcon = {
+    url: '/pointers/pencil-solid.svg',
+    hotspot: new Point(0, 0)
+  }
 
   watch(
     () => props.isActive,
     (newValue, oldValue) => {
       if (oldValue || !newValue) return
       toolbarStore.activeTool = {
+        pointerIcon,
         handlePointerEvent: handlePointerEvent(shapeCollector)
       }
       logger.debug('Tool activated')
