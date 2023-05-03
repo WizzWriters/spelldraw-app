@@ -1,11 +1,6 @@
 <script setup lang="ts">
-import { library } from '@fortawesome/fontawesome-svg-core'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPencil } from '@fortawesome/free-solid-svg-icons'
 import { onMounted, ref } from 'vue'
 import Logger from 'js-logger'
-
-library.add(faPencil)
 
 const logger = Logger.get('Navbar.vue')
 const navbarBurger = ref<HTMLAnchorElement | null>(null)
@@ -39,7 +34,7 @@ onMounted(initializeComponent)
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
       <a class="navbar-item is-size-4 has-text-weight-bold">
-        Whiteboard <font-awesome-icon icon="fa-solid fa-pencil" class="ml-2" />
+        Whiteboard <FontAwesomeIcon icon="fa-solid fa-pencil" class="ml-2" />
       </a>
 
       <a

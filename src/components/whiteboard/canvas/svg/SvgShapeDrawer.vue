@@ -8,7 +8,7 @@ import {
 import { computed } from 'vue'
 import SvgPolylineShape from './SvgPolylineShape.vue'
 import SvgPolygonShape from './SvgPolygonShape.vue'
-import SvgEllipse from './SvgEllipse.vue'
+import SvgRoundShape from './SvgRoundShape.vue'
 
 const props = defineProps<{
   shapes: Array<Shape>
@@ -42,9 +42,9 @@ let roundShapes = computed(() => {
     :key="idx"
     :shape="shape"
   ></SvgPolygonShape>
-  <SvgEllipse
+  <SvgRoundShape
     v-for="(shape, idx) in roundShapes"
     :key="idx"
     :shape="shape"
-  ></SvgEllipse>
+  ></SvgRoundShape>
 </template>

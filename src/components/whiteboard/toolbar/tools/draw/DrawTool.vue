@@ -1,12 +1,14 @@
 <script setup lang="ts">
-import { EPointerEvent } from '@/common/definitions/Pointer'
+import { Point } from '@/common/definitions/Geometry'
+import { EPointerEvent, type IPointerIcon } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
 import { useCanvasStore } from '@/store/CanvasStore'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
-import { onMounted } from 'vue'
+import { onMounted, watch } from 'vue'
+import ToolButton from '../ToolButton.vue'
 
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
@@ -14,10 +16,13 @@ const canvasStore = useCanvasStore()
 const magicStore = useMagicStore()
 
 const emit = defineEmits<{ (e: 'drawToolReady'): void }>()
+const props = defineProps<{
+  isActive: Boolean
+}>()
 
 const handlePointerEvent =
   (shapeCollector: ShapeCollector) =>
-  async (eventType: EPointerEvent, event: PointerEvent) => {
+  (eventType: EPointerEvent, event: PointerEvent) => {
     const point = getPositionOnCanvas({
       xCoordinate: event.clientX,
       yCoordinate: event.clientY
@@ -34,6 +39,9 @@ const handlePointerEvent =
         if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
         break
       }
+      case EPointerEvent.POINTER_MOVED:
+        /* Nothing to do */
+        break
       default:
         logger.warn(`Received unexpected event: ${eventType}`)
     }
@@ -41,16 +49,30 @@ const handlePointerEvent =
 
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
-  /* Hardcode as active tool for now */
-  toolbarStore.activeTool = {
-    handlePointerEvent: handlePointerEvent(shapeCollector)
+  const pointerIcon: IPointerIcon = {
+    url: '/pointers/pencil-solid.svg',
+    hotspot: new Point(0, 0)
   }
+
+  watch(
+    () => props.isActive,
+    (newValue, oldValue) => {
+      if (oldValue || !newValue) return
+      toolbarStore.activeTool = {
+        pointerIcon,
+        handlePointerEvent: handlePointerEvent(shapeCollector)
+      }
+      logger.debug('Tool activated')
+    },
+    { immediate: true }
+  )
+
   emit('drawToolReady')
 })
 </script>
 
 <template>
-  <div>
-    <!-- Empty for now -->
-  </div>
+  <ToolButton name="Draw" :is-active="props.isActive">
+    <FontAwesomeIcon icon="fa-pencil" />
+  </ToolButton>
 </template>

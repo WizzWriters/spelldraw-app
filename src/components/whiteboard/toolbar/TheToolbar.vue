@@ -1,16 +1,50 @@
 <script setup lang="ts">
-import Logger from 'js-logger'
+// import Logger from 'js-logger'
+import { computed, markRaw, ref } from 'vue'
 import DrawTool from './tools/draw/DrawTool.vue'
+import EraserTool from './tools/erase/EraserTool.vue'
 
-const logger = Logger.get('Toolbar')
+// const logger = Logger.get('Toolbar')
+const tools = ref([
+  { isActive: true, component: markRaw(DrawTool) },
+  { isActive: false, component: markRaw(EraserTool) }
+])
 
-/* Toolbar implementation will go here, for now we only have one tool */
-function handleDrawToolReady() {
-  logger.debug('DrawTool ready indication received')
-  /* TODO: Emmit toolbar ready, wait for all indications in TheWhiteboard.vue */
+const activeTool = computed(() => {
+  return tools.value.filter((tool) => tool.isActive)[0]
+})
+
+function toggleActive(idx: number) {
+  activeTool.value.isActive = false
+  tools.value[idx].isActive = true
 }
 </script>
 
 <template>
-  <DrawTool @draw-tool-ready="handleDrawToolReady"></DrawTool>
+  <div
+    class="toolbar is-flex is-flex-direction-row is-justify-content-center mb-4"
+  >
+    <div class="tools is-flex">
+      <component
+        v-for="(tool, idx) in tools"
+        :key="idx"
+        :is="tool.component"
+        :is-active="tool.isActive"
+        @click="toggleActive(idx)"
+      />
+    </div>
+  </div>
 </template>
+
+<style lang="scss">
+.toolbar {
+  position: fixed;
+  bottom: 0;
+  width: 100%;
+  pointer-events: none;
+}
+
+.tools {
+  gap: 0.2rem;
+}
+</style>

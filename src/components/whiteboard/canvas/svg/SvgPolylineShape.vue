@@ -1,13 +1,16 @@
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, toRef, type Ref } from 'vue'
 import type { Point, Polyline } from '@/common/definitions/Geometry'
 import BezierShapeSmoother, {
   type BezierCurve
 } from '@/services/smoothing/BezierShapeSmoother'
+import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
   shape: Polyline
 }>()
+
+const polylineElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 function pointToString(point: Point) {
   return `${point.xCoordinate} ${point.yCoordinate}`
@@ -48,15 +51,24 @@ let pathCommand = computed(() => {
   }
   return result
 })
+
+useIntersectionDetection(polylineElementRef, toRef(props, 'shape'))
 </script>
 
 <template>
   <circle
+    ref="polylineElementRef"
     v-if="props.shape.pointList.length == 1"
     :cx="props.shape.pointList[0].xCoordinate"
     :cy="props.shape.pointList[0].yCoordinate"
     r="1"
   >
   </circle>
-  <path v-else :d="pathCommand" fill="none" stroke="black" />
+  <path
+    v-else
+    ref="polylineElementRef"
+    :d="pathCommand"
+    fill="none"
+    stroke="black"
+  />
 </template>
