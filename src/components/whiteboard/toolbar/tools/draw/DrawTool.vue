@@ -9,6 +9,7 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { onMounted, watch } from 'vue'
 import ToolButton from '../ToolButton.vue'
+import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
 
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
@@ -50,7 +51,7 @@ const handlePointerEvent =
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
   const pointerIcon: IPointerIcon = {
-    url: '/pointers/pencil-solid.svg',
+    url: pencilPointerUrl,
     hotspot: new Point(0, 0)
   }
 

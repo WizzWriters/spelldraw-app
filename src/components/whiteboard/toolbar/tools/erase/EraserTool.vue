@@ -12,6 +12,7 @@ import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
 import ToolButton from '../ToolButton.vue'
+import eraserPointerUrl from '@/assets/pointers/eraser-solid.svg'
 
 const props = defineProps<{
   isActive: Boolean
@@ -76,7 +77,7 @@ watch(
 
 onMounted(() => {
   const pointerIcon: IPointerIcon = {
-    url: '/pointers/eraser-solid.svg',
+    url: eraserPointerUrl,
     hotspot: new Point(6, 3)
   }
 
