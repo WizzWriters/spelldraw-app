@@ -9,6 +9,7 @@ import lodash from 'lodash'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import { EPointerEvent } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
+import { Point } from '@/common/definitions/Geometry'
 
 type CanvasElement = HTMLElement & SVGSVGElement
 
@@ -36,7 +37,8 @@ const currentlyDrawnShape = computed(() => {
   if (!canvasStore.currentlyDrawnShape) return null
   let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
   let positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
-  shapeCopy.addPoint(positionOnCanvas)
+  let point = Point.fromPointerPosition(positionOnCanvas)
+  shapeCopy.addPoint(point)
   return shapeCopy
 })
 

@@ -5,7 +5,7 @@ import Logger from 'js-logger'
 const STEP = 2
 const TRIGGER_THRESHOLD = 2
 const STALL_THRESHOLD = 9
-const TOLARANCE = 5
+const TOLERANCE = 5
 
 export default class StallDetector {
   private logger = Logger.get('StallDetector')
@@ -70,22 +70,12 @@ export default class StallDetector {
 
   private shouldReset(nextPoint: Point) {
     if (this.anchorPoint) return !this.compareToAnchor(nextPoint)
-    return !this.compareToLastPoint(nextPoint)
-  }
-
-  private compareToLastPoint(nextPoint: Point) {
-    if (
-      this.lastPoint?.xCoordinate == nextPoint.xCoordinate &&
-      this.lastPoint?.yCoordinate == nextPoint.yCoordinate
-    ) {
-      return true
-    }
-    return false
+    return !this.lastPoint?.equals(nextPoint)
   }
 
   private compareToAnchor(nextPoint: Point) {
     const segment = new Segment(this.anchorPoint!, nextPoint)
-    if (segment.length < TOLARANCE) return true
+    if (segment.length < TOLERANCE) return true
     return false
   }
 }

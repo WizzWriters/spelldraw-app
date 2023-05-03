@@ -29,8 +29,8 @@ const isErasing = ref(false)
 let lastReading: IPointerPosition | null = null
 function getPointerHitline(pointerPosition: IPointerPosition) {
   const hitline = new Segment(
-    lastReading ? lastReading : pointerPosition,
-    pointerPosition
+    Point.fromPointerPosition(lastReading ? lastReading : pointerPosition),
+    Point.fromPointerPosition(pointerPosition)
   )
   lastReading = pointerPosition
   return hitline

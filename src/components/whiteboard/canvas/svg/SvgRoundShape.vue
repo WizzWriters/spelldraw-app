@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { Point, type RoundShape } from '@/common/definitions/Geometry'
+import type { Point, RoundShape } from '@/common/definitions/Geometry'
 import Logger from 'js-logger'
 import { computed, ref, toRef, type Ref } from 'vue'
 import { useIntersectionDetection } from './useIntersectionDetection'
@@ -13,10 +13,7 @@ const roundShapeElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 function getControlPoint(starPoint: Point, endPoint: Point): Point {
   let centroid = props.shape.centroid
-  return new Point(
-    starPoint.xCoordinate + endPoint.xCoordinate - centroid.xCoordinate,
-    starPoint.yCoordinate + endPoint.yCoordinate - centroid.yCoordinate
-  )
+  return starPoint.add(endPoint).subtract(centroid)
 }
 
 function pointToString(point: Point) {
