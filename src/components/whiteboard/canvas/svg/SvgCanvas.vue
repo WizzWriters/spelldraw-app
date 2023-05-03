@@ -115,7 +115,6 @@ onMounted(initializeComponent)
   display: flex;
   flex: 1 1 auto;
   &:hover {
-    // cursor: url('/pointers/pencil-solid.svg') 0 0, auto;
     cursor: v-bind(pointerIcon);
   }
 }

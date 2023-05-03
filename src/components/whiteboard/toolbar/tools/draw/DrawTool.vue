@@ -72,7 +72,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton :is-active="props.isActive">
+  <ToolButton name="Draw" :is-active="props.isActive">
     <FontAwesomeIcon icon="fa-pencil" />
   </ToolButton>
 </template>
