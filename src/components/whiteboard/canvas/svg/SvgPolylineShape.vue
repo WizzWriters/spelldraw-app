@@ -9,6 +9,7 @@ import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
   shape: Polyline
+  glows: Boolean
 }>()
 
 const polylineElementRef: Ref<SVGGeometryElement | null> = ref(null)
@@ -63,6 +64,7 @@ useIntersectionDetection(polylineElementRef, toRef(props, 'shape'))
     :cx="props.shape.pointList[0].xCoordinate"
     :cy="props.shape.pointList[0].yCoordinate"
     r="1"
+    :filter="props.glows ? 'url(#neon-glow)' : ''"
   >
   </circle>
   <path
@@ -71,5 +73,6 @@ useIntersectionDetection(polylineElementRef, toRef(props, 'shape'))
     :d="pathCommand"
     fill="none"
     stroke="black"
+    :filter="props.glows ? 'url(#neon-glow)' : ''"
   />
 </template>

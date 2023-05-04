@@ -5,6 +5,7 @@ import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
   shape: Polygon
+  glows: Boolean
 }>()
 
 const polygonElementRef: Ref<SVGGeometryElement | null> = ref(null)
@@ -26,5 +27,6 @@ useIntersectionDetection(polygonElementRef, toRef(props, 'shape'))
     :points="pointsListStr"
     fill="none"
     stroke="black"
+    :filter="props.glows ? 'url(#neon-glow)' : ''"
   />
 </template>

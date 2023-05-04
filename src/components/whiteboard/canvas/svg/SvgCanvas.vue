@@ -10,6 +10,7 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import { EPointerEvent } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import { Point } from '@/common/definitions/Geometry'
+import SvgNeonGlow from './filters/SvgNeonGlow.vue'
 
 type CanvasElement = HTMLElement & SVGSVGElement
 
@@ -101,16 +102,20 @@ onMounted(initializeComponent)
       :width="canvasWidth"
       :height="canvasHeight"
     >
+      <defs>
+        <SvgNeonGlow />
+      </defs>
       <SvgShapeDrawer :shapes="canvasStore.drawnShapes"></SvgShapeDrawer>
       <SvgPolylineShape
         v-if="currentlyDrawnShape"
         :shape="currentlyDrawnShape"
+        :glows="false"
       ></SvgPolylineShape>
     </svg>
   </div>
 </template>
 
-<style scoped lang="scss">
+<style lang="scss">
 #canvas-wrapper {
   display: flex;
   flex: 1 1 auto;

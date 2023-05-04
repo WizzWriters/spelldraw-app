@@ -44,16 +44,12 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
   switch (eventType) {
     case EPointerEvent.POINTER_DOWN:
       isErasing.value = true
-      toolbarStore.pointerHitline = getPointerHitline(pointerPosition)
       break
     case EPointerEvent.POINTER_UP:
     case EPointerEvent.POINTER_LEFT:
       isErasing.value = false
-      lastReading = null
-      toolbarStore.pointerHitline = null
       break
     case EPointerEvent.POINTER_MOVED: {
-      if (!isErasing.value) break
       toolbarStore.pointerHitline = getPointerHitline(pointerPosition)
       break
     }
@@ -64,10 +60,10 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
 }
 
 watch(
-  intersectingShapesIds,
-  (newValue) => {
-    if (newValue.length == 0) return
-    for (const id of newValue) {
+  [intersectingShapesIds, isErasing],
+  ([newIntersectingShapeIds, newIsErasing]) => {
+    if (newIntersectingShapeIds.length == 0 || !newIsErasing) return
+    for (const id of newIntersectingShapeIds) {
       canvasStore.removeDrawnShapeById(id)
     }
     toolbarStore.clearIntersectingShapes()
@@ -81,12 +77,22 @@ onMounted(() => {
     hotspot: new Point(6, 3)
   }
 
+  function activateTool() {
+    toolbarStore.activeTool = { pointerIcon, handlePointerEvent }
+    logger.debug('Tool activated')
+  }
+
+  function deactivateTool() {
+    lastReading = null
+    toolbarStore.pointerHitline = null
+    logger.debug('Tool deactivated')
+  }
+
   watch(
     () => props.isActive,
     (newValue, oldValue) => {
-      if (oldValue || !newValue) return
-      toolbarStore.activeTool = { pointerIcon, handlePointerEvent }
-      logger.debug('Tool activated')
+      if (!oldValue && newValue) activateTool()
+      else if (oldValue && !newValue) deactivateTool()
     }
   )
 })
