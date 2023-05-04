@@ -7,6 +7,7 @@ import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
   shape: RoundShape
+  glows: Boolean
 }>()
 
 const logger = Logger.get('SvgRoundShape')
@@ -50,5 +51,6 @@ useIntersectionDetection(roundShapeElementRef, toRef(props, 'shape'))
     :d="pathCommand"
     stroke="black"
     fill="none"
+    :filter="props.glows ? 'url(#neon-glow)' : ''"
   />
 </template>
