@@ -12,12 +12,10 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore",
     "lint-check": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --ignore-path .gitignore",
     "format": "prettier --write src/",
-    "format-check": "prettier --check src/"
+    "format-check": "prettier --check src/",
+    "precommit": "npm run lint && npm run format && git add ."
   },
-  "pre-commit": [
-    "lint",
-    "format"
-  ],
+  "pre-commit": "precommit",
   "dependencies": {
     "@fortawesome/fontawesome-svg-core": "^6.4.0",
     "@fortawesome/free-regular-svg-icons": "^6.4.0",
