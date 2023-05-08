@@ -1,8 +1,11 @@
 import lodash from 'lodash'
 import { Rectangle, Point } from './Geometry'
+import { RgbColor } from './Color'
 
 export abstract class Shape {
   public readonly id = crypto.randomUUID()
+  public strokeColor = new RgbColor(0, 0, 0)
+  public fillColor: RgbColor | null = null
 }
 
 export class Polyline extends Shape {

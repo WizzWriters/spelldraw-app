@@ -24,8 +24,8 @@ function shouldGlow(shapeId: string) {
     :glows="false"
   />
   <SvgShape
-    v-for="(shape, idx) in props.shapes"
-    :key="idx"
+    v-for="shape in props.shapes"
+    :key="shape.id"
     :shape="shape"
     :glows="shouldGlow(shape.id)"
   />
