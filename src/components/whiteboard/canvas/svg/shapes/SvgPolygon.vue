@@ -4,14 +4,16 @@ import type { Polygon } from '@/common/definitions/Shape'
 import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
-  shape: Polygon
+  shape: any
   glows: Boolean
 }>()
+
+const shape = computed(() => props.shape as Polygon)
 
 const polygonElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 let pointsListStr = computed(() => {
-  let pointList = props.shape.getPointList()
+  let pointList = shape.value.getPointList()
   let pointListstr = pointList.reduce((prev, point) => {
     return prev + ' ' + point.xCoordinate + ',' + point.yCoordinate
   }, '')
@@ -22,11 +24,5 @@ useIntersectionDetection(polygonElementRef, toRef(props, 'shape'))
 </script>
 
 <template>
-  <polygon
-    ref="polygonElementRef"
-    :points="pointsListStr"
-    fill="none"
-    stroke="black"
-    :filter="props.glows ? 'url(#neon-glow)' : ''"
-  />
+  <polygon ref="polygonElementRef" :points="pointsListStr" />
 </template>

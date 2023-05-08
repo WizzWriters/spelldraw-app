@@ -6,15 +6,17 @@ import { computed, ref, toRef, type Ref } from 'vue'
 import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
-  shape: RoundShape
+  shape: any
   glows: Boolean
 }>()
+
+const shape = computed(() => props.shape as RoundShape)
 
 const logger = Logger.get('SvgRoundShape')
 const roundShapeElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 function getControlPoint(starPoint: Point, endPoint: Point): Point {
-  let centroid = props.shape.centroid
+  let centroid = shape.value.centroid
   return starPoint.add(endPoint).subtract(centroid)
 }
 
@@ -23,7 +25,7 @@ function pointToString(point: Point) {
 }
 
 let pathCommand = computed(() => {
-  const pointList = props.shape.pointList
+  const pointList = shape.value.pointList
   const numberOfPoints = pointList.length
   let command = ''
   if (numberOfPoints < 4) {
@@ -46,11 +48,5 @@ useIntersectionDetection(roundShapeElementRef, toRef(props, 'shape'))
 </script>
 
 <template>
-  <path
-    ref="roundShapeElementRef"
-    :d="pathCommand"
-    stroke="black"
-    fill="none"
-    :filter="props.glows ? 'url(#neon-glow)' : ''"
-  />
+  <path ref="roundShapeElementRef" :d="pathCommand" />
 </template>
