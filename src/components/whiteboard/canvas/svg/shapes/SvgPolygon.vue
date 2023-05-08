@@ -8,8 +8,7 @@ const props = defineProps<{
   glows: Boolean
 }>()
 
-const shape = computed(() => props.shape as Polygon)
-
+const shape = toRef(props, 'shape') as Ref<Polygon>
 const polygonElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 let pointsListStr = computed(() => {

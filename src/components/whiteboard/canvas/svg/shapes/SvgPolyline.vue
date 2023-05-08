@@ -12,8 +12,7 @@ const props = defineProps<{
   glows: Boolean
 }>()
 
-const shape = computed(() => props.shape as Polyline)
-
+const shape = toRef(props, 'shape') as Ref<Polyline>
 const polylineElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 function pointToString(point: Point) {

@@ -10,8 +10,7 @@ const props = defineProps<{
   glows: Boolean
 }>()
 
-const shape = computed(() => props.shape as RoundShape)
-
+const shape = toRef(props, 'shape') as Ref<RoundShape>
 const logger = Logger.get('SvgRoundShape')
 const roundShapeElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
