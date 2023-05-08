@@ -1,8 +1,12 @@
 import type { Point, Segment } from '@/common/definitions/Geometry'
 import type { Shape } from '@/common/definitions/Shape'
+import EventBus, {
+  EShapeEvent,
+  EventCallback,
+  type ICheckIntersectionPayload
+} from '@/services/bus/EventBus'
 import { useToolbarStore } from '@/store/ToolbarStore'
-import { storeToRefs } from 'pinia'
-import { watch, type Ref } from 'vue'
+import { onMounted, onUnmounted, type Ref } from 'vue'
 
 const INCREMENT_SIZE = 0.5
 
@@ -21,10 +25,9 @@ function splitHitline(hitline: Segment) {
 
 export function useIntersectionDetection(
   elementRef: Ref<SVGGeometryElement | null>,
-  shapeId: Ref<Shape>
+  shape: Ref<Shape>
 ) {
   const toolbarStore = useToolbarStore()
-  const { pointerHitline } = storeToRefs(toolbarStore)
 
   function isPointInStroke(point: Point, canvas: SVGSVGElement) {
     const svgPoint = canvas.createSVGPoint()
@@ -33,18 +36,29 @@ export function useIntersectionDetection(
     return elementRef.value!.isPointInStroke(svgPoint)
   }
 
-  watch(pointerHitline, (newValue) => {
-    if (!newValue) return
+  function checkIntersection(pointerHitline: Segment) {
     const canvasElement = document.getElementById(
       'main-canvas'
     ) as unknown as SVGSVGElement | null
     if (!canvasElement) return
 
-    for (const point of splitHitline(newValue as Segment)) {
+    for (const point of splitHitline(pointerHitline)) {
       if (!isPointInStroke(point, canvasElement)) continue
-      toolbarStore.addToIntersectingShapes(shapeId.value.id)
+      toolbarStore.addToIntersectingShapes(shape.value.id)
       return
     }
-    toolbarStore.removeFromIntersectingShapes(shapeId.value.id)
+    toolbarStore.removeFromIntersectingShapes(shape.value.id)
+  }
+
+  const intersectionCallback = new EventCallback<ICheckIntersectionPayload>(
+    (payload) => checkIntersection(payload.pointerHitline)
+  )
+
+  onMounted(() => {
+    EventBus.subscribe(EShapeEvent.CHECK_INTERSECTION, intersectionCallback)
+  })
+
+  onUnmounted(() => {
+    EventBus.unsubscribe(EShapeEvent.CHECK_INTERSECTION, intersectionCallback)
   })
 }

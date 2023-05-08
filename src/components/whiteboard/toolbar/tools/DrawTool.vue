@@ -8,7 +8,7 @@ import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { onMounted, watch } from 'vue'
-import ToolButton from '../ToolButton.vue'
+import ToolButton from './ToolButton.vue'
 import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
 
 const logger = Logger.get('DrawTool')
