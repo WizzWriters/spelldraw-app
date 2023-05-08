@@ -1,16 +1,16 @@
 <script setup lang="ts">
 import Logger from 'js-logger'
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted, computed, type Ref } from 'vue'
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
-import SvgPolylineShape from './SvgPolylineShape.vue'
 import lodash from 'lodash'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import { EPointerEvent } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import { Point } from '@/common/definitions/Geometry'
 import SvgNeonGlow from './filters/SvgNeonGlow.vue'
+import type { Shape } from '@/common/definitions/Shape'
 
 type CanvasElement = HTMLElement & SVGSVGElement
 
@@ -34,7 +34,7 @@ const pointerIcon = computed(() => {
      ${activeToolIcon.hotspot.yCoordinate}, auto`
 })
 
-const currentlyDrawnShape = computed(() => {
+const currentlyDrawnShape: Ref<Shape | null> = computed(() => {
   if (!canvasStore.currentlyDrawnShape) return null
   let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
   let positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
@@ -105,12 +105,10 @@ onMounted(initializeComponent)
       <defs>
         <SvgNeonGlow />
       </defs>
-      <SvgShapeDrawer :shapes="canvasStore.drawnShapes"></SvgShapeDrawer>
-      <SvgPolylineShape
-        v-if="currentlyDrawnShape"
-        :shape="currentlyDrawnShape"
-        :glows="false"
-      ></SvgPolylineShape>
+      <SvgShapeDrawer
+        :shapes="canvasStore.drawnShapes"
+        :currently-drawn-shape="currentlyDrawnShape"
+      />
     </svg>
   </div>
 </template>

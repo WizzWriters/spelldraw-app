@@ -8,10 +8,11 @@ import BezierShapeSmoother, {
 import { useIntersectionDetection } from './useIntersectionDetection'
 
 const props = defineProps<{
-  shape: Polyline
+  shape: any
   glows: Boolean
 }>()
 
+const shape = toRef(props, 'shape') as Ref<Polyline>
 const polylineElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 function pointToString(point: Point) {
@@ -39,7 +40,7 @@ function nextBezierSegment(bezierCurve: BezierCurve) {
 }
 
 let pathCommand = computed(() => {
-  let pointList = props.shape.pointList
+  let pointList = shape.value.pointList
   let bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
   let result = ''
 
@@ -60,19 +61,11 @@ useIntersectionDetection(polylineElementRef, toRef(props, 'shape'))
 <template>
   <circle
     ref="polylineElementRef"
-    v-if="props.shape.pointList.length == 1"
-    :cx="props.shape.pointList[0].xCoordinate"
-    :cy="props.shape.pointList[0].yCoordinate"
+    v-if="shape.pointList.length == 1"
+    :cx="shape.pointList[0].xCoordinate"
+    :cy="shape.pointList[0].yCoordinate"
     r="1"
-    :filter="props.glows ? 'url(#neon-glow)' : ''"
   >
   </circle>
-  <path
-    v-else
-    ref="polylineElementRef"
-    :d="pathCommand"
-    fill="none"
-    stroke="black"
-    :filter="props.glows ? 'url(#neon-glow)' : ''"
-  />
+  <path v-else ref="polylineElementRef" :d="pathCommand" />
 </template>
