@@ -2,7 +2,7 @@
 import { Point, Segment } from '@/common/definitions/Geometry'
 import {
   EPointerEvent,
-  type IPointerIcon,
+  ExternalPointerIcon,
   type IPointerPosition
 } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
@@ -11,7 +11,7 @@ import { useCanvasStore } from '@/store/CanvasStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
-import ToolButton from '../ToolButton.vue'
+import ToolButton from './ToolButton.vue'
 import eraserPointerUrl from '@/assets/pointers/eraser-solid.svg'
 
 const props = defineProps<{
@@ -72,10 +72,7 @@ watch(
 )
 
 onMounted(() => {
-  const pointerIcon: IPointerIcon = {
-    url: eraserPointerUrl,
-    hotspot: new Point(6, 3)
-  }
+  const pointerIcon = new ExternalPointerIcon(eraserPointerUrl, new Point(6, 3))
 
   function activateTool() {
     toolbarStore.activeTool = { pointerIcon, handlePointerEvent }

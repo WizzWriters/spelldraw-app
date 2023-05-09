@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Point } from '@/common/definitions/Geometry'
-import { EPointerEvent, type IPointerIcon } from '@/common/definitions/Pointer'
+import {
+  EPointerEvent,
+  ExternalPointerIcon
+} from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
 import { useCanvasStore } from '@/store/CanvasStore'
@@ -8,7 +11,7 @@ import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { onMounted, watch } from 'vue'
-import ToolButton from '../ToolButton.vue'
+import ToolButton from './ToolButton.vue'
 import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
 
 const logger = Logger.get('DrawTool')
@@ -51,10 +54,7 @@ const handlePointerEvent =
 
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
-  const pointerIcon: IPointerIcon = {
-    url: pencilPointerUrl,
-    hotspot: new Point(0, 0)
-  }
+  const pointerIcon = new ExternalPointerIcon(pencilPointerUrl, new Point(0, 0))
 
   watch(
     () => props.isActive,

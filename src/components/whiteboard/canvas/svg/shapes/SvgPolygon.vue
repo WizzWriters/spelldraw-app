@@ -12,7 +12,7 @@ const shape = toRef(props, 'shape') as Ref<Polygon>
 const polygonElementRef: Ref<SVGGeometryElement | null> = ref(null)
 
 let pointsListStr = computed(() => {
-  let pointList = shape.value.getPointList()
+  let pointList = shape.value.pointList
   let pointListstr = pointList.reduce((prev, point) => {
     return prev + ' ' + point.xCoordinate + ',' + point.yCoordinate
   }, '')

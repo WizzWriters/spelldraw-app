@@ -51,15 +51,8 @@ export class Polyline extends Shape {
 }
 
 export class Polygon extends Shape {
-  private pointList: Array<Point>
-
-  constructor(pointList: Array<Point> = []) {
+  constructor(public pointList: Array<Point> = []) {
     super()
-    this.pointList = lodash.cloneDeep(pointList)
-  }
-
-  public getPointList(): Array<Point> {
-    return this.pointList
   }
 }
 
