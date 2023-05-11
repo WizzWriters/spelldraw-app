@@ -2,7 +2,7 @@ import lodash from 'lodash'
 import { Rectangle, Point } from './Geometry'
 
 export abstract class Shape {
-  public readonly id = crypto.randomUUID()
+  public readonly id: string = crypto.randomUUID()
 }
 
 export class Polyline extends Shape {
