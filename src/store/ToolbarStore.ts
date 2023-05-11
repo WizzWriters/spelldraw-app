@@ -1,11 +1,9 @@
-import type { Segment } from '@/common/definitions/Geometry'
 import type { ITool } from '@/common/definitions/Tool'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 
 export const useToolbarStore = defineStore('toolbar', () => {
   const activeTool: Ref<ITool | null> = ref(null)
-  const pointerHitline: Ref<Segment | null> = ref(null)
   const intersectingShapesIds: Ref<string[]> = ref([])
 
   function addToIntersectingShapes(id: string) {
@@ -25,7 +23,6 @@ export const useToolbarStore = defineStore('toolbar', () => {
 
   return {
     activeTool,
-    pointerHitline,
     intersectingShapesIds,
     addToIntersectingShapes,
     removeFromIntersectingShapes,

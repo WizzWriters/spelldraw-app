@@ -13,6 +13,7 @@ import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
 import eraserPointerUrl from '@/assets/pointers/eraser-solid.svg'
+import EventBus, { EShapeEvent } from '@/services/bus/EventBus'
 
 const props = defineProps<{
   isActive: Boolean
@@ -36,6 +37,12 @@ function getPointerHitline(pointerPosition: IPointerPosition) {
   return hitline
 }
 
+function emitShapeEvents(pointerPosition: IPointerPosition) {
+  EventBus.emit(EShapeEvent.CHECK_INTERSECTION, {
+    pointerHitline: getPointerHitline(pointerPosition)
+  })
+}
+
 const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
   const pointerPosition = getPositionOnCanvas({
     xCoordinate: event.clientX,
@@ -49,10 +56,9 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
     case EPointerEvent.POINTER_LEFT:
       isErasing.value = false
       break
-    case EPointerEvent.POINTER_MOVED: {
-      toolbarStore.pointerHitline = getPointerHitline(pointerPosition)
+    case EPointerEvent.POINTER_MOVED:
+      emitShapeEvents(pointerPosition)
       break
-    }
     default:
       logger.warn(`Received unexpected event: ${eventType}`)
       break
@@ -81,7 +87,6 @@ onMounted(() => {
 
   function deactivateTool() {
     lastReading = null
-    toolbarStore.pointerHitline = null
     logger.debug('Tool deactivated')
   }
 

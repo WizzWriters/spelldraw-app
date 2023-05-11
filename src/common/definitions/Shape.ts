@@ -3,7 +3,7 @@ import { Rectangle, Point } from './Geometry'
 import { RgbColor } from './Color'
 
 export abstract class Shape {
-  public readonly id = crypto.randomUUID()
+  public readonly id: string = crypto.randomUUID()
 
   constructor(
     public strokeColor: RgbColor = new RgbColor(0, 0, 0),
