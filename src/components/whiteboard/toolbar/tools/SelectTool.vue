@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { RgbColor } from '@/common/definitions/Color'
 import { Point } from '@/common/definitions/Geometry'
 import { BuiltinPointerIcon, EPointerEvent } from '@/common/definitions/Pointer'
 import { Polygon } from '@/common/definitions/Shape'
@@ -10,6 +11,9 @@ import { storeToRefs } from 'pinia'
 import { onMounted, watch, type Ref } from 'vue'
 import ToolButton from './ToolButton.vue'
 
+const SELECT_BOX_FILL = new RgbColor(37, 150, 190, 0.1)
+const SELECT_BOX_STROKE = new RgbColor(51, 173, 255)
+
 const props = defineProps<{
   isActive: Boolean
 }>()
@@ -19,11 +23,19 @@ const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
 const { currentlyDrawnShape } = storeToRefs(canvasStore)
 
-function updateSelectBox(currentPoint: Point) {
-  if (!currentlyDrawnShape.value)
-    currentlyDrawnShape.value = new Polygon(Array(4).fill(currentPoint))
+function getOrCreateSelectBox(currentPoint: Point): Ref<Polygon> {
+  if (!currentlyDrawnShape.value) {
+    currentlyDrawnShape.value = new Polygon(
+      Array(4).fill(currentPoint),
+      SELECT_BOX_STROKE,
+      SELECT_BOX_FILL
+    )
+  }
+  return currentlyDrawnShape as Ref<Polygon>
+}
 
-  let selectBox = currentlyDrawnShape as Ref<Polygon>
+function updateSelectBox(currentPoint: Point) {
+  let selectBox = getOrCreateSelectBox(currentPoint)
   let startCorner = selectBox.value.pointList[0]
   selectBox.value.pointList[1] = new Point(
     currentPoint.xCoordinate,
@@ -84,6 +96,12 @@ onMounted(() => {
 
 <template>
   <ToolButton name="Select" :is-active="props.isActive">
-    <FontAwesomeIcon icon="fa-arrow-pointer" />
+    <FontAwesomeIcon id="select-icon" icon="fa-arrow-pointer" />
   </ToolButton>
 </template>
+
+<style lang="scss" scoped>
+#select-icon {
+  margin-left: 2px;
+}
+</style>

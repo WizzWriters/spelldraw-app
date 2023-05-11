@@ -4,15 +4,22 @@ import { RgbColor } from './Color'
 
 export abstract class Shape {
   public readonly id = crypto.randomUUID()
-  public strokeColor = new RgbColor(0, 0, 0)
-  public fillColor: RgbColor | null = null
+
+  constructor(
+    public strokeColor: RgbColor = new RgbColor(0, 0, 0),
+    public fillColor: RgbColor | null = null
+  ) {}
 }
 
 export class Polyline extends Shape {
   public pointList: Array<Point>
 
-  constructor(pointList: Array<Point> = []) {
-    super()
+  constructor(
+    pointList: Array<Point> = [],
+    strokeColor?: RgbColor,
+    fillColor?: RgbColor
+  ) {
+    super(strokeColor, fillColor)
     this.pointList = lodash.cloneDeep(pointList)
   }
 
@@ -51,8 +58,12 @@ export class Polyline extends Shape {
 }
 
 export class Polygon extends Shape {
-  constructor(public pointList: Array<Point> = []) {
-    super()
+  constructor(
+    public pointList: Array<Point> = [],
+    strokeColor?: RgbColor,
+    fillColor?: RgbColor
+  ) {
+    super(strokeColor, fillColor)
   }
 }
 
@@ -60,8 +71,12 @@ export class RoundShape extends Shape {
   public pointList: Array<Point>
   public centroid: Point
 
-  constructor(points: Array<Point>) {
-    super()
+  constructor(
+    points: Array<Point>,
+    strokeColor?: RgbColor,
+    fillColor?: RgbColor
+  ) {
+    super(strokeColor, fillColor)
     this.pointList = points
     const numberOfPoints = this.pointList.length
     this.centroid = this.pointList.reduce((result, point) => {
