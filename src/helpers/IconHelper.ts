@@ -1,13 +1,13 @@
 import { library } from '@fortawesome/fontawesome-svg-core'
 import {
-  faArrowPointer,
   faCheck,
   faEraser,
+  faObjectGroup,
   faPencil,
   faTimes
 } from '@fortawesome/free-solid-svg-icons'
 
-const usedIcons = [faPencil, faCheck, faTimes, faEraser, faArrowPointer]
+const usedIcons = [faPencil, faCheck, faTimes, faEraser, faObjectGroup]
 
 export default {
   initializeIcons() {

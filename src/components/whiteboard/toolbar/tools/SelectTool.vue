@@ -109,12 +109,6 @@ onMounted(() => {
 
 <template>
   <ToolButton name="Select" :is-active="props.isActive">
-    <FontAwesomeIcon id="select-icon" icon="fa-arrow-pointer" />
+    <FontAwesomeIcon id="select-icon" icon="fa-object-group" />
   </ToolButton>
 </template>
-
-<style lang="scss" scoped>
-#select-icon {
-  margin-left: 2px;
-}
-</style>
