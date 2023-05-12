@@ -25,7 +25,8 @@ function splitHitline(hitline: Segment) {
 
 export function useIntersectionDetection(
   elementRef: Ref<SVGGeometryElement | null>,
-  shape: Ref<Shape>
+  shape: Ref<Shape>,
+  enabled: Ref<Boolean>
 ) {
   const toolbarStore = useToolbarStore()
 
@@ -54,11 +55,17 @@ export function useIntersectionDetection(
     (payload) => checkIntersection(payload.pointerHitline)
   )
 
-  onMounted(() => {
+  function enable() {
     EventBus.subscribe(EShapeEvent.CHECK_INTERSECTION, intersectionCallback)
+  }
+
+  function disable() {
+    EventBus.unsubscribe(EShapeEvent.CHECK_INTERSECTION, intersectionCallback)
+  }
+
+  onMounted(() => {
+    if (enabled.value) enable()
   })
 
-  onUnmounted(() => {
-    EventBus.unsubscribe(EShapeEvent.CHECK_INTERSECTION, intersectionCallback)
-  })
+  onUnmounted(() => disable())
 }

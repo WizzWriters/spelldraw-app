@@ -1,14 +1,15 @@
 <script setup lang="ts">
 import { RgbColor } from '@/common/definitions/Color'
-import { Point } from '@/common/definitions/Geometry'
+import { Point, Rectangle } from '@/common/definitions/Geometry'
 import { BuiltinPointerIcon, EPointerEvent } from '@/common/definitions/Pointer'
 import { Polygon } from '@/common/definitions/Shape'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
+import EventBus, { EShapeEvent } from '@/services/bus/EventBus'
 import { useCanvasStore } from '@/store/CanvasStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
-import { onMounted, watch, type Ref } from 'vue'
+import { onMounted, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
 
 const SELECT_BOX_FILL = new RgbColor(37, 150, 190, 0.1)
@@ -22,30 +23,33 @@ const logger = Logger.get('SelectTool')
 const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
 const { currentlyDrawnShape } = storeToRefs(canvasStore)
+let startPoint: Point | null = null
 
-function getOrCreateSelectBox(currentPoint: Point): Ref<Polygon> {
-  if (!currentlyDrawnShape.value) {
-    currentlyDrawnShape.value = new Polygon(
-      Array(4).fill(currentPoint),
-      SELECT_BOX_STROKE,
-      SELECT_BOX_FILL
-    )
-  }
-  return currentlyDrawnShape as Ref<Polygon>
+function getSelectBox(currentPoint: Point): Rectangle {
+  let start = startPoint!
+  return new Rectangle(
+    Math.min(currentPoint.xCoordinate, start.xCoordinate),
+    Math.max(currentPoint.xCoordinate, start.xCoordinate),
+    Math.max(currentPoint.yCoordinate, start.yCoordinate),
+    Math.min(currentPoint.yCoordinate, start.yCoordinate)
+  )
 }
 
-function updateSelectBox(currentPoint: Point) {
-  let selectBox = getOrCreateSelectBox(currentPoint)
-  let startCorner = selectBox.value.pointList[0]
-  selectBox.value.pointList[1] = new Point(
-    currentPoint.xCoordinate,
-    startCorner.yCoordinate
+function polygonOfSelectBox(selectBox: Rectangle) {
+  return new Polygon(
+    [
+      new Point(selectBox.left, selectBox.top),
+      new Point(selectBox.right, selectBox.top),
+      new Point(selectBox.right, selectBox.bottom),
+      new Point(selectBox.left, selectBox.bottom)
+    ],
+    SELECT_BOX_STROKE,
+    SELECT_BOX_FILL
   )
-  selectBox.value.pointList[2] = currentPoint
-  selectBox.value.pointList[3] = new Point(
-    startCorner.xCoordinate,
-    currentPoint.yCoordinate
-  )
+}
+
+function emitCheckSelectionEvent(selectBox: Rectangle) {
+  EventBus.emit(EShapeEvent.CHECK_SELECTION, { selectBox })
 }
 
 const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
@@ -55,17 +59,25 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
   })
   const currentPoint = Point.fromPointerPosition(pointerPosition)
   switch (eventType) {
-    case EPointerEvent.POINTER_DOWN:
-      updateSelectBox(currentPoint)
+    case EPointerEvent.POINTER_DOWN: {
+      startPoint = currentPoint
+      const selectBox = getSelectBox(currentPoint)
+      currentlyDrawnShape.value = polygonOfSelectBox(selectBox)
+      emitCheckSelectionEvent(selectBox)
       break
+    }
     case EPointerEvent.POINTER_UP:
     case EPointerEvent.POINTER_LEFT:
       currentlyDrawnShape.value = null
+      startPoint = null
       break
-    case EPointerEvent.POINTER_MOVED:
+    case EPointerEvent.POINTER_MOVED: {
       if (!currentlyDrawnShape.value) return
-      updateSelectBox(currentPoint)
+      const selectBox = getSelectBox(currentPoint)
+      currentlyDrawnShape.value = polygonOfSelectBox(selectBox)
+      emitCheckSelectionEvent(selectBox)
       break
+    }
     default:
       logger.warn(`Received unexpected event: ${eventType}`)
       break
@@ -81,6 +93,7 @@ onMounted(() => {
   }
 
   function deactivateTool() {
+    toolbarStore.clearSelectedShapes()
     logger.debug('Tool deactivated')
   }
 

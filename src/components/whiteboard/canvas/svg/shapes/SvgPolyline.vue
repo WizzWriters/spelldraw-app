@@ -5,15 +5,17 @@ import type { Polyline } from '@/common/definitions/Shape'
 import BezierShapeSmoother, {
   type BezierCurve
 } from '@/services/smoothing/BezierShapeSmoother'
-import { useIntersectionDetection } from './useIntersectionDetection'
+import { useCollisionDetection } from './composables/useCollisionDetection'
 
 const props = defineProps<{
   shape: any
   glows: Boolean
+  collisionsEnabled: Boolean
 }>()
 
 const shape = toRef(props, 'shape') as Ref<Polyline>
-const polylineElementRef: Ref<SVGGeometryElement | null> = ref(null)
+const polylineElementRef: Ref<(SVGGeometryElement & HTMLElement) | null> =
+  ref(null)
 
 function pointToString(point: Point) {
   return `${point.xCoordinate} ${point.yCoordinate}`
@@ -55,7 +57,11 @@ let pathCommand = computed(() => {
   return result
 })
 
-useIntersectionDetection(polylineElementRef, toRef(props, 'shape'))
+useCollisionDetection(
+  polylineElementRef,
+  toRef(props, 'shape'),
+  toRef(props, 'collisionsEnabled')
+)
 </script>
 
 <template>

@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { computed, ref, toRef, type Ref } from 'vue'
 import type { Polygon } from '@/common/definitions/Shape'
-import { useIntersectionDetection } from './useIntersectionDetection'
+import { useCollisionDetection } from './composables/useCollisionDetection'
 
 const props = defineProps<{
   shape: any
   glows: Boolean
+  collisionsEnabled: Boolean
 }>()
 
 const shape = toRef(props, 'shape') as Ref<Polygon>
-const polygonElementRef: Ref<SVGGeometryElement | null> = ref(null)
+const polygonElementRef: Ref<(SVGGeometryElement & HTMLElement) | null> =
+  ref(null)
 
 let pointsListStr = computed(() => {
   let pointList = shape.value.pointList
@@ -19,7 +21,11 @@ let pointsListStr = computed(() => {
   return pointListstr
 })
 
-useIntersectionDetection(polygonElementRef, toRef(props, 'shape'))
+useCollisionDetection(
+  polygonElementRef,
+  toRef(props, 'shape'),
+  toRef(props, 'collisionsEnabled')
+)
 </script>
 
 <template>

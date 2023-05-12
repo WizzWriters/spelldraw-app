@@ -13,6 +13,7 @@ import SvgRoundShape from './shapes/SvgRoundShape.vue'
 const props = defineProps<{
   shape: Shape
   glows: Boolean
+  collisionsEnabled: Boolean
 }>()
 
 function getShapeComponent(shape: Shape) {
@@ -33,6 +34,7 @@ function rgbColorToString(color: RgbColor | null) {
     :is="getShapeComponent(props.shape)"
     :shape="props.shape"
     :glows="props.glows"
+    :collisionsEnabled="props.collisionsEnabled"
     :filter="props.glows ? 'url(#neon-glow)' : ''"
     :stroke="rgbColorToString(props.shape.strokeColor)"
     :stroke-opacity="props.shape.strokeColor.opacity"
