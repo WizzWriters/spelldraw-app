@@ -41,7 +41,7 @@ const handlePointerEvent =
         break
       case EPointerEvent.POINTER_UP:
       case EPointerEvent.POINTER_LEFT: {
-        magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
+        magicStore.correctionRequestState = ECorrectionRequestState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
         stallDetector.stopDetecting()
         if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
@@ -61,6 +61,7 @@ onMounted(() => {
   const pointerIcon = new ExternalPointerIcon(pencilPointerUrl, new Point(0, 0))
 
   function activateTool() {
+    magicStore.shapeCorrectionEnabled = true
     toolbarStore.activeTool = {
       pointerIcon,
       handlePointerEvent: handlePointerEvent(shapeCollector, stallDetector)
@@ -69,6 +70,7 @@ onMounted(() => {
   }
 
   function deactivateTool() {
+    magicStore.shapeCorrectionEnabled = false
     logger.debug('Tool deactivated')
   }
 

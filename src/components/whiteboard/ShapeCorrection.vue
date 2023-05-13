@@ -118,8 +118,10 @@ function handleTransitionFromRequested(nextState: ECorrectionRequestState) {
 }
 
 /* TODO: Draw states and transitions for this DFA */
-const { shapeCorrectionState } = storeToRefs(magicStore)
-watch(shapeCorrectionState, (nextState, previousState) => {
+const { correctionRequestState } = storeToRefs(magicStore)
+watch(correctionRequestState, (nextState, previousState) => {
+  if (!magicStore.shapeCorrectionEnabled) return
+
   switch (previousState) {
     case ECorrectionRequestState.IDLE:
       handleTransitionFromIdle(nextState)
@@ -140,12 +142,6 @@ const pointerPosition = usePointerTracker()
 
 onMounted(async () => {
   await shapeCorrector.init()
-
-  /* Remove when the hunt ends */
-  loaderRef.value?.addEventListener('*', (event) => {
-    console.log('Ladies and gentlemens, we got him:')
-    console.error(event)
-  })
 })
 </script>
 

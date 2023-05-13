@@ -33,8 +33,8 @@ export default class StallDetector {
   }
 
   public stopDetecting() {
-    this.reset()
     this.pointCollector.stopCollecting()
+    this.reset()
   }
 
   private feed(nextPoint: Point) {
@@ -54,7 +54,7 @@ export default class StallDetector {
 
   private reset(lastPoint?: Point) {
     this.iterationsCount = 0
-    this.magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
+    this.magicStore.correctionRequestState = ECorrectionRequestState.IDLE
     this.lastPoint = lastPoint || null
     this.anchorPoint = null
   }
@@ -77,13 +77,13 @@ export default class StallDetector {
   /* Called when we suspect that user might be about to hold the pointer */
   private trigger() {
     this.logger.debug('Cursor started stalling...')
-    this.magicStore.shapeCorrectionState = ECorrectionRequestState.START
+    this.magicStore.correctionRequestState = ECorrectionRequestState.START
     this.anchorPoint = this.lastPoint
   }
 
   private stallDetected() {
     this.logger.debug('Cursor stalled!')
-    this.magicStore.shapeCorrectionState = ECorrectionRequestState.COMMIT
+    this.magicStore.correctionRequestState = ECorrectionRequestState.COMMIT
   }
 
   private shouldReset(nextPoint: Point) {
