@@ -9,7 +9,7 @@ import { useCanvasStore } from '@/store/CanvasStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
-import { onMounted, watch } from 'vue'
+import { onMounted, watch, type Ref } from 'vue'
 import ToolButton from './ToolButton.vue'
 
 const SELECT_BOX_FILL = new RgbColor(37, 150, 190, 0.1)
@@ -35,21 +35,29 @@ function getSelectBox(currentPoint: Point): Rectangle {
   )
 }
 
-function polygonOfSelectBox(selectBox: Rectangle) {
+function polygonPointListOfSelectBox(selectBox: Rectangle) {
+  return [
+    new Point(selectBox.left, selectBox.top),
+    new Point(selectBox.right, selectBox.top),
+    new Point(selectBox.right, selectBox.bottom),
+    new Point(selectBox.left, selectBox.bottom)
+  ]
+}
+
+function emitCheckSelectionEvent(selectBox: Rectangle) {
+  EventBus.emit(EShapeEvent.CHECK_SELECTION, { selectBox })
+}
+
+function newPolygonOfSelectBox(selectBox: Rectangle) {
   return new Polygon(
-    [
-      new Point(selectBox.left, selectBox.top),
-      new Point(selectBox.right, selectBox.top),
-      new Point(selectBox.right, selectBox.bottom),
-      new Point(selectBox.left, selectBox.bottom)
-    ],
+    polygonPointListOfSelectBox(selectBox),
     SELECT_BOX_STROKE,
     SELECT_BOX_FILL
   )
 }
 
-function emitCheckSelectionEvent(selectBox: Rectangle) {
-  EventBus.emit(EShapeEvent.CHECK_SELECTION, { selectBox })
+function updatePolygon(polygon: Ref<Polygon>, selectBox: Rectangle) {
+  polygon.value.pointList = polygonPointListOfSelectBox(selectBox)
 }
 
 const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
@@ -62,8 +70,8 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
     case EPointerEvent.POINTER_DOWN: {
       startPoint = currentPoint
       const selectBox = getSelectBox(currentPoint)
-      currentlyDrawnShape.value = polygonOfSelectBox(selectBox)
       emitCheckSelectionEvent(selectBox)
+      currentlyDrawnShape.value = newPolygonOfSelectBox(selectBox)
       break
     }
     case EPointerEvent.POINTER_UP:
@@ -74,8 +82,8 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
     case EPointerEvent.POINTER_MOVED: {
       if (!currentlyDrawnShape.value) return
       const selectBox = getSelectBox(currentPoint)
-      currentlyDrawnShape.value = polygonOfSelectBox(selectBox)
       emitCheckSelectionEvent(selectBox)
+      updatePolygon(currentlyDrawnShape as Ref<Polygon>, selectBox)
       break
     }
     default:
