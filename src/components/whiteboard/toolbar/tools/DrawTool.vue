@@ -21,7 +21,7 @@ const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
 const magicStore = useMagicStore()
 
-const emit = defineEmits<{ (e: 'drawToolReady'): void }>()
+const emit = defineEmits<{ (e: 'drawToolReady'): void; (e: 'click'): void }>()
 const props = defineProps<{
   isActive: Boolean
 }>()
@@ -89,7 +89,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Draw" :is-active="props.isActive">
+  <ToolButton name="Draw" :is-active="props.isActive" @click="emit('click')">
     <FontAwesomeIcon icon="fa-pencil" />
   </ToolButton>
   <ShapeCorrection />

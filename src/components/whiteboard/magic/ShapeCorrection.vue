@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
-import { computed, onMounted, ref, watch, type Ref } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import Logger from 'js-logger'
 import type { Shape } from '@/common/definitions/Shape'
 import ShapeCorrector from '@/services/correction/ShapeCorrector'
 import { useCanvasStore } from '@/store/CanvasStore'
+import CorrectionLoader from './CorrectionLoader.vue'
 
 const logger = Logger.get('ShapeCorrection.vue')
 const shapeCorrector = new ShapeCorrector()
@@ -14,34 +14,18 @@ const shapeCorrector = new ShapeCorrector()
 const magicStore = useMagicStore()
 const canvasStore = useCanvasStore()
 
-const loaderRef: Ref<HTMLElement | null> = ref(null)
 const loaderState = ref({
   isShown: false,
-  isStatusShown: false,
-  isTracking: false,
+  isLoading: true,
+  isTrackingPointer: false,
   wasCorrectionSuccessful: false
-})
-
-const loaderPosition = computed(() => {
-  if (!loaderState.value.isTracking) {
-    const boundingRect = loaderRef.value?.getBoundingClientRect()
-    if (!boundingRect) return { xCoordinate: 0, yCoordinate: 0 }
-    return { xCoordinate: boundingRect.left, yCoordinate: boundingRect.top }
-  }
-
-  return {
-    xCoordinate:
-      pointerPosition.value.xCoordinate - (loaderRef?.value?.clientWidth || 0),
-    yCoordinate:
-      pointerPosition.value.yCoordinate - (loaderRef?.value?.clientHeight || 0)
-  }
 })
 
 let correctionPromise: Promise<Shape | null>
 
 function startCorrection() {
-  loaderState.value.isTracking = true
-  loaderState.value.isStatusShown = false
+  loaderState.value.isTrackingPointer = true
+  loaderState.value.isLoading = true
   loaderState.value.isShown = true
   let currentlyDrawnShape = canvasStore.currentlyDrawnShape
   if (currentlyDrawnShape) {
@@ -51,8 +35,8 @@ function startCorrection() {
 }
 
 async function commitCorrection() {
-  loaderState.value.isTracking = false
-  loaderState.value.isStatusShown = true
+  loaderState.value.isTrackingPointer = false
+  loaderState.value.isLoading = false
   let correction = await correctionPromise
 
   if (!correction) {
@@ -138,75 +122,18 @@ watch(correctionRequestState, (nextState, previousState) => {
   }
 })
 
-const pointerPosition = usePointerTracker()
-
 onMounted(async () => {
   await shapeCorrector.init()
 })
 </script>
 
 <template>
-  <Transition>
-    <div
-      v-if="loaderState.isShown"
-      id="loader"
-      class="box p-2 has-text-centered"
-      ref="loaderRef"
-      :style="
-        `top: ${loaderPosition.yCoordinate}px;` +
-        `left: ${loaderPosition.xCoordinate}px;`
-      "
-    >
-      <p
-        v-if="loaderState.isStatusShown && loaderState.wasCorrectionSuccessful"
-        class="has-text-success p-0"
-      >
-        <FontAwesomeIcon icon="fa-check"></FontAwesomeIcon>
-      </p>
-      <p
-        v-else-if="
-          loaderState.isStatusShown && !loaderState.wasCorrectionSuccessful
-        "
-        class="has-text-danger p-0"
-      >
-        <FontAwesomeIcon icon="fa-times"></FontAwesomeIcon>
-      </p>
-      <progress
-        v-else
-        class="progress is-small is-primary"
-        :value="magicStore.activationStep"
-        :max="magicStore.maxActivationStep"
-      ></progress>
-    </div>
-  </Transition>
+  <CorrectionLoader
+    :is-shown="loaderState.isShown"
+    :is-loading="loaderState.isLoading"
+    :is-tracking-pointer="loaderState.isTrackingPointer"
+    :status="loaderState.wasCorrectionSuccessful"
+    :value="magicStore.activationStep"
+    :max-value="magicStore.maxActivationStep"
+  />
 </template>
-
-<style lang="scss">
-#loader {
-  position: fixed;
-  pointer-events: none;
-  user-select: none;
-  -webkit-user-drag: none;
-  width: 50px;
-  height: 40px;
-  display: flex;
-  align-items: center;
-
-  p {
-    width: 100%;
-  }
-}
-
-.v-enter-active {
-  transition: opacity 0.2s ease;
-}
-
-.v-leave-active {
-  transition: opacity 1s ease;
-}
-
-.v-enter-from,
-.v-leave-to {
-  opacity: 0;
-}
-</style>
