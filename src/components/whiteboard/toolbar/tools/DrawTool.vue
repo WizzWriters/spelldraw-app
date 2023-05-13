@@ -13,6 +13,7 @@ import Logger from 'js-logger'
 import { onMounted, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
 import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
+import StallDetector from '@/services/canvas/StallDetector'
 
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
@@ -25,7 +26,7 @@ const props = defineProps<{
 }>()
 
 const handlePointerEvent =
-  (shapeCollector: ShapeCollector) =>
+  (shapeCollector: ShapeCollector, stallDetector: StallDetector) =>
   (eventType: EPointerEvent, event: PointerEvent) => {
     const pointerPosition = getPositionOnCanvas({
       xCoordinate: event.clientX,
@@ -36,11 +37,13 @@ const handlePointerEvent =
     switch (eventType) {
       case EPointerEvent.POINTER_DOWN:
         shapeCollector.startCollecting(point)
+        stallDetector.startDetecting()
         break
       case EPointerEvent.POINTER_UP:
       case EPointerEvent.POINTER_LEFT: {
         magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
+        stallDetector.stopDetecting()
         if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
         break
       }
@@ -54,17 +57,26 @@ const handlePointerEvent =
 
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
+  let stallDetector = new StallDetector()
   const pointerIcon = new ExternalPointerIcon(pencilPointerUrl, new Point(0, 0))
+
+  function activateTool() {
+    toolbarStore.activeTool = {
+      pointerIcon,
+      handlePointerEvent: handlePointerEvent(shapeCollector, stallDetector)
+    }
+    logger.debug('Tool activated')
+  }
+
+  function deactivateTool() {
+    logger.debug('Tool deactivated')
+  }
 
   watch(
     () => props.isActive,
     (newValue, oldValue) => {
-      if (oldValue || !newValue) return
-      toolbarStore.activeTool = {
-        pointerIcon,
-        handlePointerEvent: handlePointerEvent(shapeCollector)
-      }
-      logger.debug('Tool activated')
+      if (!oldValue && newValue) activateTool()
+      else if (oldValue && !newValue) deactivateTool()
     },
     { immediate: true }
   )
