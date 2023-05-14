@@ -1,11 +1,13 @@
 <script setup lang="ts">
+import TextPredictor from '@/services/correction/TextPredictor'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
-import { ref, watch } from 'vue'
+import { onMounted, ref, watch } from 'vue'
 import CorrectionLoader from './CorrectionLoader.vue'
 
 const logger = Logger.get('TextPrediction.vue')
+const textPredictor = new TextPredictor()
 const magicStore = useMagicStore()
 
 const loaderState = ref({
@@ -93,6 +95,10 @@ watch(correctionRequestState, (nextState, previousState) => {
       handleUnexpectedTransition(previousState, nextState)
       break
   }
+})
+
+onMounted(async () => {
+  await textPredictor.init()
 })
 </script>
 

@@ -14,9 +14,11 @@ export class HiddenCanvas {
   private context2d: CanvasRenderingContext2D
   private lineWidth: number
 
-  constructor() {
+  constructor(width: number, height: number) {
     this.logger = Logger.get('HTMLCanvas')
     this.htmlCanvas = document.createElement('canvas')
+    this.htmlCanvas.width = width
+    this.htmlCanvas.height = height
     this.lineWidth = 1
     const context2d = this.htmlCanvas.getContext('2d')
     if (context2d == null) {
@@ -24,6 +26,7 @@ export class HiddenCanvas {
     }
     this.context2d = context2d
     this.context2d.fillStyle = 'black'
+    this.clear()
   }
 
   public drawShape(shape: Polyline) {
@@ -91,13 +94,6 @@ export class HiddenCanvas {
       endPoint.xCoordinate,
       endPoint.yCoordinate
     )
-  }
-
-  public resize(width: number, height: number): void {
-    if (this.htmlCanvas.width != width || this.htmlCanvas.height != height) {
-      this.htmlCanvas.width = width
-      this.htmlCanvas.height = height
-    }
   }
 
   public clear() {

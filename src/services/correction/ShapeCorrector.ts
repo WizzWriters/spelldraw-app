@@ -17,21 +17,18 @@ import type { Point } from '@/common/definitions/Geometry'
 
 @AsyncInitialized
 export default class ShapeCorrector {
-  private hiddenCanvas: HiddenCanvas
-  private shapeWizard: ShapeWizard
-  private shapeTranslator: ShapeNormalizer
+  private hiddenCanvas = new HiddenCanvas(
+    ShapeWizard.INPUT_WIDTH,
+    ShapeWizard.INPUT_HEIGHT
+  )
+  private shapeWizard = new ShapeWizard()
+  private shapeTranslator = new ShapeNormalizer()
 
   constructor() {
-    this.hiddenCanvas = new HiddenCanvas()
-    this.shapeWizard = new ShapeWizard()
-    this.shapeTranslator = new ShapeNormalizer()
-
     if (import.meta.env.VITE_SHOW_SHAPE_CANVAS === 'TRUE') {
       this.showCanvas()
     }
-    this.hiddenCanvas.resize(ShapeWizard.INPUT_WIDTH, ShapeWizard.INPUT_HEIGHT)
     this.hiddenCanvas.setLineWidth(ShapeWizard.INPUT_LINE_WIDTH)
-    this.hiddenCanvas.clear()
   }
 
   @AsyncInit
@@ -76,9 +73,8 @@ export default class ShapeCorrector {
       case ShapeClassification.RECTANGLE:
       case ShapeClassification.TRIANGLE:
         return new Polygon(points)
-      case ShapeClassification.ELLIPSE: {
+      case ShapeClassification.ELLIPSE:
         return new RoundShape(points)
-      }
       default:
         return new Polygon(points)
     }
