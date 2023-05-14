@@ -13,19 +13,21 @@ import Logger from 'js-logger'
 import { onMounted, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
 import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
+import StallDetector from '@/services/canvas/StallDetector'
+import ShapeCorrection from '../../magic/ShapeCorrection.vue'
 
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
 const magicStore = useMagicStore()
 
-const emit = defineEmits<{ (e: 'drawToolReady'): void }>()
+const emit = defineEmits<{ (e: 'drawToolReady'): void; (e: 'click'): void }>()
 const props = defineProps<{
   isActive: Boolean
 }>()
 
 const handlePointerEvent =
-  (shapeCollector: ShapeCollector) =>
+  (shapeCollector: ShapeCollector, stallDetector: StallDetector) =>
   (eventType: EPointerEvent, event: PointerEvent) => {
     const pointerPosition = getPositionOnCanvas({
       xCoordinate: event.clientX,
@@ -36,11 +38,13 @@ const handlePointerEvent =
     switch (eventType) {
       case EPointerEvent.POINTER_DOWN:
         shapeCollector.startCollecting(point)
+        stallDetector.startDetecting()
         break
       case EPointerEvent.POINTER_UP:
       case EPointerEvent.POINTER_LEFT: {
-        magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
+        magicStore.correctionRequestState = ECorrectionRequestState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
+        stallDetector.stopDetecting()
         if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
         break
       }
@@ -54,17 +58,28 @@ const handlePointerEvent =
 
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
+  let stallDetector = new StallDetector()
   const pointerIcon = new ExternalPointerIcon(pencilPointerUrl, new Point(0, 0))
+
+  function activateTool() {
+    magicStore.shapeCorrectionEnabled = true
+    toolbarStore.activeTool = {
+      pointerIcon,
+      handlePointerEvent: handlePointerEvent(shapeCollector, stallDetector)
+    }
+    logger.debug('Tool activated')
+  }
+
+  function deactivateTool() {
+    magicStore.shapeCorrectionEnabled = false
+    logger.debug('Tool deactivated')
+  }
 
   watch(
     () => props.isActive,
     (newValue, oldValue) => {
-      if (oldValue || !newValue) return
-      toolbarStore.activeTool = {
-        pointerIcon,
-        handlePointerEvent: handlePointerEvent(shapeCollector)
-      }
-      logger.debug('Tool activated')
+      if (!oldValue && newValue) activateTool()
+      else if (oldValue && !newValue) deactivateTool()
     },
     { immediate: true }
   )
@@ -74,7 +89,8 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Draw" :is-active="props.isActive">
+  <ToolButton name="Draw" :is-active="props.isActive" @click="emit('click')">
     <FontAwesomeIcon icon="fa-pencil" />
   </ToolButton>
+  <ShapeCorrection />
 </template>

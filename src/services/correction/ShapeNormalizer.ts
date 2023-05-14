@@ -1,12 +1,13 @@
-import { Polyline } from '@/common/definitions/Shape'
+import type ComplexShape from '@/common/definitions/ComplexShape'
 import lodash from 'lodash'
 
 export class NormalizedShape {
   constructor(
     public offset: { x: number; y: number },
+    public padding: { v: number; h: number },
     public margin: { x: number; y: number },
     public scaleFrac: { x: number; y: number },
-    public shape: Polyline
+    public shape: ComplexShape
   ) {}
 }
 
@@ -14,14 +15,17 @@ export default class ShapeNormalizer {
   constructor() {}
 
   public normalize(
-    shape: Polyline,
-    maxWidth: number,
-    maxHeight: number,
-    padding: number
+    shape: ComplexShape,
+    maxSize: { width: number; height: number },
+    padding: { v: number; h: number },
+    keepProportions = true
   ): NormalizedShape {
-    const [paddingTop, paddingLeft] = [maxHeight * padding, maxWidth * padding]
-    maxHeight -= 2 * paddingTop
-    maxWidth -= 2 * paddingLeft
+    const [topPadding, leftPadding] = [
+      maxSize.height * padding.v,
+      maxSize.width * padding.h
+    ]
+    const maxHeight = maxSize.height - 2 * topPadding
+    const maxWidth = maxSize.width - 2 * leftPadding
 
     const shapeCopy = lodash.cloneDeep(shape)
     const boundingRect = shapeCopy.getBoundingRectangle()
@@ -29,44 +33,56 @@ export default class ShapeNormalizer {
 
     shapeCopy.move(-leftOffset, -topOffset)
 
-    const [widthFrac, heightFrac] = [
+    let [scaleFracX, scaleFracY] = [
       maxWidth / boundingRect.width,
       maxHeight / boundingRect.height
     ]
-    const scaleFracX = widthFrac
-    const scaleFracY = heightFrac
 
-    const resizedShape = this.resize(shapeCopy, scaleFracX, scaleFracY)
-    resizedShape.move(paddingLeft, paddingTop)
+    if (keepProportions)
+      scaleFracX = scaleFracY = Math.min(scaleFracX, scaleFracY)
+    shapeCopy.squeeze(scaleFracX, scaleFracY)
+
+    const [leftMargin, topMargin] = this.calculateMargins(
+      shapeCopy,
+      maxWidth,
+      maxHeight
+    )
+    shapeCopy.move(leftPadding + leftMargin, topPadding + topMargin)
+
     return new NormalizedShape(
       { x: leftOffset, y: topOffset },
-      { x: paddingLeft, y: paddingTop },
+      { h: leftPadding, v: topPadding },
+      { x: leftMargin, y: topMargin },
       { x: scaleFracX, y: scaleFracY },
-      resizedShape
+      shapeCopy
     )
   }
 
-  public denormalize(normalizedShape: NormalizedShape): Polyline {
+  public denormalize(normalizedShape: NormalizedShape): ComplexShape {
     normalizedShape.shape.move(
-      -normalizedShape.margin.x,
-      -normalizedShape.margin.y
+      -(normalizedShape.padding.h + normalizedShape.margin.x),
+      -(normalizedShape.padding.v + normalizedShape.margin.y)
     )
-    const resizedShape = this.resize(
-      normalizedShape.shape,
+    normalizedShape.shape.squeeze(
       1 / normalizedShape.scaleFrac.x,
       1 / normalizedShape.scaleFrac.y
     )
-    resizedShape.move(normalizedShape.offset.x, normalizedShape.offset.y)
-    return resizedShape
+    normalizedShape.shape.move(
+      normalizedShape.offset.x,
+      normalizedShape.offset.y
+    )
+    return normalizedShape.shape
   }
 
-  private resize(shape: Polyline, xfrac: number, yfrac: number) {
-    return new Polyline(
-      shape.pointList.map((point) => {
-        point.xCoordinate *= xfrac
-        point.yCoordinate *= yfrac
-        return point
-      })
-    )
+  private calculateMargins(
+    shape: ComplexShape,
+    maxWidth: number,
+    maxHeight: number
+  ) {
+    const boundingRect = shape.getBoundingRectangle()
+    const [width, height] = [boundingRect.width, boundingRect.height]
+    const xMargin = width < maxWidth ? (maxWidth - width) / 2 : 0
+    const yMargin = height < maxHeight ? (maxHeight - height) / 2 : 0
+    return [xMargin, yMargin]
   }
 }
