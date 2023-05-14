@@ -4,22 +4,23 @@ import { ref, type Ref } from 'vue'
 
 export const useToolbarStore = defineStore('toolbar', () => {
   const activeTool: Ref<ITool | null> = ref(null)
-  const intersectingShapesIds: Ref<string[]> = ref([])
-  const selectedShapesIds: Ref<string[]> = ref([])
+  const intersectingShapesIds = ref(new Set<string>())
+  const selectedShapesIds = ref(new Set<string>())
 
-  function appendShapeId(id: string, array: Ref<string[]>) {
-    if (array.value.indexOf(id) >= 0) return
-    array.value.push(id)
+  function addShapeId(id: string, idSet: Ref<Set<string>>) {
+    idSet.value.add(id)
   }
 
-  function removeShapeId(id: string, array: Ref<string[]>) {
-    const index = array.value.indexOf(id)
-    if (index < 0) return
-    array.value.splice(index, 1)
+  function removeShapeId(id: string, idSet: Ref<Set<string>>) {
+    idSet.value.delete(id)
+  }
+
+  function clearShapeIds(idSet: Ref<Set<string>>) {
+    idSet.value.clear()
   }
 
   function addToIntersectingShapes(id: string) {
-    appendShapeId(id, intersectingShapesIds)
+    addShapeId(id, intersectingShapesIds)
   }
 
   function removeFromIntersectingShapes(id: string) {
@@ -27,7 +28,7 @@ export const useToolbarStore = defineStore('toolbar', () => {
   }
 
   function addToSelectedShapes(id: string) {
-    appendShapeId(id, selectedShapesIds)
+    addShapeId(id, selectedShapesIds)
   }
 
   function removeFromSelectedShapes(id: string) {
@@ -35,11 +36,11 @@ export const useToolbarStore = defineStore('toolbar', () => {
   }
 
   function clearSelectedShapes() {
-    selectedShapesIds.value = []
+    clearShapeIds(selectedShapesIds)
   }
 
   function clearIntersectingShapes() {
-    intersectingShapesIds.value = []
+    clearShapeIds(intersectingShapesIds)
   }
 
   return {
