@@ -3,5 +3,10 @@
     "repo": "ShapeCorrection",
     "tag": "v2.1.2",
     "owner": "ventus550"
+  },
+  "TextOracle": {
+    "repo": "HandwritingRecognition",
+    "tag": "v2.0.1",
+    "owner": "ventus550"
   }
 }
