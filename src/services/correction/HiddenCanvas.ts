@@ -1,12 +1,13 @@
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
-import type { Polyline } from '@/common/definitions/Shape'
+import { Polyline, type Shape } from '@/common/definitions/Shape'
 import BezierShapeSmoother, {
   LinearBezierCurve,
   type BezierCurve,
   QuadraticBezierCurve,
   CubicBezierCurve
 } from '../smoothing/BezierShapeSmoother'
+import NotImplemented from '@/utils/exceptions/NotImplemented'
 
 export class HiddenCanvas {
   public htmlCanvas: HTMLCanvasElement
@@ -29,7 +30,12 @@ export class HiddenCanvas {
     this.clear()
   }
 
-  public drawShape(shape: Polyline) {
+  public drawShape(shape: Shape) {
+    if (shape instanceof Polyline) this.drawPolylineShape(shape)
+    else throw new NotImplemented()
+  }
+
+  private drawPolylineShape(shape: Polyline) {
     const pointList = shape.pointList
     if (pointList.length == 0) return
 

@@ -1,12 +1,12 @@
-import { Polyline } from '@/common/definitions/Shape'
+import type { Shape } from '@/common/definitions/Shape'
 import lodash from 'lodash'
 
 export class NormalizedShape {
   constructor(
     public offset: { x: number; y: number },
-    public margin: { x: number; y: number },
+    public padding: { x: number; y: number },
     public scaleFrac: { x: number; y: number },
-    public shape: Polyline
+    public shape: Shape
   ) {}
 }
 
@@ -14,7 +14,7 @@ export default class ShapeNormalizer {
   constructor() {}
 
   public normalize(
-    shape: Polyline,
+    shape: Shape,
     maxWidth: number,
     maxHeight: number,
     padding: number
@@ -29,44 +29,34 @@ export default class ShapeNormalizer {
 
     shapeCopy.move(-leftOffset, -topOffset)
 
-    const [widthFrac, heightFrac] = [
+    const [scaleFracX, scaleFracY] = [
       maxWidth / boundingRect.width,
       maxHeight / boundingRect.height
     ]
-    const scaleFracX = widthFrac
-    const scaleFracY = heightFrac
 
-    const resizedShape = this.resize(shapeCopy, scaleFracX, scaleFracY)
-    resizedShape.move(paddingLeft, paddingTop)
+    shapeCopy.squeeze(scaleFracX, scaleFracY)
+    shapeCopy.move(paddingLeft, paddingTop)
     return new NormalizedShape(
       { x: leftOffset, y: topOffset },
       { x: paddingLeft, y: paddingTop },
       { x: scaleFracX, y: scaleFracY },
-      resizedShape
+      shapeCopy
     )
   }
 
-  public denormalize(normalizedShape: NormalizedShape): Polyline {
+  public denormalize(normalizedShape: NormalizedShape): Shape {
     normalizedShape.shape.move(
-      -normalizedShape.margin.x,
-      -normalizedShape.margin.y
+      -normalizedShape.padding.x,
+      -normalizedShape.padding.y
     )
-    const resizedShape = this.resize(
-      normalizedShape.shape,
+    normalizedShape.shape.squeeze(
       1 / normalizedShape.scaleFrac.x,
       1 / normalizedShape.scaleFrac.y
     )
-    resizedShape.move(normalizedShape.offset.x, normalizedShape.offset.y)
-    return resizedShape
-  }
-
-  private resize(shape: Polyline, xfrac: number, yfrac: number) {
-    return new Polyline(
-      shape.pointList.map((point) => {
-        point.xCoordinate *= xfrac
-        point.yCoordinate *= yfrac
-        return point
-      })
+    normalizedShape.shape.move(
+      normalizedShape.offset.x,
+      normalizedShape.offset.y
     )
+    return normalizedShape.shape
   }
 }

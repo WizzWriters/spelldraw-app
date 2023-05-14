@@ -7,13 +7,13 @@ import {
   Polyline,
   Polygon,
   Shape,
-  RoundShape
+  RoundShape,
+  PointListBasedShape
 } from '@/common/definitions/Shape'
 import ShapeWizard, { ShapeClassification } from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
 import * as tf from '@tensorflow/tfjs'
-import type { Point } from '@/common/definitions/Geometry'
 
 @AsyncInitialized
 export default class ShapeCorrector {
@@ -62,21 +62,21 @@ export default class ShapeCorrector {
     const newShape = new Polyline(newPoints)
     normalizedShape.shape = newShape
     const denormalizedShape = this.shapeTranslator.denormalize(normalizedShape)
-    return this.recognitionToShape(shapeLabel, denormalizedShape.pointList)
+    return this.recognitionToShape(shapeLabel, denormalizedShape as Polyline)
   }
 
   private recognitionToShape(
     shapeLabel: ShapeClassification,
-    points: Point[]
+    shape: PointListBasedShape
   ): Shape {
     switch (shapeLabel) {
       case ShapeClassification.RECTANGLE:
       case ShapeClassification.TRIANGLE:
-        return new Polygon(points)
+        return new Polygon(shape.pointList)
       case ShapeClassification.ELLIPSE:
-        return new RoundShape(points)
+        return new RoundShape(shape.pointList)
       default:
-        return new Polygon(points)
+        return new Polygon(shape.pointList)
     }
   }
 
