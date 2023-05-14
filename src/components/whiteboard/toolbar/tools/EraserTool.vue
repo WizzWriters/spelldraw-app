@@ -68,7 +68,7 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
 watch(
   [intersectingShapesIds, isErasing],
   ([newIntersectingShapeIds, newIsErasing]) => {
-    if (newIntersectingShapeIds.length == 0 || !newIsErasing) return
+    if (newIntersectingShapeIds.size == 0 || !newIsErasing) return
     for (const id of newIntersectingShapeIds) {
       canvasStore.removeDrawnShapeById(id)
     }
