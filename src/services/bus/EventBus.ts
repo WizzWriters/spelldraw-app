@@ -1,12 +1,19 @@
-import type { Segment } from '@/common/definitions/Geometry'
+import type { Rectangle, Segment } from '@/common/definitions/Geometry'
 
 export enum EShapeEvent {
-  CHECK_INTERSECTION = 'check-intersection'
+  CHECK_INTERSECTION = 'check-intersection',
+  CHECK_SELECTION = 'check-selection'
 }
 
 export interface ICheckIntersectionPayload {
   pointerHitline: Segment
 }
+
+export interface ICheckSelectionPayload {
+  selectBox: Rectangle
+}
+
+type ShapeEventPayload = ICheckIntersectionPayload | ICheckSelectionPayload
 
 export class EventCallback<PayloadT> {
   private wrappedCallback: (event: Event) => void
@@ -27,20 +34,32 @@ export class EventCallback<PayloadT> {
   }
 }
 
-type ShapeEventCallback = EventCallback<ICheckIntersectionPayload>
+type ShapeEventCallback =
+  | EventCallback<ICheckIntersectionPayload>
+  | EventCallback<ICheckSelectionPayload>
 
 class EventBus {
   public emit(
     event: EShapeEvent.CHECK_INTERSECTION,
     payload: ICheckIntersectionPayload
-  ) {
+  ): void
+  public emit(
+    event: EShapeEvent.CHECK_SELECTION,
+    payload: ICheckSelectionPayload
+  ): void
+  public emit(event: EShapeEvent, payload: ShapeEventPayload) {
     this.dispatchEvent(event, payload)
   }
 
   public subscribe(
     event: EShapeEvent.CHECK_INTERSECTION,
     callback: EventCallback<ICheckIntersectionPayload>
-  ) {
+  ): void
+  public subscribe(
+    event: EShapeEvent.CHECK_SELECTION,
+    callback: EventCallback<ICheckSelectionPayload>
+  ): void
+  public subscribe(event: EShapeEvent, callback: ShapeEventCallback) {
     this.registerCallback(event, callback)
   }
 

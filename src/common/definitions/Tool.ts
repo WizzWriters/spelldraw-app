@@ -1,6 +1,10 @@
-import type { EPointerEvent, IPointerIcon } from './Pointer'
+import type {
+  EPointerEvent,
+  BuiltinPointerIcon,
+  ExternalPointerIcon
+} from './Pointer'
 
 export interface ITool {
-  pointerIcon?: IPointerIcon
+  pointerIcon?: ExternalPointerIcon | BuiltinPointerIcon
   handlePointerEvent(eventType: EPointerEvent, event: PointerEvent): void
 }

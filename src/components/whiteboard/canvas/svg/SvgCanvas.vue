@@ -6,11 +6,15 @@ import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
 import lodash from 'lodash'
 import { useToolbarStore } from '@/store/ToolbarStore'
-import { EPointerEvent } from '@/common/definitions/Pointer'
+import {
+  EPointerEvent,
+  ExternalPointerIcon,
+  BuiltinPointerIcon
+} from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import { Point } from '@/common/definitions/Geometry'
 import SvgNeonGlow from './filters/SvgNeonGlow.vue'
-import type { Shape } from '@/common/definitions/Shape'
+import { Polyline, type Shape } from '@/common/definitions/Shape'
 
 type CanvasElement = HTMLElement & SVGSVGElement
 
@@ -30,13 +34,19 @@ const pointerPosition = usePointerTracker()
 const pointerIcon = computed(() => {
   let activeToolIcon = toolbarStore.activeTool?.pointerIcon
   if (!activeToolIcon) return 'auto'
-  return `url(${activeToolIcon.url}) ${activeToolIcon.hotspot.xCoordinate}
-     ${activeToolIcon.hotspot.yCoordinate}, auto`
+  if (activeToolIcon instanceof ExternalPointerIcon)
+    return `url(${activeToolIcon.url}) ${activeToolIcon.hotspot.xCoordinate}
+            ${activeToolIcon.hotspot.yCoordinate}, auto`
+  else if (activeToolIcon instanceof BuiltinPointerIcon)
+    return activeToolIcon.name
+  throw Error('Unknown pointer icon type')
 })
 
 const currentlyDrawnShape: Ref<Shape | null> = computed(() => {
-  if (!canvasStore.currentlyDrawnShape) return null
-  let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape)
+  const currentlyDrawnShape = canvasStore.currentlyDrawnShape
+  if (!currentlyDrawnShape) return null
+  if (!(currentlyDrawnShape instanceof Polyline)) return currentlyDrawnShape
+  let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape) as Polyline
   let positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
   let point = Point.fromPointerPosition(positionOnCanvas)
   shapeCopy.addPoint(point)

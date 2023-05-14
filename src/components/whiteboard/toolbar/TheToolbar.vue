@@ -3,11 +3,13 @@
 import { computed, markRaw, ref } from 'vue'
 import DrawTool from './tools/DrawTool.vue'
 import EraserTool from './tools/EraserTool.vue'
+import SelectTool from './tools/SelectTool.vue'
 
 // const logger = Logger.get('Toolbar')
 const tools = ref([
   { isActive: true, component: markRaw(DrawTool) },
-  { isActive: false, component: markRaw(EraserTool) }
+  { isActive: false, component: markRaw(EraserTool) },
+  { isActive: false, component: markRaw(SelectTool) }
 ])
 
 const activeTool = computed(() => {

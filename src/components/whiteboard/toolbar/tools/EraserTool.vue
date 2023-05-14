@@ -2,7 +2,7 @@
 import { Point, Segment } from '@/common/definitions/Geometry'
 import {
   EPointerEvent,
-  type IPointerIcon,
+  ExternalPointerIcon,
   type IPointerPosition
 } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
@@ -68,7 +68,7 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
 watch(
   [intersectingShapesIds, isErasing],
   ([newIntersectingShapeIds, newIsErasing]) => {
-    if (newIntersectingShapeIds.length == 0 || !newIsErasing) return
+    if (newIntersectingShapeIds.size == 0 || !newIsErasing) return
     for (const id of newIntersectingShapeIds) {
       canvasStore.removeDrawnShapeById(id)
     }
@@ -78,10 +78,7 @@ watch(
 )
 
 onMounted(() => {
-  const pointerIcon: IPointerIcon = {
-    url: eraserPointerUrl,
-    hotspot: new Point(6, 3)
-  }
+  const pointerIcon = new ExternalPointerIcon(eraserPointerUrl, new Point(6, 3))
 
   function activateTool() {
     toolbarStore.activeTool = { pointerIcon, handlePointerEvent }

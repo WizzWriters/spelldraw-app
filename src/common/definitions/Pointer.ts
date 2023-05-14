@@ -7,9 +7,12 @@ export enum EPointerEvent {
   POINTER_LEFT = 'pointerleave'
 }
 
-export interface IPointerIcon {
-  url: string
-  hotspot: Point
+export class ExternalPointerIcon {
+  constructor(public url: string, public hotspot: Point) {}
+}
+
+export class BuiltinPointerIcon {
+  constructor(public name: 'crosshair') {}
 }
 
 export interface IPointerPosition {

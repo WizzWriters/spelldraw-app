@@ -1,6 +1,6 @@
 import { PointCollector } from './PointCollector'
 import type { Point } from '@/common/definitions/Geometry'
-import { Polyline } from '@/common/definitions/Shape'
+import { Polyline, Shape } from '@/common/definitions/Shape'
 import { useCanvasStore } from '@/store/CanvasStore'
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
@@ -26,11 +26,11 @@ export default class ShapeCollector {
       this.handleShapeNulled()
       return
     }
-    const currentlyDrawnShape = this.canvasStore.currentlyDrawnShape
+    const currentlyDrawnShape = this.canvasStore.currentlyDrawnShape as Polyline
     currentlyDrawnShape.addPoint(newPoint)
   }
 
-  public collectShape(endpoint?: Point): Polyline | null {
+  public collectShape(endpoint?: Point): Shape | null {
     if (!this.canvasStore.currentlyDrawnShape) {
       this.handleShapeNulled()
       return null

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { Point } from '@/common/definitions/Geometry'
-import { EPointerEvent, type IPointerIcon } from '@/common/definitions/Pointer'
+import {
+  EPointerEvent,
+  ExternalPointerIcon
+} from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
 import { useCanvasStore } from '@/store/CanvasStore'
@@ -51,10 +54,7 @@ const handlePointerEvent =
 
 onMounted(() => {
   let shapeCollector = new ShapeCollector()
-  const pointerIcon: IPointerIcon = {
-    url: pencilPointerUrl,
-    hotspot: new Point(0, 0)
-  }
+  const pointerIcon = new ExternalPointerIcon(pencilPointerUrl, new Point(0, 0))
 
   watch(
     () => props.isActive,

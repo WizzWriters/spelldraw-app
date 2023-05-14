@@ -3,16 +3,18 @@ import type { Point } from '@/common/definitions/Geometry'
 import type { RoundShape } from '@/common/definitions/Shape'
 import Logger from 'js-logger'
 import { computed, ref, toRef, type Ref } from 'vue'
-import { useIntersectionDetection } from './useIntersectionDetection'
+import { useCollisionDetection } from './composables/useCollisionDetection'
 
 const props = defineProps<{
   shape: any
   glows: Boolean
+  collisionsEnabled: Boolean
 }>()
 
 const shape = toRef(props, 'shape') as Ref<RoundShape>
 const logger = Logger.get('SvgRoundShape')
-const roundShapeElementRef: Ref<SVGGeometryElement | null> = ref(null)
+const roundShapeElementRef: Ref<(SVGGeometryElement & HTMLElement) | null> =
+  ref(null)
 
 function getControlPoint(starPoint: Point, endPoint: Point): Point {
   let centroid = shape.value.centroid
@@ -43,7 +45,11 @@ let pathCommand = computed(() => {
   return command
 })
 
-useIntersectionDetection(roundShapeElementRef, toRef(props, 'shape'))
+useCollisionDetection(
+  roundShapeElementRef,
+  toRef(props, 'shape'),
+  toRef(props, 'collisionsEnabled')
+)
 </script>
 
 <template>

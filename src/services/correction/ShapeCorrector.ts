@@ -40,7 +40,9 @@ export default class ShapeCorrector {
   }
 
   @RequiresAsyncInit
-  public async correct(shape: Polyline): Promise<Shape | null> {
+  public async correct(shape: Shape): Promise<Shape | null> {
+    if (!(shape instanceof Polyline)) return shape
+
     const normalizedShape = this.shapeTranslator.normalize(
       shape,
       ShapeWizard.INPUT_WIDTH,

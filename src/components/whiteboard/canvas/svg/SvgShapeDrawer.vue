@@ -10,10 +10,9 @@ const props = defineProps<{
 const toolbarStore = useToolbarStore()
 
 function shouldGlow(shapeId: string) {
-  const index = toolbarStore.intersectingShapesIds.findIndex(
-    (intersectingShapeId) => intersectingShapeId == shapeId
-  )
-  return index != -1
+  const intersecting = toolbarStore.intersectingShapesIds.has(shapeId)
+  const selected = toolbarStore.selectedShapesIds.has(shapeId)
+  return intersecting || selected
 }
 </script>
 
@@ -22,11 +21,13 @@ function shouldGlow(shapeId: string) {
     v-if="currentlyDrawnShape"
     :shape="currentlyDrawnShape"
     :glows="false"
+    :collisions-enabled="false"
   />
   <SvgShape
-    v-for="(shape, idx) in props.shapes"
-    :key="idx"
+    v-for="shape in props.shapes"
+    :key="shape.id"
     :shape="shape"
     :glows="shouldGlow(shape.id)"
+    :collisions-enabled="true"
   />
 </template>
