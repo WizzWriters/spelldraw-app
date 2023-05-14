@@ -51,7 +51,7 @@ class TextOracle {
   public ctc!: CtcDecoder
 
   constructor() {
-    this.model = new TensorflowModel('TextOracle/test')
+    this.model = new TensorflowModel('TextOracle/oracle')
     this.characters = ''
     pin('oracle', this)
   }
