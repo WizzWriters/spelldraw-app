@@ -4,7 +4,8 @@ import lodash from 'lodash'
 export class NormalizedShape {
   constructor(
     public offset: { x: number; y: number },
-    public padding: { x: number; y: number },
+    public padding: { v: number; h: number },
+    public margin: { x: number; y: number },
     public scaleFrac: { x: number; y: number },
     public shape: ComplexShape
   ) {}
@@ -15,13 +16,16 @@ export default class ShapeNormalizer {
 
   public normalize(
     shape: ComplexShape,
-    maxWidth: number,
-    maxHeight: number,
-    padding: number
+    maxSize: { width: number; height: number },
+    padding: { v: number; h: number },
+    keepProportions = true
   ): NormalizedShape {
-    const [paddingTop, paddingLeft] = [maxHeight * padding, maxWidth * padding]
-    maxHeight -= 2 * paddingTop
-    maxWidth -= 2 * paddingLeft
+    const [topPadding, leftPadding] = [
+      maxSize.height * padding.v,
+      maxSize.width * padding.h
+    ]
+    const maxHeight = maxSize.height - 2 * topPadding
+    const maxWidth = maxSize.width - 2 * leftPadding
 
     const shapeCopy = lodash.cloneDeep(shape)
     const boundingRect = shapeCopy.getBoundingRectangle()
@@ -29,16 +33,26 @@ export default class ShapeNormalizer {
 
     shapeCopy.move(-leftOffset, -topOffset)
 
-    const [scaleFracX, scaleFracY] = [
+    let [scaleFracX, scaleFracY] = [
       maxWidth / boundingRect.width,
       maxHeight / boundingRect.height
     ]
 
+    if (keepProportions)
+      scaleFracX = scaleFracY = Math.min(scaleFracX, scaleFracY)
     shapeCopy.squeeze(scaleFracX, scaleFracY)
-    shapeCopy.move(paddingLeft, paddingTop)
+
+    const [leftMargin, topMargin] = this.calculateMargins(
+      shapeCopy,
+      maxWidth,
+      maxHeight
+    )
+    shapeCopy.move(leftPadding + leftMargin, topPadding + topMargin)
+
     return new NormalizedShape(
       { x: leftOffset, y: topOffset },
-      { x: paddingLeft, y: paddingTop },
+      { h: leftPadding, v: topPadding },
+      { x: leftMargin, y: topMargin },
       { x: scaleFracX, y: scaleFracY },
       shapeCopy
     )
@@ -46,8 +60,8 @@ export default class ShapeNormalizer {
 
   public denormalize(normalizedShape: NormalizedShape): ComplexShape {
     normalizedShape.shape.move(
-      -normalizedShape.padding.x,
-      -normalizedShape.padding.y
+      -(normalizedShape.padding.h + normalizedShape.margin.x),
+      -(normalizedShape.padding.v + normalizedShape.margin.y)
     )
     normalizedShape.shape.squeeze(
       1 / normalizedShape.scaleFrac.x,
@@ -58,5 +72,17 @@ export default class ShapeNormalizer {
       normalizedShape.offset.y
     )
     return normalizedShape.shape
+  }
+
+  private calculateMargins(
+    shape: ComplexShape,
+    maxWidth: number,
+    maxHeight: number
+  ) {
+    const boundingRect = shape.getBoundingRectangle()
+    const [width, height] = [boundingRect.width, boundingRect.height]
+    const xMargin = width < maxWidth ? (maxWidth - width) / 2 : 0
+    const yMargin = height < maxHeight ? (maxHeight - height) / 2 : 0
+    return [xMargin, yMargin]
   }
 }

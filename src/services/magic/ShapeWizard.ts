@@ -60,6 +60,7 @@ export default class ShapeWizard {
   public static readonly INPUT_HEIGHT = 70
   public static readonly INPUT_PADDING = 0.15
   public static readonly INPUT_LINE_WIDTH = 2
+  public static readonly INPUT_KEEP_PROPORTIONS = false
 
   public uncertaintyTolerance: number
   private classifier: Classifier

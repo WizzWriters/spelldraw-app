@@ -43,10 +43,11 @@ export default class ShapeCorrector {
 
     const normalizedShape = this.shapeTranslator.normalize(
       new ComplexShape([shape]),
-      ShapeWizard.INPUT_WIDTH,
-      ShapeWizard.INPUT_HEIGHT,
-      ShapeWizard.INPUT_PADDING
+      { width: ShapeWizard.INPUT_WIDTH, height: ShapeWizard.INPUT_HEIGHT },
+      { v: ShapeWizard.INPUT_PADDING, h: ShapeWizard.INPUT_PADDING },
+      ShapeWizard.INPUT_KEEP_PROPORTIONS
     )
+
     this.hiddenCanvas.clear()
     this.hiddenCanvas.drawShape(normalizedShape.shape.fragments[0])
 

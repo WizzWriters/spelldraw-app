@@ -11,7 +11,9 @@ import type ComplexShape from '@/common/definitions/ComplexShape'
 const LINE_WIDTH = 2
 const CANVAS_WIDTH = 128
 const CANVAS_HEIGHT = 32
-const CANVAS_PADDING = 0
+const CANVAS_PADDING_VERTICAL = 0.05
+const CANVAS_PADDING_HORIZONTAL = 0
+const KEEP_PROPORTIONS = true
 
 @AsyncInitialized
 export default class TextPredictor {
@@ -34,9 +36,9 @@ export default class TextPredictor {
 
     const normalizedShape = this.shapeNormalizer.normalize(
       shape,
-      CANVAS_WIDTH,
-      CANVAS_HEIGHT,
-      CANVAS_PADDING
+      { width: CANVAS_WIDTH, height: CANVAS_HEIGHT },
+      { v: CANVAS_PADDING_VERTICAL, h: CANVAS_PADDING_HORIZONTAL },
+      KEEP_PROPORTIONS
     )
     this.hiddenCanvas.clear()
     for (const fragment of normalizedShape.shape.fragments) {
