@@ -1,6 +1,9 @@
 <script setup lang="ts">
+import ComplexShape from '@/common/definitions/ComplexShape'
 import TextPredictor from '@/services/correction/TextPredictor'
+import { useCanvasStore } from '@/store/CanvasStore'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
+import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
@@ -9,6 +12,8 @@ import CorrectionLoader from './CorrectionLoader.vue'
 const logger = Logger.get('TextPrediction.vue')
 const textPredictor = new TextPredictor()
 const magicStore = useMagicStore()
+const toolbarStore = useToolbarStore()
+const canvasStore = useCanvasStore()
 
 const loaderState = ref({
   isShown: false,
@@ -38,10 +43,15 @@ function handleUnexpectedTransition(
 
 function handleTransitionFromIdle(nextState: ECorrectionRequestState) {
   switch (nextState) {
-    case ECorrectionRequestState.START:
+    case ECorrectionRequestState.START: {
       showLoadingLoader()
-      // trigger prediction here
+      const selectedShapes = canvasStore.drawnShapes.filter((shape) =>
+        toolbarStore.selectedShapesIds.has(shape.id)
+      )
+      const complexShape = new ComplexShape(selectedShapes)
+      textPredictor.predict(complexShape)
       break
+    }
     default:
       handleUnexpectedTransition(ECorrectionRequestState.IDLE, nextState)
       break

@@ -14,6 +14,7 @@ import ShapeWizard, { ShapeClassification } from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
 import * as tf from '@tensorflow/tfjs'
+import ComplexShape from '@/common/definitions/ComplexShape'
 
 @AsyncInitialized
 export default class ShapeCorrector {
@@ -41,13 +42,13 @@ export default class ShapeCorrector {
     if (!(shape instanceof Polyline)) return shape
 
     const normalizedShape = this.shapeTranslator.normalize(
-      shape,
+      new ComplexShape([shape]),
       ShapeWizard.INPUT_WIDTH,
       ShapeWizard.INPUT_HEIGHT,
       ShapeWizard.INPUT_PADDING
     )
     this.hiddenCanvas.clear()
-    this.hiddenCanvas.drawShape(normalizedShape.shape)
+    this.hiddenCanvas.drawShape(normalizedShape.shape.fragments[0])
 
     // Load grayscale tensor from html canvas
     const image = tf.browser.fromPixels(this.hiddenCanvas.htmlCanvas, 1)
@@ -60,9 +61,12 @@ export default class ShapeCorrector {
     if (shapeLabel == ShapeClassification.OTHER) return null
 
     const newShape = new Polyline(newPoints)
-    normalizedShape.shape = newShape
+    normalizedShape.shape.fragments = [newShape]
     const denormalizedShape = this.shapeTranslator.denormalize(normalizedShape)
-    return this.recognitionToShape(shapeLabel, denormalizedShape as Polyline)
+    return this.recognitionToShape(
+      shapeLabel,
+      denormalizedShape.fragments[0] as Polyline
+    )
   }
 
   private recognitionToShape(

@@ -1,4 +1,4 @@
-import type { Shape } from '@/common/definitions/Shape'
+import type ComplexShape from '@/common/definitions/ComplexShape'
 import lodash from 'lodash'
 
 export class NormalizedShape {
@@ -6,7 +6,7 @@ export class NormalizedShape {
     public offset: { x: number; y: number },
     public padding: { x: number; y: number },
     public scaleFrac: { x: number; y: number },
-    public shape: Shape
+    public shape: ComplexShape
   ) {}
 }
 
@@ -14,7 +14,7 @@ export default class ShapeNormalizer {
   constructor() {}
 
   public normalize(
-    shape: Shape,
+    shape: ComplexShape,
     maxWidth: number,
     maxHeight: number,
     padding: number
@@ -44,7 +44,7 @@ export default class ShapeNormalizer {
     )
   }
 
-  public denormalize(normalizedShape: NormalizedShape): Shape {
+  public denormalize(normalizedShape: NormalizedShape): ComplexShape {
     normalizedShape.shape.move(
       -normalizedShape.padding.x,
       -normalizedShape.padding.y

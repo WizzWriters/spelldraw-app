@@ -15,7 +15,7 @@ export abstract class Shape {
   abstract getBoundingRectangle(): Rectangle
 }
 
-export class PointListBasedShape extends Shape {
+export abstract class PointListBasedShape extends Shape {
   constructor(
     public pointList: Array<Point> = [],
     strokeColor?: RgbColor,
