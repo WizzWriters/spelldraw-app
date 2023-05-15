@@ -13,7 +13,7 @@ export default class ComplexShape {
       rect.left = Math.min(rect.left, shapeBouningRect.left)
       rect.right = Math.max(rect.right, shapeBouningRect.right)
       rect.bottom = Math.max(rect.bottom, shapeBouningRect.bottom)
-      rect.top = Math.min(rect.top, boundingRectangle.top)
+      rect.top = Math.min(rect.top, shapeBouningRect.top)
       return rect
     }, boundingRectangle)
   }
