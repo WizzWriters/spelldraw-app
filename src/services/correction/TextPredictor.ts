@@ -6,6 +6,8 @@ import {
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
 import type ComplexShape from '@/common/definitions/ComplexShape'
+import TextOracle from '../magic/TextOracle'
+import * as tf from '@tensorflow/tfjs'
 
 /* To be moved */
 const LINE_WIDTH = 2
@@ -19,6 +21,7 @@ const KEEP_PROPORTIONS = true
 export default class TextPredictor {
   private hiddenCanvas = new HiddenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT)
   private shapeNormalizer = new ShapeNormalizer()
+  private textOracle = new TextOracle()
 
   constructor() {
     if (import.meta.env.VITE_SHOW_TEXT_CANVAS === 'TRUE') {
@@ -28,7 +31,9 @@ export default class TextPredictor {
   }
 
   @AsyncInit
-  public async init() {}
+  public async init() {
+    await this.textOracle.init()
+  }
 
   @RequiresAsyncInit
   public async predict(shape: ComplexShape): Promise<string> {
@@ -45,9 +50,15 @@ export default class TextPredictor {
       this.hiddenCanvas.drawShape(fragment)
     }
 
-    /* Insert magic here */
+    // Load grayscale tensor from html canvas
+    const image = tf.browser.fromPixels(this.hiddenCanvas.htmlCanvas, 1)
 
-    return ''
+    // Normalize to {0, 1}
+    const imageNormalized = tf.round(image.div(tf.tensor(255.0))) as tf.Tensor3D
+    console.log(await imageNormalized.array())
+    const txt = await this.textOracle.call(imageNormalized)
+    console.log(txt)
+    return txt
   }
 
   /* for debugging purposes only */

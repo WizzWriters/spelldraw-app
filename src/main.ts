@@ -4,7 +4,6 @@ import App from './App.vue'
 import LoggerHelper from './helpers/LoggerHelper'
 import IconHelper from './helpers/IconHelper'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import './services/magic/TextOracle' //TODO: remove on integration
 
 import './assets/main.scss'
 LoggerHelper.initializeLogger()
