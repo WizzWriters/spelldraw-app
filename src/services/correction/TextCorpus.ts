@@ -10,8 +10,8 @@ export default class TextCorpus {
   }
 
   findMostSimilar(word: string) {
-    // @ts-ignore for some reason ts does not know min can take two arguments :/
     return (
+      // @ts-ignore for some reason ts does not know min can take two arguments :/
       lodash.min(this.words, (candidate) => this.similarity(word, candidate)) ||
       word
     )
