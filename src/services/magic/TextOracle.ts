@@ -1,6 +1,8 @@
-import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
+import Logger from 'js-logger'
+import type { ILogger } from 'js-logger'
 import lodash from 'lodash'
+import pin from '@/helpers/Pinner'
 import TensorflowModel from './TensorflowModel'
 import {
   AsyncInit,
@@ -18,7 +20,6 @@ class CtcDecoder {
 
   public decode(timesteps: number[][]) {
     const path = this.bestPath(timesteps)
-    console.log('best ' + path)
     const mergedPath = this.mergePath(path)
     const clearedPath = this.clearPath(mergedPath)
     return this.path2text(clearedPath)
@@ -48,12 +49,12 @@ class CtcDecoder {
 @AsyncInitialized
 export default class TextOracle {
   public model: TensorflowModel
-  private characters: string
   public ctc!: CtcDecoder
+  protected logger: ILogger
 
   constructor() {
     this.model = new TensorflowModel('TextOracle/oracle')
-    this.characters = ''
+    this.logger = Logger.get('Oracle')
     pin('oracle', this)
   }
 
@@ -62,16 +63,15 @@ export default class TextOracle {
     await this.model.init()
 
     if (!this.model.meta().characters) throw new MissingMetadata()
-    this.characters = this.model.meta().characters
-    this.ctc = new CtcDecoder(this.characters)
+    this.ctc = new CtcDecoder(this.model.meta().characters)
   }
 
   @RequiresAsyncInit
   public async call(image: tf.Tensor3D): Promise<string> {
-    const tokens = this.characters.length + 2
     const preds = this.model.call(tf.expandDims(image))
-    console.log(preds)
     const codes = await tf.squeeze(preds[0]).array()
-    return this.ctc.decode(codes as number[][])
+    const text = this.ctc.decode(codes as number[][])
+    this.logger.debug(text)
+    return text
   }
 }
