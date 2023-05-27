@@ -9,6 +9,9 @@ import type ComplexShape from '@/common/definitions/ComplexShape'
 import TextOracle from '../magic/TextOracle'
 import * as tf from '@tensorflow/tfjs'
 import TextCorpus from './TextCorpus'
+import { TextBox } from '@/common/definitions/Shape'
+import Text from '@/common/definitions/Text'
+import Logger from 'js-logger'
 
 /* To be moved */
 const LINE_WIDTH = 2
@@ -20,6 +23,7 @@ const KEEP_PROPORTIONS = true
 
 @AsyncInitialized
 export default class TextPredictor {
+  private logger = Logger.get('TextPredictor')
   private hiddenCanvas = new HiddenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT)
   private shapeNormalizer = new ShapeNormalizer()
   private textOracle = new TextOracle()
@@ -38,8 +42,10 @@ export default class TextPredictor {
   }
 
   @RequiresAsyncInit
-  public async predict(shape: ComplexShape): Promise<string> {
-    if (shape.fragments.length == 0) return ''
+  public async predict(shape: ComplexShape): Promise<TextBox | null> {
+    if (shape.fragments.length == 0) return null
+
+    const textBoundingRect = shape.getBoundingRectangle()
 
     const normalizedShape = this.shapeNormalizer.normalize(
       shape,
@@ -60,7 +66,15 @@ export default class TextPredictor {
     const text = await this.textOracle.call(imageNormalized)
 
     // TODO: probably should reject corrections with large distance
-    return this.textCorpus.findMostSimilar(text.toLocaleLowerCase())
+    const recognizedWord = this.textCorpus.findMostSimilar(
+      text.toLocaleLowerCase()
+    )
+    this.logger.debug(`Recognized word: ${recognizedWord}`)
+
+    return new TextBox(
+      textBoundingRect,
+      new Text(recognizedWord, textBoundingRect.height)
+    )
   }
 
   /* for debugging purposes only */

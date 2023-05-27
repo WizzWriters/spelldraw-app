@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import ComplexShape from '@/common/definitions/ComplexShape'
+import type { TextBox } from '@/common/definitions/Shape'
 import TextPredictor from '@/services/correction/TextPredictor'
 import { useCanvasStore } from '@/store/CanvasStore'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
@@ -15,6 +16,9 @@ const magicStore = useMagicStore()
 const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
 
+let predictionPromise: Promise<TextBox | null>
+let shapeBeingRecognized: ComplexShape | null = null
+
 const loaderState = ref({
   isShown: false,
   isLoading: true,
@@ -22,10 +26,43 @@ const loaderState = ref({
   wasCorrectionSuccessful: false
 })
 
+function eraseComplexShape(shape: ComplexShape) {
+  for (const fragment of shape.fragments) {
+    canvasStore.removeDrawnShapeById(fragment.id)
+  }
+}
+
 function showLoadingLoader() {
   loaderState.value.isTrackingPointer = true
   loaderState.value.isLoading = true
   loaderState.value.isShown = true
+}
+
+async function commitPrediction() {
+  loaderState.value.isTrackingPointer = false
+  loaderState.value.isLoading = false
+  const prediction = await predictionPromise
+
+  if (!prediction) {
+    loaderState.value.wasCorrectionSuccessful = false
+    logger.debug('No words recognized')
+    return
+  }
+
+  loaderState.value.wasCorrectionSuccessful = true
+  canvasStore.drawnShapes.push(prediction)
+  eraseComplexShape(shapeBeingRecognized!)
+  shapeBeingRecognized = null
+}
+
+function startPrediction() {
+  showLoadingLoader()
+  const selectedShapes = canvasStore.drawnShapes.filter((shape) =>
+    toolbarStore.selectedShapesIds.has(shape.id)
+  )
+  const complexShape = new ComplexShape(selectedShapes)
+  shapeBeingRecognized = complexShape
+  predictionPromise = textPredictor.predict(complexShape)
 }
 
 function hideLoader() {
@@ -44,12 +81,7 @@ function handleUnexpectedTransition(
 function handleTransitionFromIdle(nextState: ECorrectionRequestState) {
   switch (nextState) {
     case ECorrectionRequestState.START: {
-      showLoadingLoader()
-      const selectedShapes = canvasStore.drawnShapes.filter((shape) =>
-        toolbarStore.selectedShapesIds.has(shape.id)
-      )
-      const complexShape = new ComplexShape(selectedShapes)
-      textPredictor.predict(complexShape)
+      startPrediction()
       break
     }
     default:
@@ -62,12 +94,10 @@ function handleTransitionFromStarted(nextState: ECorrectionRequestState) {
   switch (nextState) {
     case ECorrectionRequestState.IDLE:
       hideLoader()
+      shapeBeingRecognized = null
       break
     case ECorrectionRequestState.COMMIT:
-      // commit prediction here
-      loaderState.value.isTrackingPointer = false
-      loaderState.value.wasCorrectionSuccessful = false
-      loaderState.value.isLoading = false
+      commitPrediction()
       setTimeout(hideLoader, 300)
       break
     default:

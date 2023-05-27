@@ -1,5 +1,6 @@
 import lodash from 'lodash'
 import { Rectangle, Point } from './Geometry'
+import type Text from './Text'
 import { RgbColor } from './Color'
 
 export abstract class Shape {
@@ -76,5 +77,35 @@ export class RoundShape extends PointListBasedShape {
     return this.pointList.reduce((result, point) => {
       return result.add(point.divide(numberOfPoints))
     }, new Point(0, 0))
+  }
+}
+
+export enum ETextAlignment {
+  CENTER
+}
+
+export class TextBox extends Shape {
+  constructor(
+    public box: Rectangle,
+    public text: Text,
+    public textAlignment: ETextAlignment = ETextAlignment.CENTER,
+    strokeColor?: RgbColor,
+    fillColor?: RgbColor
+  ) {
+    super(strokeColor, fillColor)
+  }
+
+  move(xOffset: number, yOffset: number): void {
+    this.box.move(xOffset, yOffset)
+  }
+
+  squeeze(xFraction: number, yFraction: number): void {
+    this.box.width = this.box.width * xFraction
+    this.box.height = this.box.height * yFraction
+    this.text.fontSize = this.text.fontSize * yFraction
+  }
+
+  getBoundingRectangle(): Rectangle {
+    return this.box
   }
 }
