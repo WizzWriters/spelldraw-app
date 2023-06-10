@@ -22,7 +22,7 @@ const CANVAS_PADDING_HORIZONTAL = 0
 const KEEP_PROPORTIONS = true
 
 @AsyncInitialized
-export default class TextPredictor {
+export default class TextRecognizer {
   private logger = Logger.get('TextPredictor')
   private hiddenCanvas = new HiddenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT)
   private shapeNormalizer = new ShapeNormalizer()

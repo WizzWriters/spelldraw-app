@@ -12,7 +12,7 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, watch, type Ref } from 'vue'
-import TextPrediction from '../../magic/TextPrediction.vue'
+import TextRecognition from '../../magic/TextRecognition.vue'
 import ToolButton from './ToolButton.vue'
 
 const SELECT_BOX_FILL = new RgbColor(37, 150, 190, 0.1)
@@ -107,7 +107,7 @@ onMounted(() => {
   const pointerIcon = new BuiltinPointerIcon('crosshair')
 
   function activateTool() {
-    magicStore.textPredictionEnabled = true
+    magicStore.textRecognitionEnabled = true
     toolbarStore.activeTool = {
       pointerIcon,
       handlePointerEvent: handlePointerEvent(stallDetector)
@@ -116,7 +116,7 @@ onMounted(() => {
   }
 
   function deactivateTool() {
-    magicStore.textPredictionEnabled = false
+    magicStore.textRecognitionEnabled = false
     toolbarStore.clearSelectedShapes()
     logger.debug('Tool deactivated')
   }
@@ -136,5 +136,5 @@ onMounted(() => {
   <ToolButton name="Select" :is-active="props.isActive" @click="emit('click')">
     <FontAwesomeIcon id="select-icon" icon="fa-object-group" />
   </ToolButton>
-  <TextPrediction />
+  <TextRecognition />
 </template>

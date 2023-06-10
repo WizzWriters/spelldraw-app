@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ComplexShape from '@/common/definitions/ComplexShape'
 import type { TextBox } from '@/common/definitions/Shape'
-import TextPredictor from '@/services/correction/TextPredictor'
+import TextRecognizer from '@/services/correction/TextRecognizer'
 import { useCanvasStore } from '@/store/CanvasStore'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
@@ -11,12 +11,12 @@ import { onMounted, ref, watch } from 'vue'
 import CorrectionLoader from './CorrectionLoader.vue'
 
 const logger = Logger.get('TextPrediction.vue')
-const textPredictor = new TextPredictor()
+const textRecognizer = new TextRecognizer()
 const magicStore = useMagicStore()
 const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
 
-let predictionPromise: Promise<TextBox | null>
+let recognitionPromise: Promise<TextBox | null>
 let shapeBeingRecognized: ComplexShape | null = null
 
 const loaderState = ref({
@@ -38,10 +38,10 @@ function showLoadingLoader() {
   loaderState.value.isShown = true
 }
 
-async function commitPrediction() {
+async function commitRecognition() {
   loaderState.value.isTrackingPointer = false
   loaderState.value.isLoading = false
-  const prediction = await predictionPromise
+  const prediction = await recognitionPromise
 
   if (!prediction) {
     loaderState.value.wasCorrectionSuccessful = false
@@ -55,14 +55,14 @@ async function commitPrediction() {
   shapeBeingRecognized = null
 }
 
-function startPrediction() {
+function startRecognition() {
   showLoadingLoader()
   const selectedShapes = canvasStore.drawnShapes.filter((shape) =>
     toolbarStore.selectedShapesIds.has(shape.id)
   )
   const complexShape = new ComplexShape(selectedShapes)
   shapeBeingRecognized = complexShape
-  predictionPromise = textPredictor.predict(complexShape)
+  recognitionPromise = textRecognizer.predict(complexShape)
 }
 
 function hideLoader() {
@@ -81,7 +81,7 @@ function handleUnexpectedTransition(
 function handleTransitionFromIdle(nextState: ECorrectionRequestState) {
   switch (nextState) {
     case ECorrectionRequestState.START: {
-      startPrediction()
+      startRecognition()
       break
     }
     default:
@@ -97,7 +97,7 @@ function handleTransitionFromStarted(nextState: ECorrectionRequestState) {
       shapeBeingRecognized = null
       break
     case ECorrectionRequestState.COMMIT:
-      commitPrediction()
+      commitRecognition()
       setTimeout(hideLoader, 300)
       break
     default:
@@ -119,7 +119,7 @@ function handleTransitionFromRequested(nextState: ECorrectionRequestState) {
 
 const { correctionRequestState } = storeToRefs(magicStore)
 watch(correctionRequestState, (nextState, previousState) => {
-  if (!magicStore.textPredictionEnabled) return
+  if (!magicStore.textRecognitionEnabled) return
 
   switch (previousState) {
     case ECorrectionRequestState.IDLE:
@@ -138,7 +138,7 @@ watch(correctionRequestState, (nextState, previousState) => {
 })
 
 onMounted(async () => {
-  await textPredictor.init()
+  await textRecognizer.init()
 })
 </script>
 
