@@ -1,6 +1,11 @@
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
-import { Polyline, type Shape } from '@/common/definitions/Shape'
+import {
+  Polygon,
+  Polyline,
+  RoundShape,
+  type Shape
+} from '@/common/definitions/Shape'
 import BezierShapeSmoother, {
   LinearBezierCurve,
   type BezierCurve,
@@ -32,7 +37,42 @@ export class HiddenCanvas {
 
   public drawShape(shape: Shape) {
     if (shape instanceof Polyline) this.drawPolylineShape(shape)
+    else if (shape instanceof Polygon) this.drawPolygon(shape)
+    else if (shape instanceof RoundShape) this.drawRoundShape(shape)
     else throw new NotImplemented()
+  }
+
+  private drawRoundShape(shape: RoundShape) {
+    const startingPoint = shape.pointList[0]
+    const numberOfPoints = shape.pointList.length
+
+    this.context2d.beginPath()
+    this.context2d.moveTo(startingPoint.xCoordinate, startingPoint.yCoordinate)
+    for (let i = 0; i < numberOfPoints; i++) {
+      const startPoint = shape.pointList[i]
+      const nextPoint = shape.pointList[(i + 1) % numberOfPoints]
+      const controlPoint = startPoint.add(nextPoint).subtract(shape.centroid)
+      const quadraticCurve = new QuadraticBezierCurve(
+        startPoint,
+        [controlPoint],
+        nextPoint
+      )
+      this.traceQuadraticBezierCurve(quadraticCurve)
+    }
+    this.context2d.stroke()
+  }
+
+  private drawPolygon(shape: Polygon) {
+    const startingPoint = shape.pointList[0]
+
+    this.context2d.beginPath()
+    this.context2d.moveTo(startingPoint.xCoordinate, startingPoint.yCoordinate)
+
+    for (const point of [...shape.pointList].reverse()) {
+      this.context2d.lineTo(point.xCoordinate, point.yCoordinate)
+    }
+
+    this.context2d.stroke()
   }
 
   private drawPolylineShape(shape: Polyline) {
