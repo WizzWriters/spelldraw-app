@@ -43,12 +43,12 @@ onMounted(() => {
   const textElement = textElementRef.value
   if (!textElement) throw new Error('Text element is missing!')
 
-  const bouningBox = textElement.getBBox()
+  const boundingBox = textElement.getBBox()
   const newBox = new Rectangle(
-    Math.min(bouningBox.x, shape.value.box.left),
-    Math.max(bouningBox.x + bouningBox.width, shape.value.box.right),
-    Math.max(bouningBox.y + bouningBox.height, shape.value.box.bottom),
-    Math.min(bouningBox.y, shape.value.box.bottom)
+    Math.min(boundingBox.x, shape.value.box.left),
+    Math.max(boundingBox.x + boundingBox.width, shape.value.box.right),
+    Math.max(boundingBox.y + boundingBox.height, shape.value.box.bottom),
+    Math.min(boundingBox.y, shape.value.box.bottom)
   )
   shape.value.box = newBox
 })
