@@ -4,12 +4,12 @@ import type { Polygon } from '@/common/definitions/Shape'
 import { useCollisionDetection } from './composables/useCollisionDetection'
 
 const props = defineProps<{
-  shape: any
-  glows: Boolean
+  shapeProp: any
+  highlighted: Boolean
   collisionsEnabled: Boolean
 }>()
 
-const shape = toRef(props, 'shape') as Ref<Polygon>
+const shape = toRef(props, 'shapeProp') as Ref<Polygon>
 const polygonElementRef: Ref<(SVGGeometryElement & HTMLElement) | null> =
   ref(null)
 
@@ -23,11 +23,15 @@ let pointsListStr = computed(() => {
 
 useCollisionDetection(
   polygonElementRef,
-  toRef(props, 'shape'),
+  toRef(props, 'shapeProp'),
   toRef(props, 'collisionsEnabled')
 )
 </script>
 
 <template>
-  <polygon ref="polygonElementRef" :points="pointsListStr" />
+  <polygon
+    ref="polygonElementRef"
+    :points="pointsListStr"
+    :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+  />
 </template>

@@ -26,7 +26,7 @@ export default class TensorflowModel {
   }
 
   @RequiresAsyncInit
-  public meta() {
+  public meta(): Dictionary<any> {
     return this.layers.getConfig().name as Dictionary<any>
   }
 

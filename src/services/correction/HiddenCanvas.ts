@@ -1,12 +1,18 @@
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
-import type { Polyline } from '@/common/definitions/Shape'
+import {
+  Polygon,
+  Polyline,
+  RoundShape,
+  type Shape
+} from '@/common/definitions/Shape'
 import BezierShapeSmoother, {
   LinearBezierCurve,
   type BezierCurve,
   QuadraticBezierCurve,
   CubicBezierCurve
 } from '../smoothing/BezierShapeSmoother'
+import NotImplemented from '@/utils/exceptions/NotImplemented'
 
 export class HiddenCanvas {
   public htmlCanvas: HTMLCanvasElement
@@ -14,9 +20,11 @@ export class HiddenCanvas {
   private context2d: CanvasRenderingContext2D
   private lineWidth: number
 
-  constructor() {
+  constructor(width: number, height: number) {
     this.logger = Logger.get('HTMLCanvas')
     this.htmlCanvas = document.createElement('canvas')
+    this.htmlCanvas.width = width
+    this.htmlCanvas.height = height
     this.lineWidth = 1
     const context2d = this.htmlCanvas.getContext('2d')
     if (context2d == null) {
@@ -24,9 +32,50 @@ export class HiddenCanvas {
     }
     this.context2d = context2d
     this.context2d.fillStyle = 'black'
+    this.clear()
   }
 
-  public drawShape(shape: Polyline) {
+  public drawShape(shape: Shape) {
+    if (shape instanceof Polyline) this.drawPolylineShape(shape)
+    else if (shape instanceof Polygon) this.drawPolygon(shape)
+    else if (shape instanceof RoundShape) this.drawRoundShape(shape)
+    else throw new NotImplemented()
+  }
+
+  private drawRoundShape(shape: RoundShape) {
+    const startingPoint = shape.pointList[0]
+    const numberOfPoints = shape.pointList.length
+
+    this.context2d.beginPath()
+    this.context2d.moveTo(startingPoint.xCoordinate, startingPoint.yCoordinate)
+    for (let i = 0; i < numberOfPoints; i++) {
+      const startPoint = shape.pointList[i]
+      const nextPoint = shape.pointList[(i + 1) % numberOfPoints]
+      const controlPoint = startPoint.add(nextPoint).subtract(shape.centroid)
+      const quadraticCurve = new QuadraticBezierCurve(
+        startPoint,
+        [controlPoint],
+        nextPoint
+      )
+      this.traceQuadraticBezierCurve(quadraticCurve)
+    }
+    this.context2d.stroke()
+  }
+
+  private drawPolygon(shape: Polygon) {
+    const startingPoint = shape.pointList[0]
+
+    this.context2d.beginPath()
+    this.context2d.moveTo(startingPoint.xCoordinate, startingPoint.yCoordinate)
+
+    for (const point of [...shape.pointList].reverse()) {
+      this.context2d.lineTo(point.xCoordinate, point.yCoordinate)
+    }
+
+    this.context2d.stroke()
+  }
+
+  private drawPolylineShape(shape: Polyline) {
     const pointList = shape.pointList
     if (pointList.length == 0) return
 
@@ -91,13 +140,6 @@ export class HiddenCanvas {
       endPoint.xCoordinate,
       endPoint.yCoordinate
     )
-  }
-
-  public resize(width: number, height: number): void {
-    if (this.htmlCanvas.width != width || this.htmlCanvas.height != height) {
-      this.htmlCanvas.width = width
-      this.htmlCanvas.height = height
-    }
   }
 
   public clear() {

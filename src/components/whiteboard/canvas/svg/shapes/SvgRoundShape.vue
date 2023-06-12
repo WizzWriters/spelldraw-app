@@ -6,12 +6,12 @@ import { computed, ref, toRef, type Ref } from 'vue'
 import { useCollisionDetection } from './composables/useCollisionDetection'
 
 const props = defineProps<{
-  shape: any
-  glows: Boolean
+  shapeProp: any
+  highlighted: Boolean
   collisionsEnabled: Boolean
 }>()
 
-const shape = toRef(props, 'shape') as Ref<RoundShape>
+const shape = toRef(props, 'shapeProp') as Ref<RoundShape>
 const logger = Logger.get('SvgRoundShape')
 const roundShapeElementRef: Ref<(SVGGeometryElement & HTMLElement) | null> =
   ref(null)
@@ -47,11 +47,15 @@ let pathCommand = computed(() => {
 
 useCollisionDetection(
   roundShapeElementRef,
-  toRef(props, 'shape'),
+  toRef(props, 'shapeProp'),
   toRef(props, 'collisionsEnabled')
 )
 </script>
 
 <template>
-  <path ref="roundShapeElementRef" :d="pathCommand" />
+  <path
+    ref="roundShapeElementRef"
+    :d="pathCommand"
+    :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+  />
 </template>

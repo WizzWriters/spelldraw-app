@@ -1,6 +1,7 @@
 import { Segment, type Point } from '@/common/definitions/Geometry'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import Logger from 'js-logger'
+import { PointCollector } from './PointCollector'
 
 const STEP = 2
 const TRIGGER_THRESHOLD = 2
@@ -12,14 +13,31 @@ export default class StallDetector {
   private lastPoint: Point | null = null
   private iterationsCount = 0
   private magicStore = useMagicStore()
+  private pointCollector = new PointCollector()
   /* We allow for small movement around the anchor after being triggered */
   private anchorPoint: Point | null = null
 
   constructor() {
     this.magicStore.maxActivationStep = STALL_THRESHOLD
+    this.pointCollector.atPointCollected((newPoint) => {
+      this.handlePointCollected(newPoint)
+    })
   }
 
-  public feed(nextPoint: Point) {
+  private handlePointCollected(newPoint: Point) {
+    this.feed(newPoint)
+  }
+
+  public startDetecting() {
+    this.pointCollector.startCollecting()
+  }
+
+  public stopDetecting() {
+    this.pointCollector.stopCollecting()
+    this.reset()
+  }
+
+  private feed(nextPoint: Point) {
     if (!this.lastPoint) {
       this.reset(nextPoint)
       return
@@ -34,9 +52,9 @@ export default class StallDetector {
     this.reset(nextPoint)
   }
 
-  public reset(lastPoint?: Point) {
+  private reset(lastPoint?: Point) {
     this.iterationsCount = 0
-    this.magicStore.shapeCorrectionState = ECorrectionRequestState.IDLE
+    this.magicStore.correctionRequestState = ECorrectionRequestState.IDLE
     this.lastPoint = lastPoint || null
     this.anchorPoint = null
   }
@@ -58,14 +76,14 @@ export default class StallDetector {
 
   /* Called when we suspect that user might be about to hold the pointer */
   private trigger() {
-    this.logger.debug('Cursor stalling suspicion...')
-    this.magicStore.shapeCorrectionState = ECorrectionRequestState.START
+    this.logger.debug('Cursor started stalling...')
+    this.magicStore.correctionRequestState = ECorrectionRequestState.START
     this.anchorPoint = this.lastPoint
   }
 
   private stallDetected() {
     this.logger.debug('Cursor stalled!')
-    this.magicStore.shapeCorrectionState = ECorrectionRequestState.COMMIT
+    this.magicStore.correctionRequestState = ECorrectionRequestState.COMMIT
   }
 
   private shouldReset(nextPoint: Point) {

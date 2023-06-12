@@ -7,31 +7,29 @@ import {
   Polyline,
   Polygon,
   Shape,
-  RoundShape
+  RoundShape,
+  PointListBasedShape
 } from '@/common/definitions/Shape'
 import ShapeWizard, { ShapeClassification } from '../magic/ShapeWizard'
 import { HiddenCanvas } from './HiddenCanvas'
 import ShapeNormalizer from './ShapeNormalizer'
 import * as tf from '@tensorflow/tfjs'
-import type { Point } from '@/common/definitions/Geometry'
+import ComplexShape from '@/common/definitions/ComplexShape'
 
 @AsyncInitialized
 export default class ShapeCorrector {
-  private hiddenCanvas: HiddenCanvas
-  private shapeWizard: ShapeWizard
-  private shapeTranslator: ShapeNormalizer
+  private hiddenCanvas = new HiddenCanvas(
+    ShapeWizard.INPUT_WIDTH,
+    ShapeWizard.INPUT_HEIGHT
+  )
+  private shapeWizard = new ShapeWizard()
+  private shapeTranslator = new ShapeNormalizer()
 
   constructor() {
-    this.hiddenCanvas = new HiddenCanvas()
-    this.shapeWizard = new ShapeWizard()
-    this.shapeTranslator = new ShapeNormalizer()
-
     if (import.meta.env.VITE_SHOW_SHAPE_CANVAS === 'TRUE') {
       this.showCanvas()
     }
-    this.hiddenCanvas.resize(ShapeWizard.INPUT_WIDTH, ShapeWizard.INPUT_HEIGHT)
     this.hiddenCanvas.setLineWidth(ShapeWizard.INPUT_LINE_WIDTH)
-    this.hiddenCanvas.clear()
   }
 
   @AsyncInit
@@ -44,13 +42,14 @@ export default class ShapeCorrector {
     if (!(shape instanceof Polyline)) return shape
 
     const normalizedShape = this.shapeTranslator.normalize(
-      shape,
-      ShapeWizard.INPUT_WIDTH,
-      ShapeWizard.INPUT_HEIGHT,
-      ShapeWizard.INPUT_PADDING
+      new ComplexShape([shape]),
+      { width: ShapeWizard.INPUT_WIDTH, height: ShapeWizard.INPUT_HEIGHT },
+      { v: ShapeWizard.INPUT_PADDING, h: ShapeWizard.INPUT_PADDING },
+      ShapeWizard.INPUT_KEEP_PROPORTIONS
     )
+
     this.hiddenCanvas.clear()
-    this.hiddenCanvas.drawShape(normalizedShape.shape)
+    this.hiddenCanvas.drawShape(normalizedShape.shape.fragments[0])
 
     // Load grayscale tensor from html canvas
     const image = tf.browser.fromPixels(this.hiddenCanvas.htmlCanvas, 1)
@@ -63,24 +62,26 @@ export default class ShapeCorrector {
     if (shapeLabel == ShapeClassification.OTHER) return null
 
     const newShape = new Polyline(newPoints)
-    normalizedShape.shape = newShape
+    normalizedShape.shape.fragments = [newShape]
     const denormalizedShape = this.shapeTranslator.denormalize(normalizedShape)
-    return this.recognitionToShape(shapeLabel, denormalizedShape.pointList)
+    return this.recognitionToShape(
+      shapeLabel,
+      denormalizedShape.fragments[0] as Polyline
+    )
   }
 
   private recognitionToShape(
     shapeLabel: ShapeClassification,
-    points: Point[]
+    shape: PointListBasedShape
   ): Shape {
     switch (shapeLabel) {
       case ShapeClassification.RECTANGLE:
       case ShapeClassification.TRIANGLE:
-        return new Polygon(points)
-      case ShapeClassification.ELLIPSE: {
-        return new RoundShape(points)
-      }
+        return new Polygon(shape.pointList)
+      case ShapeClassification.ELLIPSE:
+        return new RoundShape(shape.pointList)
       default:
-        return new Polygon(points)
+        return new Polygon(shape.pointList)
     }
   }
 

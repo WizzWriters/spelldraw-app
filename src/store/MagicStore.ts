@@ -8,9 +8,17 @@ export enum ECorrectionRequestState {
 }
 
 export const useMagicStore = defineStore('magic', () => {
-  const shapeCorrectionState = ref(ECorrectionRequestState.IDLE)
+  const shapeCorrectionEnabled = ref(false)
+  const textRecognitionEnabled = ref(false)
+  const correctionRequestState = ref(ECorrectionRequestState.IDLE)
   const maxActivationStep = ref(0)
   const activationStep = ref(0)
 
-  return { shapeCorrectionState, activationStep, maxActivationStep }
+  return {
+    shapeCorrectionEnabled,
+    textRecognitionEnabled,
+    correctionRequestState,
+    activationStep,
+    maxActivationStep
+  }
 })
