@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import ComplexShape from '@/common/definitions/ComplexShape'
 import type { TextBox } from '@/common/definitions/Shape'
-import TextRecognizer from '@/services/correction/TextRecognizer'
+import HandwritingRecognizer from '@/services/correction/HandwritingRecognizer'
 import { useCanvasStore } from '@/store/CanvasStore'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
@@ -11,7 +11,7 @@ import { onMounted, ref, watch } from 'vue'
 import CorrectionLoader from './CorrectionLoader.vue'
 
 const logger = Logger.get('TextPrediction.vue')
-const textRecognizer = new TextRecognizer()
+const handwritingRecognizer = new HandwritingRecognizer()
 const magicStore = useMagicStore()
 const toolbarStore = useToolbarStore()
 const canvasStore = useCanvasStore()
@@ -62,7 +62,7 @@ function startRecognition() {
   )
   const complexShape = new ComplexShape(selectedShapes)
   shapeBeingRecognized = complexShape
-  recognitionPromise = textRecognizer.predict(complexShape)
+  recognitionPromise = handwritingRecognizer.recognize(complexShape)
 }
 
 function hideLoader() {
@@ -138,7 +138,7 @@ watch(correctionRequestState, (nextState, previousState) => {
 })
 
 onMounted(async () => {
-  await textRecognizer.init()
+  await handwritingRecognizer.init()
 })
 </script>
 

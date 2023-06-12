@@ -22,7 +22,7 @@ const CANVAS_PADDING_HORIZONTAL = 0
 const KEEP_PROPORTIONS = true
 
 @AsyncInitialized
-export default class TextRecognizer {
+export default class HandwritingRecognizer {
   private logger = Logger.get('TextPredictor')
   private hiddenCanvas = new HiddenCanvas(CANVAS_WIDTH, CANVAS_HEIGHT)
   private shapeNormalizer = new ShapeNormalizer()
@@ -42,7 +42,7 @@ export default class TextRecognizer {
   }
 
   @RequiresAsyncInit
-  public async predict(shape: ComplexShape): Promise<TextBox | null> {
+  public async recognize(shape: ComplexShape): Promise<TextBox | null> {
     if (shape.fragments.length == 0) return null
 
     const textBoundingRect = shape.getBoundingRectangle()
