@@ -1,3 +1,4 @@
+import io from 'socket.io-client'
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
@@ -8,6 +9,8 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import './assets/main.scss'
 LoggerHelper.initializeLogger()
 IconHelper.initializeIcons()
+
+const socket = io('http://localhost:3000')
 
 const pinia = createPinia()
 const app = createApp(App)
