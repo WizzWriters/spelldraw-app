@@ -123,8 +123,16 @@ export class Rectangle {
     return this.right - this.left
   }
 
+  public set width(newWidth: number) {
+    this.right = this.left + newWidth
+  }
+
   public get height(): number {
     return this.bottom - this.top
+  }
+
+  public set height(newHeight: number) {
+    this.bottom = this.top + newHeight
   }
 
   public move(xOffset: number, yOffset: number) {
@@ -140,6 +148,15 @@ export class Rectangle {
       this.bottom >= rectangle.bottom &&
       this.right >= rectangle.right &&
       this.left <= rectangle.left
+    )
+  }
+
+  public contains(point: Point) {
+    return (
+      this.top <= point.yCoordinate &&
+      this.bottom >= point.yCoordinate &&
+      this.left <= point.xCoordinate &&
+      this.right >= point.xCoordinate
     )
   }
 }

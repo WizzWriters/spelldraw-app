@@ -95,7 +95,8 @@ onMounted(() => {
     (newValue, oldValue) => {
       if (!oldValue && newValue) activateTool()
       else if (oldValue && !newValue) deactivateTool()
-    }
+    },
+    { immediate: true }
   )
 })
 </script>

@@ -1,11 +1,11 @@
-import type { Shape } from '@/common/definitions/Shape'
+import type { PointListBasedShape } from '@/common/definitions/Shape'
 import type { Ref } from 'vue'
 import { useIntersectionDetection } from './useIntersectionDetection'
 import { useSelectionDetection } from './useSelectionDetection'
 
 export function useCollisionDetection(
   elementRef: Ref<(SVGGeometryElement & HTMLElement) | null>,
-  shape: Ref<Shape>,
+  shape: Ref<PointListBasedShape>,
   enabled: Ref<Boolean>
 ) {
   useIntersectionDetection(elementRef, shape, enabled)

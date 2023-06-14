@@ -22,7 +22,7 @@ export default {
         logLevel = Logger.OFF
         break
       default:
-        console.error('Unknown log level, using default value: INFO')
+        console.warn('Unknown log level, using default value: INFO')
         logLevel = Logger.INFO
         break
     }

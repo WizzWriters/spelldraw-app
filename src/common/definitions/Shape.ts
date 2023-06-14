@@ -1,5 +1,6 @@
 import lodash from 'lodash'
 import { Rectangle, Point } from './Geometry'
+import type Text from './Text'
 import { RgbColor } from './Color'
 
 export abstract class Shape {
@@ -9,29 +10,33 @@ export abstract class Shape {
     public strokeColor: RgbColor = new RgbColor(0, 0, 0),
     public fillColor: RgbColor | null = null
   ) {}
+
+  abstract move(xOffset: number, yOffset: number): void
+  abstract squeeze(xFraction: number, yFraction: number): void
+  abstract getBoundingRectangle(): Rectangle
 }
 
-export class Polyline extends Shape {
-  public pointList: Array<Point>
-
+export abstract class PointListBasedShape extends Shape {
   constructor(
-    pointList: Array<Point> = [],
+    public pointList: Array<Point> = [],
     strokeColor?: RgbColor,
     fillColor?: RgbColor
   ) {
     super(strokeColor, fillColor)
-    this.pointList = lodash.cloneDeep(pointList)
-  }
-
-  public addPoint(point: Point) {
-    if (lodash.isEqual(point, lodash.last(this.pointList))) return
-    this.pointList.push(point)
   }
 
   public move(xOffset: number, yOffset: number) {
     this.pointList.map((point) => {
       point.xCoordinate += xOffset
       point.yCoordinate += yOffset
+      return point
+    })
+  }
+
+  public squeeze(xFraction: number, yFraction: number) {
+    this.pointList.map((point) => {
+      point.xCoordinate *= xFraction
+      point.yCoordinate *= yFraction
       return point
     })
   }
@@ -57,30 +62,50 @@ export class Polyline extends Shape {
   }
 }
 
-export class Polygon extends Shape {
+export class Polyline extends PointListBasedShape {
+  public addPoint(point: Point) {
+    if (lodash.isEqual(point, lodash.last(this.pointList))) return
+    this.pointList.push(point)
+  }
+}
+
+export class Polygon extends PointListBasedShape {}
+
+export class RoundShape extends PointListBasedShape {
+  public get centroid() {
+    const numberOfPoints = this.pointList.length
+    return this.pointList.reduce((result, point) => {
+      return result.add(point.divide(numberOfPoints))
+    }, new Point(0, 0))
+  }
+}
+
+export enum ETextAlignment {
+  CENTER
+}
+
+export class TextBox extends Shape {
   constructor(
-    public pointList: Array<Point> = [],
+    public box: Rectangle,
+    public text: Text,
+    public textAlignment: ETextAlignment = ETextAlignment.CENTER,
     strokeColor?: RgbColor,
     fillColor?: RgbColor
   ) {
     super(strokeColor, fillColor)
   }
-}
 
-export class RoundShape extends Shape {
-  public pointList: Array<Point>
-  public centroid: Point
+  move(xOffset: number, yOffset: number): void {
+    this.box.move(xOffset, yOffset)
+  }
 
-  constructor(
-    points: Array<Point>,
-    strokeColor?: RgbColor,
-    fillColor?: RgbColor
-  ) {
-    super(strokeColor, fillColor)
-    this.pointList = points
-    const numberOfPoints = this.pointList.length
-    this.centroid = this.pointList.reduce((result, point) => {
-      return result.add(point.divide(numberOfPoints))
-    }, new Point(0, 0))
+  squeeze(xFraction: number, yFraction: number): void {
+    this.box.width = this.box.width * xFraction
+    this.box.height = this.box.height * yFraction
+    this.text.fontSize = this.text.fontSize * yFraction
+  }
+
+  getBoundingRectangle(): Rectangle {
+    return this.box
   }
 }
