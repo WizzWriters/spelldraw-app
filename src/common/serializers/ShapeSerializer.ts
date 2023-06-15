@@ -19,7 +19,7 @@ enum EShapeType {
 
 export interface ICommonShapeJson {
   type: EShapeType
-  strokeColor: RgbColor | null
+  strokeColor: RgbColor
   fillColor: RgbColor | null
   id: string
 }
@@ -36,9 +36,7 @@ class PointListBasedShapeSerializer {
     else if (shape instanceof RoundShape) type = EShapeType.ROUND_SHAPE
     else throw new NotImplemented()
 
-    const strokeColor = shape.strokeColor
-      ? RgbColorSerializer.toJson(shape.strokeColor)
-      : null
+    const strokeColor = RgbColorSerializer.toJson(shape.strokeColor)
     const fillColor = shape.fillColor
       ? RgbColorSerializer.toJson(shape.fillColor)
       : null
@@ -62,9 +60,20 @@ class PointListBasedShapeSerializer {
       PointSerializer.fromJson(pointJson)
     )
 
+    const strokeColor = RgbColorSerializer.fromJson(shapeJson.strokeColor)
+    const fillColor = shapeJson.fillColor
+      ? RgbColorSerializer.fromJson(shapeJson.fillColor)
+      : undefined
+
     switch (shapeJson.type) {
       case EShapeType.POLYLINE:
-        shape = new Polyline(pointList)
+        shape = new Polyline(pointList, strokeColor, fillColor)
+        break
+      case EShapeType.POLYGON:
+        shape = new Polygon(pointList, strokeColor, fillColor)
+        break
+      case EShapeType.ROUND_SHAPE:
+        shape = new RoundShape(pointList, strokeColor, fillColor)
         break
       default:
         throw new NotImplemented()
@@ -89,6 +98,8 @@ export default class ShapeSerializer {
   static fromJson(shape: IShapeJson): Shape {
     switch (shape.type) {
       case EShapeType.POLYLINE:
+      case EShapeType.POLYGON:
+      case EShapeType.ROUND_SHAPE:
         return PointListBasedShapeSerializer.fromJson(shape)
       default:
         throw new NotImplemented()

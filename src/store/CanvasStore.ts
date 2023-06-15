@@ -14,7 +14,7 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   function addDrawnShape(shape: Shape) {
     drawnShapes.value.push(shape)
-    IoConnection.emit('new_shape', {
+    IoConnection.emit('shape_create', {
       board_id: boardStore.boardId,
       shape: ShapeSerializer.toJson(shape)
     })
@@ -24,11 +24,22 @@ export const useCanvasStore = defineStore('canvas', () => {
     const shapeIndex = drawnShapes.value.findIndex((shape) => shape.id == id)
     if (shapeIndex < 0) return
     drawnShapes.value.splice(shapeIndex, 1)
+    IoConnection.emit('shape_delete', {
+      board_id: boardStore.boardId,
+      shape_id: id
+    })
   }
 
-  IoConnection.onEvent('new_shape', (data) => {
+  IoConnection.onEvent('shape_create', (data) => {
     const receivedShape = ShapeSerializer.fromJson(data.shape)
     drawnShapes.value.push(receivedShape)
+  })
+
+  IoConnection.onEvent('shape_delete', (data) => {
+    const id = data.shape_id
+    const shapeIndex = drawnShapes.value.findIndex((shape) => shape.id == id)
+    if (shapeIndex < 0) return
+    drawnShapes.value.splice(shapeIndex, 1)
   })
 
   return {
