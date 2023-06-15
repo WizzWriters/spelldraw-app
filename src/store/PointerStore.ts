@@ -1,4 +1,5 @@
 import type { IPointerPosition } from '@/common/definitions/Pointer'
+import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import IoConnection from '@/services/connection/IoConnection'
 import { useBoardStore } from './BoardStore'
 
@@ -16,10 +17,11 @@ const PointerStore = (function () {
 
   function broadcastPosition() {
     const boardStore = useBoardStore()
+    const relativePosition = getPositionOnCanvas(pointerStore!.pointerPosition)
     IoConnection.emit('position_update', {
       board_id: boardStore.boardId,
       board_user_id: boardStore.boardUserId,
-      position: pointerStore!.pointerPosition
+      position: relativePosition
     })
   }
 
