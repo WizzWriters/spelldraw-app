@@ -4,11 +4,18 @@ import connection from '@/services/connection/IoConnection'
 import Logger from 'js-logger'
 import type { IPointerPosition } from '@/common/definitions/Pointer'
 import { usePointerStore } from './PointerStore'
+import { HslColor } from '@/common/definitions/Color'
 
 const logger = Logger.get('BoardStore')
 
+function getRandomColor() {
+  const hue = Math.random() * 360
+  return new HslColor(hue, 58, 46)
+}
+
 export class ConnectedUser {
   public position: IPointerPosition = { xCoordinate: 0, yCoordinate: 0 }
+  public color: HslColor = getRandomColor()
 
   constructor(public id: string) {}
 }
@@ -56,7 +63,7 @@ export const useBoardStore = defineStore('board', () => {
     removeConnectedUser(userId)
   })
 
-  connection.onEvent('user_position_updated', (data) => {
+  connection.onEvent('position_update', (data) => {
     const userId = data.board_user_id
     let index = connectedUsers.value.findIndex((user) => (user.id = userId))
     if (index < 0) {
