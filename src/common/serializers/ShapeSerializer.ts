@@ -5,10 +5,13 @@ import {
   Polygon,
   Polyline,
   RoundShape,
+  TextBox,
   type Shape
 } from '../definitions/Shape'
 import { RgbColorSerializer } from './ColorSerializer'
 import { PointSerializer, type IPointJson } from './PointSerializer'
+import { RectangleSerializer, type IRectangleJson } from './RectangleSerializer'
+import TextSerializer, { type ITextJson } from './TextSerializer'
 
 enum EShapeType {
   POLYLINE = 'polyline',
@@ -17,14 +20,14 @@ enum EShapeType {
   TEXT = 'text'
 }
 
-export interface ICommonShapeJson {
+interface ICommonShapeJson {
   type: EShapeType
   strokeColor: RgbColor
   fillColor: RgbColor | null
   id: string
 }
 
-export interface IPointListBasedShapeJson extends ICommonShapeJson {
+interface IPointListBasedShapeJson extends ICommonShapeJson {
   pointList: Array<IPointJson>
 }
 
@@ -85,12 +88,57 @@ class PointListBasedShapeSerializer {
   }
 }
 
-type IShapeJson = IPointListBasedShapeJson
+interface ITextBoxJson extends ICommonShapeJson {
+  box: IRectangleJson
+  text: ITextJson
+  textAlignment: number
+}
+
+class TextBoxSerializer {
+  public static toJson(textBox: TextBox): ITextBoxJson {
+    const strokeColor = RgbColorSerializer.toJson(textBox.strokeColor)
+    const fillColor = textBox.fillColor
+      ? RgbColorSerializer.toJson(textBox.fillColor)
+      : null
+
+    return {
+      type: EShapeType.TEXT,
+      id: textBox.id,
+      strokeColor,
+      fillColor,
+      box: RectangleSerializer.toJson(textBox.box),
+      text: TextSerializer.toJson(textBox.text),
+      textAlignment: textBox.textAlignment
+    }
+  }
+
+  public static fromJson(textBoxJson: ITextBoxJson) {
+    const strokeColor = RgbColorSerializer.fromJson(textBoxJson.strokeColor)
+    const fillColor = textBoxJson.fillColor
+      ? RgbColorSerializer.fromJson(textBoxJson.fillColor)
+      : undefined
+    const textBox = new TextBox(
+      RectangleSerializer.fromJson(textBoxJson.box),
+      TextSerializer.fromJson(textBoxJson.text),
+      textBoxJson.textAlignment,
+      strokeColor,
+      fillColor
+    )
+
+    Object.defineProperties(textBox, { id: { value: textBoxJson.id } })
+    return textBox
+  }
+}
+
+export type IShapeJson = IPointListBasedShapeJson | ITextBoxJson
 
 export default class ShapeSerializer {
   static toJson(shape: Shape): IShapeJson {
     if (shape instanceof PointListBasedShape) {
       return PointListBasedShapeSerializer.toJson(shape)
+    }
+    if (shape instanceof TextBox) {
+      return TextBoxSerializer.toJson(shape)
     }
     throw new NotImplemented()
   }
@@ -100,7 +148,11 @@ export default class ShapeSerializer {
       case EShapeType.POLYLINE:
       case EShapeType.POLYGON:
       case EShapeType.ROUND_SHAPE:
-        return PointListBasedShapeSerializer.fromJson(shape)
+        return PointListBasedShapeSerializer.fromJson(
+          shape as IPointListBasedShapeJson
+        )
+      case EShapeType.TEXT:
+        return TextBoxSerializer.fromJson(shape as ITextBoxJson)
       default:
         throw new NotImplemented()
     }
