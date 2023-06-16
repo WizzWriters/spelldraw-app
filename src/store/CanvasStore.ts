@@ -42,6 +42,19 @@ export const useCanvasStore = defineStore('canvas', () => {
     drawnShapes.value.splice(shapeIndex, 1)
   })
 
+  IoConnection.onEvent('shape_list_share_req', (data) => {
+    IoConnection.emit('shape_list_share_resp', {
+      ...data,
+      shapes: drawnShapes.value.map((shape) => ShapeSerializer.toJson(shape))
+    })
+  })
+
+  IoConnection.onEvent('shape_list', (data) => {
+    for (const shapeJson of data.shapes) {
+      drawnShapes.value.push(ShapeSerializer.fromJson(shapeJson))
+    }
+  })
+
   return {
     drawnShapes,
     currentlyDrawnShape,

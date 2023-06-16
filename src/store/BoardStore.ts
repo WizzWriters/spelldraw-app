@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
-import connection from '@/services/connection/IoConnection'
+import IoConnection from '@/services/connection/IoConnection'
 import Logger from 'js-logger'
 import type { IPointerPosition } from '@/common/definitions/Pointer'
 import { usePointerStore } from './PointerStore'
@@ -26,12 +26,12 @@ export const useBoardStore = defineStore('board', () => {
   const connectedUsers: Ref<Array<ConnectedUser>> = ref([])
 
   async function createBoard() {
-    const response = await connection.request('create_board', undefined)
+    const response = await IoConnection.request('create_board', undefined)
     boardId.value = response.data.id
   }
 
   async function joinBoard(id: string): Promise<Boolean> {
-    const response = await connection.request('join_board', { board_id: id })
+    const response = await IoConnection.request('join_board', { board_id: id })
     if (response.status != 0) return false
     boardId.value = response.data.board_id
     boardUserId.value = response.data.board_user_id
@@ -48,7 +48,7 @@ export const useBoardStore = defineStore('board', () => {
     connectedUsers.value.splice(index, 1)
   }
 
-  connection.onEvent('user_joined', (data) => {
+  IoConnection.onEvent('user_joined', (data) => {
     const userId = data.board_user_id
     logger.debug(`User ${userId} just joined!`)
     addConnectedUser(new ConnectedUser(userId))
@@ -57,13 +57,13 @@ export const useBoardStore = defineStore('board', () => {
     pointerStore.broadcastPosition()
   })
 
-  connection.onEvent('user_left', (data) => {
+  IoConnection.onEvent('user_left', (data) => {
     const userId = data.board_user_id
     logger.debug(`User ${userId} left`)
     removeConnectedUser(userId)
   })
 
-  connection.onEvent('position_update', (data) => {
+  IoConnection.onEvent('position_update', (data) => {
     const userId = data.board_user_id
     let index = connectedUsers.value.findIndex((user) => (user.id = userId))
     if (index < 0) {
