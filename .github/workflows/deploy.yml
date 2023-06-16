@@ -3,7 +3,7 @@ run-name: Deploy application to github Pages 🚀
 
 on:
   push:
-    branches: ['main', 'socket-io']
+    branches: ['main']
 
   workflow_dispatch:
 
