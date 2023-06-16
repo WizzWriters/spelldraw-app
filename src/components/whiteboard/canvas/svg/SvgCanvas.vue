@@ -127,6 +127,7 @@ onMounted(initializeComponent)
 
 <style lang="scss">
 #canvas-wrapper {
+  height: 100%;
   display: flex;
   flex: 1 1 auto;
   &:hover {

@@ -6,8 +6,10 @@
 @import '~/bulma/sass/elements/box.sass';
 @import '~/bulma/sass/elements/progress.sass';
 @import '~/bulma/sass/elements/container.sass';
+@import '~/bulma/sass/form/all';
 
 @import './elements/all';
+@import './components/all';
 
 html {
   height: 100%;
