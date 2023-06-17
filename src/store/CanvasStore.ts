@@ -11,6 +11,7 @@ export const useCanvasStore = defineStore('canvas', () => {
   const drawnShapes: Ref<Array<Shape>> = ref([])
   const currentlyDrawnShape: Ref<Shape | null> = ref(null)
   const canvasPosition = ref({ left: 0, top: 0 })
+  const canvasOffset = ref({ x: 0, y: 0 })
 
   function addDrawnShape(shape: Shape) {
     drawnShapes.value.push(shape)
@@ -59,6 +60,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     drawnShapes,
     currentlyDrawnShape,
     canvasPosition,
+    canvasOffset,
     removeDrawnShapeById,
     addDrawnShape
   }
