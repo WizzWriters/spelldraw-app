@@ -6,11 +6,11 @@ const props = defineProps<{
 </script>
 
 <template>
-  <button
+  <div
     class="tool-button button is-medium has-text-dark is-rounded"
     :title="props.name"
     :class="{ 'is-focused': props.isActive }"
   >
     <slot></slot>
-  </button>
+  </div>
 </template>

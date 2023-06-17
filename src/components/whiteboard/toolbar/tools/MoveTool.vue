@@ -76,7 +76,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Move" :is-active="false">
+  <ToolButton name="Move" :is-active="props.isActive">
     <FontAwesomeIcon :icon="['fas', 'arrows-up-down-left-right']" />
   </ToolButton>
 </template>
