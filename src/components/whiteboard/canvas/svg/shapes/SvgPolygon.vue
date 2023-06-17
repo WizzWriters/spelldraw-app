@@ -33,5 +33,6 @@ useCollisionDetection(
     ref="polygonElementRef"
     :points="pointsListStr"
     :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+    :stroke-width="shape.strokeWidth"
   />
 </template>

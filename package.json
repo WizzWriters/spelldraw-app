@@ -22,6 +22,7 @@
     "@fortawesome/free-solid-svg-icons": "^6.4.0",
     "@fortawesome/vue-fontawesome": "^3.0.3",
     "@tensorflow/tfjs": "^4.4.0",
+    "bulma-slider": "^2.0.4",
     "js-logger": "^1.6.1",
     "lodash": "^4.17.21",
     "pinia": "^2.0.35",

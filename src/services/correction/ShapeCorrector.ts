@@ -77,15 +77,26 @@ export default class ShapeCorrector {
     switch (shapeLabel) {
       case ShapeClassification.RECTANGLE:
       case ShapeClassification.TRIANGLE:
-        return new Polygon(shape.pointList, shape.strokeColor, shape.fillColor)
+        return new Polygon(
+          shape.pointList,
+          shape.strokeColor,
+          shape.fillColor,
+          shape.strokeWidth
+        )
       case ShapeClassification.ELLIPSE:
         return new RoundShape(
           shape.pointList,
           shape.strokeColor,
-          shape.fillColor
+          shape.fillColor,
+          shape.strokeWidth
         )
       default:
-        return new Polygon(shape.pointList, shape.strokeColor, shape.fillColor)
+        return new Polygon(
+          shape.pointList,
+          shape.strokeColor,
+          shape.fillColor,
+          shape.strokeWidth
+        )
     }
   }
 

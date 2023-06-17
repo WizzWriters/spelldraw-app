@@ -13,12 +13,20 @@ const emit = defineEmits(['click'])
 const toolbarStore = useToolbarStore()
 
 const settingStroke = ref(true)
-
 const color = computed(() => {
   if (settingStroke.value) {
     return rgbColorToString(toolbarStore.selectedStrokeColor)
   } else {
     return rgbColorToString(toolbarStore.selectedFillColor)
+  }
+})
+
+const strokeWidth = computed({
+  get() {
+    return toolbarStore.selectedStrokeWidth.toFixed(1)
+  },
+  set(value) {
+    toolbarStore.setStrokeWidth(parseFloat(value))
   }
 })
 
@@ -35,7 +43,12 @@ function colorChanged(newColor: any) {
 <template>
   <div id="color-picker">
     <div v-if="props.isActive" id="picker" class="box px-4 pb-3 pt-2">
-      <div class="is-flex is-size-4 is-justify-content-space-between mb-2">
+      <div
+        :class="
+          `is-flex is-size-4 is-justify-content-space-between ` +
+          `mb-2 is-align-items-center`
+        "
+      >
         <div class="tabs mb-1">
           <ul>
             <li
@@ -67,10 +80,24 @@ function colorChanged(newColor: any) {
           :colors-default="[]"
           @changeColor="colorChanged"
         />
+        <div class="mt-1">Stroke width</div>
+        <div class="is-flex is-align-items-self-end">
+          <input
+            id="stroke-width-slider"
+            class="slider is-fullwidth is-info is-circle my-0"
+            step="0.5"
+            min="1"
+            max="10"
+            v-model="strokeWidth"
+            type="range"
+          />
+          <div class="mx-2">{{ strokeWidth }}</div>
+        </div>
       </div>
       <div v-else>
-        <!-- It couldn't be a single picker, because it had troubles with switching -->
-        <!-- In the future we should implement our own picker -->
+        <!-- It couldn't be a single picker, because it had troubles
+            with switching between modes. In the future we should
+            implement our own picker -->
         <ColorPicker
           theme="light"
           :color="color"

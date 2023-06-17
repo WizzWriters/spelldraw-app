@@ -10,6 +10,7 @@ export const useToolbarStore = defineStore('toolbar', () => {
   const selectedShapesIds = ref(new Set<string>())
   const selectedStrokeColor = ref(new RgbColor(0, 0, 0, 1))
   const selectedFillColor = ref(new RgbColor(0, 0, 0, 0))
+  const selectedStrokeWidth = ref(1)
 
   function addShapeId(id: string, idSet: Ref<Set<string>>) {
     idSet.value.add(id)
@@ -69,11 +70,23 @@ export const useToolbarStore = defineStore('toolbar', () => {
     }
   }
 
+  function setStrokeWidth(strokeWidth: number) {
+    const canvasStore = useCanvasStore()
+    selectedStrokeWidth.value = strokeWidth
+    for (const shapeId of selectedShapesIds.value) {
+      const shape = canvasStore.getShapeById(shapeId)
+      if (!shape) continue
+      shape.strokeWidth = strokeWidth
+      canvasStore.updateShape(shape)
+    }
+  }
+
   return {
     activeTool,
     selectedShapesIds,
     selectedStrokeColor,
     selectedFillColor,
+    selectedStrokeWidth,
     addToSelectedShapes,
     removeFromSelectedShapes,
     clearSelectedShapes,
@@ -82,6 +95,7 @@ export const useToolbarStore = defineStore('toolbar', () => {
     removeFromIntersectingShapes,
     clearIntersectingShapes,
     setStrokeColor,
-    setFillColor
+    setFillColor,
+    setStrokeWidth
   }
 })
