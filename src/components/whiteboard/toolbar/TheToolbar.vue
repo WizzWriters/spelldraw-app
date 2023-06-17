@@ -23,10 +23,8 @@ function toggleActive(idx: number) {
 </script>
 
 <template>
-  <div
-    class="toolbar is-flex is-flex-direction-row is-justify-content-center mb-4"
-  >
-    <div class="tools is-flex">
+  <div id="toolbar">
+    <div class="tools">
       <component
         v-for="(tool, idx) in tools"
         :key="idx"
@@ -38,14 +36,4 @@ function toggleActive(idx: number) {
   </div>
 </template>
 
-<style lang="scss">
-.toolbar {
-  bottom: 0;
-  width: 100%;
-  pointer-events: none;
-}
-
-.tools {
-  gap: 0.2rem;
-}
-</style>
+<style lang="scss"></style>
