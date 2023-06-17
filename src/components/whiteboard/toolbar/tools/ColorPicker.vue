@@ -20,7 +20,7 @@ const color = computed(() => {
 
 function colorChanged(newColor: any) {
   const { r, g, b, a } = newColor.rgba
-  toolbarStore.selectedStrokeColor = new RgbColor(r, g, b, a)
+  toolbarStore.setStrokeColor(new RgbColor(r, g, b, a))
 }
 </script>
 

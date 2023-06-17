@@ -31,6 +31,23 @@ export const useCanvasStore = defineStore('canvas', () => {
     })
   }
 
+  function getShapeById(id: string) {
+    const shape = drawnShapes.value.find((shape) => shape.id == id)
+    return shape
+  }
+
+  function updateShape(updatedShape: Shape) {
+    const shapeIndex = drawnShapes.value.findIndex(
+      (shape) => shape.id == updatedShape.id
+    )
+    if (shapeIndex < 0) return
+    IoConnection.emit('shape_update', {
+      board_id: boardStore.boardId,
+      shape: ShapeSerializer.toJson(updatedShape)
+    })
+    drawnShapes.value[shapeIndex] = updatedShape
+  }
+
   IoConnection.onEvent('shape_create', (data) => {
     const receivedShape = ShapeSerializer.fromJson(data.shape)
     drawnShapes.value.push(receivedShape)
@@ -56,12 +73,23 @@ export const useCanvasStore = defineStore('canvas', () => {
     }
   })
 
+  IoConnection.onEvent('shape_update', (data) => {
+    const updatedShape = ShapeSerializer.fromJson(data.shape)
+    const shapeIndex = drawnShapes.value.findIndex(
+      (shape) => shape.id == updatedShape.id
+    )
+    if (shapeIndex < 0) return
+    drawnShapes.value[shapeIndex] = updatedShape
+  })
+
   return {
     drawnShapes,
     currentlyDrawnShape,
     canvasPosition,
     canvasOffset,
     removeDrawnShapeById,
-    addDrawnShape
+    addDrawnShape,
+    getShapeById,
+    updateShape
   }
 })

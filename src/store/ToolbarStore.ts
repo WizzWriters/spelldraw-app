@@ -2,6 +2,7 @@ import { RgbColor } from '@/common/definitions/Color'
 import type { ITool } from '@/common/definitions/Tool'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
+import { useCanvasStore } from './CanvasStore'
 
 export const useToolbarStore = defineStore('toolbar', () => {
   const activeTool: Ref<ITool | null> = ref(null)
@@ -46,7 +47,14 @@ export const useToolbarStore = defineStore('toolbar', () => {
   }
 
   function setStrokeColor(color: RgbColor) {
+    const canvasStore = useCanvasStore()
     selectedStrokeColor.value = color
+    for (const shapeId of selectedShapesIds.value) {
+      const shape = canvasStore.getShapeById(shapeId)
+      if (!shape) continue
+      shape.strokeColor = color
+      canvasStore.updateShape(shape)
+    }
   }
 
   return {
