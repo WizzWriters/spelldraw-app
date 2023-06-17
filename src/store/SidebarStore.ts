@@ -2,7 +2,8 @@ import { defineStore } from 'pinia'
 import { type Ref, ref } from 'vue'
 
 export enum ESidebarContent {
-  SHARE = 'Share'
+  SHARE = 'Share',
+  COLOR = 'Color'
 }
 
 export const useSidebarStore = defineStore('sidebar', () => {

@@ -15,8 +15,6 @@ const tools = ref([
   { isActive: false, component: markRaw(MoveTool) }
 ])
 
-const colorPickerShown = ref(false)
-
 const activeTool = computed(() => {
   return tools.value.filter((tool) => tool.isActive)[0]
 })
@@ -24,10 +22,6 @@ const activeTool = computed(() => {
 function toggleActive(idx: number) {
   activeTool.value.isActive = false
   tools.value[idx].isActive = true
-}
-
-function togglePicker() {
-  colorPickerShown.value = !colorPickerShown.value
 }
 </script>
 
@@ -41,10 +35,7 @@ function togglePicker() {
         :is-active="tool.isActive"
         @click="toggleActive(idx)"
       />
-      <ColorPicker
-        :is-active="colorPickerShown"
-        @click="togglePicker()"
-      ></ColorPicker>
+      <ColorPicker />
     </div>
   </div>
 </template>

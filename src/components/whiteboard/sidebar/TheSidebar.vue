@@ -2,6 +2,7 @@
 import { ESidebarContent, useSidebarStore } from '@/store/SidebarStore'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import ShareSidebar from './ShareSidebar.vue'
+import ColorSidebar from './ColorSidebar.vue'
 
 const sidebarStore = useSidebarStore()
 
@@ -11,7 +12,7 @@ function collapseSidebar() {
 </script>
 
 <template>
-  <div id="sidebar" class="p-5">
+  <div id="sidebar" class="p-5 box">
     <div
       class="is-flex is-align-items-center is-size-3 is-justify-content-space-between"
     >
@@ -23,6 +24,9 @@ function collapseSidebar() {
       />
     </div>
     <ShareSidebar v-if="sidebarStore.sidebarContent == ESidebarContent.SHARE" />
+    <ColorSidebar
+      v-else-if="sidebarStore.sidebarContent == ESidebarContent.COLOR"
+    />
   </div>
 </template>
 

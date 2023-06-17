@@ -70,6 +70,7 @@ useIntersectionDetection(
       :width="shape.box.width"
       :height="shape.box.height"
       stroke-dasharray="5, 5"
+      fill="none"
     />
     <text
       class="textbox"

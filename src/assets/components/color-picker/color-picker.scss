@@ -1,27 +1,6 @@
 @import 'vue-color-kit/dist/vue-color-kit.css';
 
-$picker-bottom-margin: 1.2em;
-$picker-widescreen-width: 14.3rem;
-
-#picker {
-  position: fixed;
-  bottom: $toolbar-widescreen-height + $picker-bottom-margin;
-  pointer-events: auto;
-  margin-bottom: 0;
-  z-index: 100;
-
-  @include from($tablet) {
-    width: $picker-widescreen-width;
-    transform: translateX(-38%);
-  }
-
-  @include until($tablet) {
-    width: 100%;
-    left: 0;
-    top: $navbar-height;
-    bottom: unset;
-  }
-
+#sidebar {
   .hu-color-picker.light {
     width: unset !important;
     background: unset;
