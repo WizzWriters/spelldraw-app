@@ -8,7 +8,7 @@ export abstract class Shape {
 
   constructor(
     public strokeColor: RgbColor = new RgbColor(0, 0, 0),
-    public fillColor: RgbColor | null = null
+    public fillColor: RgbColor = new RgbColor(0, 0, 0, 0)
   ) {}
 
   abstract move(xOffset: number, yOffset: number): void
@@ -90,7 +90,7 @@ export class TextBox extends Shape {
     public text: Text,
     public textAlignment: ETextAlignment = ETextAlignment.CENTER,
     strokeColor?: RgbColor,
-    fillColor?: RgbColor
+    fillColor: RgbColor = new RgbColor(0, 0, 0, 1)
   ) {
     super(strokeColor, fillColor)
   }

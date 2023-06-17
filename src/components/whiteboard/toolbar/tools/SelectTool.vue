@@ -15,7 +15,7 @@ import { onMounted, watch, type Ref } from 'vue'
 import HandwritingRecognition from '../../magic/HandwritingRecognition.vue'
 import ToolButton from './ToolButton.vue'
 
-const SELECT_BOX_FILL = new RgbColor(37, 150, 190, 0.1)
+const SELECT_BOX_FILL = new RgbColor(37, 150, 190, 0.2)
 const SELECT_BOX_STROKE = new RgbColor(51, 173, 255)
 
 const emit = defineEmits<{ (e: 'click'): void }>()

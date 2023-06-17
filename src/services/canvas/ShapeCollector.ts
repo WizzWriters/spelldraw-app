@@ -49,7 +49,8 @@ export default class ShapeCollector {
   public startCollecting(startpoint?: Point) {
     this.canvasStore.currentlyDrawnShape = new Polyline(
       [],
-      this.toolbarStore.selectedStrokeColor
+      this.toolbarStore.selectedStrokeColor,
+      this.toolbarStore.selectedFillColor
     )
     if (startpoint) this.handlePointCollected(startpoint)
     this.pointCollector.startCollecting()

@@ -1,7 +1,7 @@
 @import 'vue-color-kit/dist/vue-color-kit.css';
 
 $picker-bottom-margin: 1.2em;
-$picker-widescreen-width: 16rem;
+$picker-widescreen-width: 14.3rem;
 
 #picker {
   position: fixed;
@@ -27,5 +27,13 @@ $picker-widescreen-width: 16rem;
     background: unset;
     box-shadow: unset;
     padding: unset;
+
+    .color-set {
+      justify-content: center;
+    }
+
+    .color-show {
+      justify-content: center;
+    }
   }
 }
