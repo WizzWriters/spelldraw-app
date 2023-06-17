@@ -133,8 +133,20 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Select" :is-active="props.isActive" @click="emit('click')">
-    <FontAwesomeIcon id="select-icon" icon="fa-object-group" />
-  </ToolButton>
-  <HandwritingRecognition />
+  <div id="select-tool">
+    <ToolButton
+      name="Select"
+      :is-active="props.isActive"
+      @click="emit('click')"
+    >
+      <FontAwesomeIcon id="select-icon" icon="fa-object-group" />
+    </ToolButton>
+    <HandwritingRecognition />
+  </div>
 </template>
+
+<style lang="scss">
+#select-tool {
+  order: 1;
+}
+</style>

@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // import Logger from 'js-logger'
 import { computed, markRaw, ref } from 'vue'
+import ColorPicker from './tools/ColorPicker.vue'
 import DrawTool from './tools/DrawTool.vue'
 import EraserTool from './tools/EraserTool.vue'
 import MoveTool from './tools/MoveTool.vue'
@@ -14,6 +15,8 @@ const tools = ref([
   { isActive: false, component: markRaw(MoveTool) }
 ])
 
+const colorPickerShown = ref(false)
+
 const activeTool = computed(() => {
   return tools.value.filter((tool) => tool.isActive)[0]
 })
@@ -21,6 +24,10 @@ const activeTool = computed(() => {
 function toggleActive(idx: number) {
   activeTool.value.isActive = false
   tools.value[idx].isActive = true
+}
+
+function togglePicker() {
+  colorPickerShown.value = !colorPickerShown.value
 }
 </script>
 
@@ -34,6 +41,10 @@ function toggleActive(idx: number) {
         :is-active="tool.isActive"
         @click="toggleActive(idx)"
       />
+      <ColorPicker
+        :is-active="colorPickerShown"
+        @click="togglePicker()"
+      ></ColorPicker>
     </div>
   </div>
 </template>

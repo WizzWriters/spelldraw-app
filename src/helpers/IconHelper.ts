@@ -7,7 +7,8 @@ import {
   faShareNodes,
   faTimes,
   faUser,
-  faArrowsUpDownLeftRight
+  faArrowsUpDownLeftRight,
+  faPalette
 } from '@fortawesome/free-solid-svg-icons'
 
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
@@ -21,7 +22,8 @@ const usedIcons = [
   faShareNodes,
   faCircleXmark,
   faUser,
-  faArrowsUpDownLeftRight
+  faArrowsUpDownLeftRight,
+  faPalette
 ]
 
 export default {

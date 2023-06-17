@@ -1,3 +1,4 @@
+import { RgbColor } from '@/common/definitions/Color'
 import type { ITool } from '@/common/definitions/Tool'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
@@ -6,6 +7,7 @@ export const useToolbarStore = defineStore('toolbar', () => {
   const activeTool: Ref<ITool | null> = ref(null)
   const intersectingShapesIds = ref(new Set<string>())
   const selectedShapesIds = ref(new Set<string>())
+  const selectedStrokeColor = ref(new RgbColor(0, 0, 0, 1))
 
   function addShapeId(id: string, idSet: Ref<Set<string>>) {
     idSet.value.add(id)
@@ -43,15 +45,21 @@ export const useToolbarStore = defineStore('toolbar', () => {
     clearShapeIds(intersectingShapesIds)
   }
 
+  function setStrokeColor(color: RgbColor) {
+    selectedStrokeColor.value = color
+  }
+
   return {
     activeTool,
     selectedShapesIds,
+    selectedStrokeColor,
     addToSelectedShapes,
     removeFromSelectedShapes,
     clearSelectedShapes,
     intersectingShapesIds,
     addToIntersectingShapes,
     removeFromIntersectingShapes,
-    clearIntersectingShapes
+    clearIntersectingShapes,
+    setStrokeColor
   }
 })

@@ -1,4 +1,7 @@
 $tool-button-side-length: 2.5em;
+$toolbar-widescreen-margin-bottom: 1em;
+$toolbar-widescreen-height: $tool-button-side-length +
+  $toolbar-widescreen-margin-bottom;
 
 #toolbar {
   display: flex;
@@ -8,7 +11,7 @@ $tool-button-side-length: 2.5em;
 
   @include from($tablet) {
     width: 100%;
-    margin-bottom: 1rem;
+    margin-bottom: $toolbar-widescreen-margin-bottom;
   }
 
   @include until($tablet) {
