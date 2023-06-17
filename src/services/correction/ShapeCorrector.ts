@@ -61,7 +61,12 @@ export default class ShapeCorrector {
 
     if (shapeLabel == ShapeClassification.OTHER) return null
 
-    const newShape = new Polyline(newPoints, shape.strokeColor, shape.fillColor)
+    const newShape = new Polyline(
+      newPoints,
+      shape.strokeColor,
+      shape.fillColor,
+      shape.strokeWidth
+    )
     normalizedShape.shape.fragments = [newShape]
     const denormalizedShape = this.shapeTranslator.denormalize(normalizedShape)
     return this.recognitionToShape(

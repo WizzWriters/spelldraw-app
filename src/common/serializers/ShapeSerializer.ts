@@ -21,10 +21,11 @@ enum EShapeType {
 }
 
 interface ICommonShapeJson {
+  id: string
   type: EShapeType
   strokeColor: RgbColor
-  fillColor: RgbColor | null
-  id: string
+  strokeWidth: number
+  fillColor: RgbColor
 }
 
 interface IPointListBasedShapeJson extends ICommonShapeJson {
@@ -40,9 +41,7 @@ class PointListBasedShapeSerializer {
     else throw new NotImplemented()
 
     const strokeColor = RgbColorSerializer.toJson(shape.strokeColor)
-    const fillColor = shape.fillColor
-      ? RgbColorSerializer.toJson(shape.fillColor)
-      : null
+    const fillColor = RgbColorSerializer.toJson(shape.fillColor)
 
     const pointList = shape.pointList.map((point) =>
       PointSerializer.toJson(point)
@@ -53,6 +52,7 @@ class PointListBasedShapeSerializer {
       id: shape.id,
       strokeColor,
       fillColor,
+      strokeWidth: shape.strokeWidth,
       pointList
     }
   }
@@ -64,19 +64,18 @@ class PointListBasedShapeSerializer {
     )
 
     const strokeColor = RgbColorSerializer.fromJson(shapeJson.strokeColor)
-    const fillColor = shapeJson.fillColor
-      ? RgbColorSerializer.fromJson(shapeJson.fillColor)
-      : undefined
+    const fillColor = RgbColorSerializer.fromJson(shapeJson.fillColor)
+    const strokeWidth = shapeJson.strokeWidth
 
     switch (shapeJson.type) {
       case EShapeType.POLYLINE:
-        shape = new Polyline(pointList, strokeColor, fillColor)
+        shape = new Polyline(pointList, strokeColor, fillColor, strokeWidth)
         break
       case EShapeType.POLYGON:
-        shape = new Polygon(pointList, strokeColor, fillColor)
+        shape = new Polygon(pointList, strokeColor, fillColor, strokeWidth)
         break
       case EShapeType.ROUND_SHAPE:
-        shape = new RoundShape(pointList, strokeColor, fillColor)
+        shape = new RoundShape(pointList, strokeColor, fillColor, strokeWidth)
         break
       default:
         throw new NotImplemented()
@@ -97,15 +96,14 @@ interface ITextBoxJson extends ICommonShapeJson {
 class TextBoxSerializer {
   public static toJson(textBox: TextBox): ITextBoxJson {
     const strokeColor = RgbColorSerializer.toJson(textBox.strokeColor)
-    const fillColor = textBox.fillColor
-      ? RgbColorSerializer.toJson(textBox.fillColor)
-      : null
+    const fillColor = RgbColorSerializer.toJson(textBox.fillColor)
 
     return {
       type: EShapeType.TEXT,
       id: textBox.id,
       strokeColor,
       fillColor,
+      strokeWidth: textBox.strokeWidth,
       box: RectangleSerializer.toJson(textBox.box),
       text: TextSerializer.toJson(textBox.text),
       textAlignment: textBox.textAlignment
@@ -114,9 +112,8 @@ class TextBoxSerializer {
 
   public static fromJson(textBoxJson: ITextBoxJson) {
     const strokeColor = RgbColorSerializer.fromJson(textBoxJson.strokeColor)
-    const fillColor = textBoxJson.fillColor
-      ? RgbColorSerializer.fromJson(textBoxJson.fillColor)
-      : undefined
+    const fillColor = RgbColorSerializer.fromJson(textBoxJson.fillColor)
+
     const textBox = new TextBox(
       RectangleSerializer.fromJson(textBoxJson.box),
       TextSerializer.fromJson(textBoxJson.text),
