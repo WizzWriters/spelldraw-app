@@ -18,7 +18,7 @@ function collapseSidebar() {
       <h2 class="is-size-3">{{ sidebarStore.sidebarContent }}</h2>
       <FontAwesomeIcon
         :icon="['far', 'circle-xmark']"
-        id="closing-icon"
+        class="closing-icon"
         @click="collapseSidebar()"
       />
     </div>
@@ -27,7 +27,7 @@ function collapseSidebar() {
 </template>
 
 <style lang="scss">
-#closing-icon {
+.closing-icon {
   cursor: pointer;
 }
 </style>

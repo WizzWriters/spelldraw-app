@@ -26,7 +26,22 @@ function colorChanged(newColor: any) {
 
 <template>
   <div id="color-picker">
-    <div v-if="props.isActive" id="picker" class="box">
+    <div v-if="props.isActive" id="picker" class="box px-4 pb-3 pt-2">
+      <div class="is-flex is-size-4 is-justify-content-end mb-2">
+        <!-- <div class="tabs mb-1">
+  <ul>
+    <li class="is-active"><a>Stroke</a></li>
+    <li><a>Fill</a></li>
+  </ul>
+</div> -->
+        <span>
+          <FontAwesomeIcon
+            :icon="['far', 'circle-xmark']"
+            class="closing-icon"
+            @click="emit('click')"
+          />
+        </span>
+      </div>
       <ColorPicker
         theme="light"
         :color="color"
