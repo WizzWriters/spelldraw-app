@@ -40,7 +40,6 @@ function toggleActive(idx: number) {
 
 <style lang="scss">
 .toolbar {
-  position: fixed;
   bottom: 0;
   width: 100%;
   pointer-events: none;

@@ -47,7 +47,7 @@ async function commitCorrection() {
 
   loaderState.value.wasCorrectionSuccessful = true
   canvasStore.currentlyDrawnShape = null
-  canvasStore.drawnShapes.push(correction)
+  canvasStore.addDrawnShape(correction)
   logger.debug('Shape correction commited')
 }
 

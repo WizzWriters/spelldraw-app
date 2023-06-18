@@ -21,7 +21,12 @@ export default class TensorflowModel {
 
   @AsyncInit
   public async init() {
-    this.layers = await tf.loadLayersModel(`./models/${this.name}/model.json`)
+    const currenUrl = new URL(import.meta.url)
+    const modelUrl =
+      currenUrl.origin +
+      import.meta.env.BASE_URL +
+      `models/${this.name}/model.json`
+    this.layers = await tf.loadLayersModel(modelUrl)
     this.logger.debug('Model initialized!', this.layers)
   }
 

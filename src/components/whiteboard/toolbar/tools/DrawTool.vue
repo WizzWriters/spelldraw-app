@@ -45,7 +45,7 @@ const handlePointerEvent =
         magicStore.correctionRequestState = ECorrectionRequestState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
         stallDetector.stopDetecting()
-        if (collectedShape) canvasStore.drawnShapes.push(collectedShape)
+        if (collectedShape) canvasStore.addDrawnShape(collectedShape)
         break
       }
       case EPointerEvent.POINTER_MOVED:

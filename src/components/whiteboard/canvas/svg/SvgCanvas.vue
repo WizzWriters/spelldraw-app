@@ -4,6 +4,7 @@ import { ref, onMounted, computed, type Ref } from 'vue'
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
+import SvgUsers from './SvgUsers.vue'
 import lodash from 'lodash'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import {
@@ -119,12 +120,14 @@ onMounted(initializeComponent)
         :shapes="canvasStore.drawnShapes"
         :currently-drawn-shape="currentlyDrawnShape"
       />
+      <SvgUsers></SvgUsers>
     </svg>
   </div>
 </template>
 
 <style lang="scss">
 #canvas-wrapper {
+  height: 100%;
   display: flex;
   flex: 1 1 auto;
   &:hover {

@@ -51,9 +51,7 @@ onMounted(initializeComponent)
     </div>
 
     <div class="navbar-menu" ref="navbarMenu">
-      <div class="navbar-start">
-        <a class="navbar-item"> Boards </a>
-      </div>
+      <div class="navbar-start"></div>
 
       <div class="navbar-end">
         <div class="navbar-item">
