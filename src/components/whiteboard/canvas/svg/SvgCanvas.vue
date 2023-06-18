@@ -54,6 +54,13 @@ const currentlyDrawnShape: Ref<Shape | null> = computed(() => {
   return shapeCopy
 })
 
+const viewBox = computed(() => {
+  return (
+    `${canvasStore.canvasOffset.x} ${canvasStore.canvasOffset.y} ` +
+    `${canvasWidth.value} ${canvasHeight.value}`
+  )
+})
+
 function initializeComponent() {
   let canvasElement = canvasElementRef.value
   let wrapperElement = canvasWrapperElementRef.value
@@ -112,6 +119,7 @@ onMounted(initializeComponent)
       ref="canvasElementRef"
       :width="canvasWidth"
       :height="canvasHeight"
+      :viewBox="viewBox"
     >
       <defs>
         <SvgNeonGlow />

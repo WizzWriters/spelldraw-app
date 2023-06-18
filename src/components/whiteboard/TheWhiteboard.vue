@@ -48,7 +48,7 @@ onMounted(async () => {
   <div id="the-whiteboard">
     <SvgCanvas @canvas-ready="handleCanvasReady"></SvgCanvas>
     <div id="the-whiteboard-overlay">
-      <div class="main-overlay-content">
+      <div id="main-overlay-content">
         <SidebarControl />
         <TheToolbar />
       </div>
@@ -61,23 +61,5 @@ onMounted(async () => {
 #the-whiteboard {
   position: relative;
   height: 100%;
-}
-
-#the-whiteboard-overlay {
-  position: absolute;
-  top: 0;
-  bottom: 0;
-  display: flex;
-  flex-direction: row;
-  width: 100%;
-  pointer-events: none;
-}
-
-.main-overlay-content {
-  height: 100%;
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
 }
 </style>
