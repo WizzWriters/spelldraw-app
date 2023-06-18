@@ -57,5 +57,6 @@ useCollisionDetection(
     ref="roundShapeElementRef"
     :d="pathCommand"
     :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+    :stroke-width="shape.strokeWidth"
   />
 </template>

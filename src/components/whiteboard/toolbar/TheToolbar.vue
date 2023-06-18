@@ -1,6 +1,7 @@
 <script setup lang="ts">
 // import Logger from 'js-logger'
 import { computed, markRaw, ref } from 'vue'
+import ColorPicker from './tools/ColorPicker.vue'
 import DrawTool from './tools/DrawTool.vue'
 import EraserTool from './tools/EraserTool.vue'
 import MoveTool from './tools/MoveTool.vue'
@@ -34,6 +35,7 @@ function toggleActive(idx: number) {
         :is-active="tool.isActive"
         @click="toggleActive(idx)"
       />
+      <ColorPicker />
     </div>
   </div>
 </template>

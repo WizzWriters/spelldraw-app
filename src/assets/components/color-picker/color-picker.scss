@@ -1,0 +1,18 @@
+@import 'vue-color-kit/dist/vue-color-kit.css';
+
+#sidebar {
+  .hu-color-picker.light {
+    width: unset !important;
+    background: unset;
+    box-shadow: unset;
+    padding: unset;
+
+    .color-set {
+      justify-content: center;
+    }
+
+    .color-show {
+      justify-content: center;
+    }
+  }
+}

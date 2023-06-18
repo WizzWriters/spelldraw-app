@@ -7,7 +7,7 @@ export enum EPointerEvent {
   POINTER_LEFT = 'pointerleave'
 }
 
-type BuitInIcon = 'crosshair' | 'grab'
+type BuitInIcon = 'crosshair' | 'grab' | 'default'
 
 export class ExternalPointerIcon {
   constructor(public url: string, public hotspot: Point) {}

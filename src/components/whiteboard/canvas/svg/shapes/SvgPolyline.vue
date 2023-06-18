@@ -79,5 +79,8 @@ useCollisionDetection(
     ref="polylineElementRef"
     :d="pathCommand"
     :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+    :stroke-width="shape.strokeWidth"
+    stroke-linecap="round"
+    shape-rendering="geometricPrecision"
   />
 </template>
