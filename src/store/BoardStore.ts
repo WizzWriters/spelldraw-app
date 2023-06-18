@@ -65,7 +65,7 @@ export const useBoardStore = defineStore('board', () => {
 
   IoConnection.onEvent('position_update', (data) => {
     const userId = data.board_user_id
-    let index = connectedUsers.value.findIndex((user) => (user.id = userId))
+    let index = connectedUsers.value.findIndex((user) => user.id == userId)
     if (index < 0) {
       index = connectedUsers.value.push(new ConnectedUser(userId))
       index--
