@@ -40,6 +40,7 @@ async function commitCorrection() {
 
   if (!correction) {
     loaderState.value.wasCorrectionSuccessful = false
+    loaderState.value.isLoading = false
     logger.debug('Shape correction failed successfully :)')
     return
   }

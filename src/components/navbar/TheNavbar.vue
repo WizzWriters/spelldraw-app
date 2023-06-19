@@ -33,9 +33,9 @@ onMounted(initializeComponent)
 <template>
   <nav class="navbar" role="navigation" aria-label="main navigation">
     <div class="navbar-brand">
-      <a class="navbar-item is-size-4 has-text-weight-bold">
+      <div class="logo navbar-item is-size-4 has-text-weight-bold">
         Whiteboard <FontAwesomeIcon icon="fa-solid fa-pencil" class="ml-2" />
-      </a>
+      </div>
 
       <a
         role="button"
@@ -56,10 +56,10 @@ onMounted(initializeComponent)
       <div class="navbar-end">
         <div class="navbar-item">
           <div class="buttons">
-            <a class="button is-primary">
+            <button class="button is-primary" disabled>
               <strong>Sign up</strong>
-            </a>
-            <a class="button is-light"> Log in </a>
+            </button>
+            <button class="button is-light" disabled>Log in</button>
           </div>
         </div>
       </div>
@@ -70,5 +70,9 @@ onMounted(initializeComponent)
 <style scoped lang="scss">
 .navbar {
   box-shadow: 0px -4px 4px 1px;
+
+  .logo {
+    pointer-events: none;
+  }
 }
 </style>
