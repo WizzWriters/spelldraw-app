@@ -1,9 +1,4 @@
 import {
-  AsyncInit,
-  AsyncInitialized,
-  RequiresAsyncInit
-} from '@/utils/decorators/AsyncInit'
-import {
   Polyline,
   Polygon,
   Shape,
@@ -16,7 +11,6 @@ import ShapeNormalizer from './ShapeNormalizer'
 import * as tf from '@tensorflow/tfjs'
 import ComplexShape from '@/common/definitions/ComplexShape'
 
-@AsyncInitialized
 export default class ShapeCorrector {
   private hiddenCanvas = new HiddenCanvas(
     ShapeWizard.INPUT_WIDTH,
@@ -32,12 +26,6 @@ export default class ShapeCorrector {
     this.hiddenCanvas.setLineWidth(ShapeWizard.INPUT_LINE_WIDTH)
   }
 
-  @AsyncInit
-  public async init() {
-    await this.shapeWizard.init()
-  }
-
-  @RequiresAsyncInit
   public async correct(shape: Shape): Promise<Shape | null> {
     if (!(shape instanceof Polyline)) return shape
 

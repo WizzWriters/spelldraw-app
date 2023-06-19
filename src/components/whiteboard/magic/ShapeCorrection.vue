@@ -121,10 +121,6 @@ watch(correctionRequestState, (nextState, previousState) => {
       break
   }
 })
-
-onMounted(async () => {
-  await shapeCorrector.init()
-})
 </script>
 
 <template>
