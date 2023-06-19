@@ -1,15 +1,18 @@
 <script setup lang="ts">
 // import Logger from 'js-logger'
 import { computed, markRaw, ref } from 'vue'
+import ColorPicker from './tools/ColorPicker.vue'
 import DrawTool from './tools/DrawTool.vue'
 import EraserTool from './tools/EraserTool.vue'
+import MoveTool from './tools/MoveTool.vue'
 import SelectTool from './tools/SelectTool.vue'
 
 // const logger = Logger.get('Toolbar')
 const tools = ref([
   { isActive: true, component: markRaw(DrawTool) },
   { isActive: false, component: markRaw(EraserTool) },
-  { isActive: false, component: markRaw(SelectTool) }
+  { isActive: false, component: markRaw(SelectTool) },
+  { isActive: false, component: markRaw(MoveTool) }
 ])
 
 const activeTool = computed(() => {
@@ -23,10 +26,8 @@ function toggleActive(idx: number) {
 </script>
 
 <template>
-  <div
-    class="toolbar is-flex is-flex-direction-row is-justify-content-center mb-4"
-  >
-    <div class="tools is-flex">
+  <div id="toolbar">
+    <div class="tools">
       <component
         v-for="(tool, idx) in tools"
         :key="idx"
@@ -34,19 +35,9 @@ function toggleActive(idx: number) {
         :is-active="tool.isActive"
         @click="toggleActive(idx)"
       />
+      <ColorPicker />
     </div>
   </div>
 </template>
 
-<style lang="scss">
-.toolbar {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  pointer-events: none;
-}
-
-.tools {
-  gap: 0.2rem;
-}
-</style>
+<style lang="scss"></style>

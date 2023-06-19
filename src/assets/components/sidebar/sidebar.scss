@@ -1,0 +1,14 @@
+#sidebar {
+  min-width: 20rem;
+  pointer-events: auto;
+  border-radius: unset;
+
+  #copy-button {
+    width: 100%;
+  }
+
+  @include until($tablet) {
+    width: 100%;
+    position: absolute;
+  }
+}

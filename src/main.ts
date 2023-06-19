@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import App from './App.vue'
+import router from './routes/Router'
 import LoggerHelper from './helpers/LoggerHelper'
 import IconHelper from './helpers/IconHelper'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import './services/magic/TextOracle' //TODO: remove on integration
 
 import './assets/main.scss'
 LoggerHelper.initializeLogger()
@@ -15,4 +15,5 @@ const app = createApp(App)
 
 app.component('FontAwesomeIcon', FontAwesomeIcon)
 app.use(pinia)
+app.use(router)
 app.mount('#app')

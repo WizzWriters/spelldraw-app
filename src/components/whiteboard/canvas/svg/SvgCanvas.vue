@@ -4,6 +4,7 @@ import { ref, onMounted, computed, type Ref } from 'vue'
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
+import SvgUsers from './SvgUsers.vue'
 import lodash from 'lodash'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import {
@@ -51,6 +52,13 @@ const currentlyDrawnShape: Ref<Shape | null> = computed(() => {
   let point = Point.fromPointerPosition(positionOnCanvas)
   shapeCopy.addPoint(point)
   return shapeCopy
+})
+
+const viewBox = computed(() => {
+  return (
+    `${canvasStore.canvasOffset.x} ${canvasStore.canvasOffset.y} ` +
+    `${canvasWidth.value} ${canvasHeight.value}`
+  )
 })
 
 function initializeComponent() {
@@ -111,6 +119,7 @@ onMounted(initializeComponent)
       ref="canvasElementRef"
       :width="canvasWidth"
       :height="canvasHeight"
+      :viewBox="viewBox"
     >
       <defs>
         <SvgNeonGlow />
@@ -119,12 +128,14 @@ onMounted(initializeComponent)
         :shapes="canvasStore.drawnShapes"
         :currently-drawn-shape="currentlyDrawnShape"
       />
+      <SvgUsers></SvgUsers>
     </svg>
   </div>
 </template>
 
 <style lang="scss">
 #canvas-wrapper {
+  height: 100%;
   display: flex;
   flex: 1 1 auto;
   &:hover {

@@ -25,8 +25,8 @@ export function useSelectionDetection(
       domRect.top
     )
     rectangle.move(
-      -canvasStore.canvasPosition.left,
-      -canvasStore.canvasPosition.top
+      -canvasStore.canvasPosition.left + canvasStore.canvasOffset.x,
+      -canvasStore.canvasPosition.top + canvasStore.canvasOffset.y
     )
     return rectangle
   }

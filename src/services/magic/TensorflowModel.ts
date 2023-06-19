@@ -1,3 +1,4 @@
+import WorkerPath from './TensorflowWorker?worker&url'
 import type { Dictionary } from 'lodash'
 
 export type Tensor = number[] | Tensor[]
@@ -6,8 +7,7 @@ export default class TensorflowModel {
   protected worker: Worker
 
   constructor(name: string) {
-    const path = '/src/services/magic/TensorflowWorker.ts'
-    this.worker = new Worker(path, { type: 'module', name })
+    this.worker = new Worker(WorkerPath, { type: 'module', name })
   }
 
   protected async post(message: null | Tensor) {

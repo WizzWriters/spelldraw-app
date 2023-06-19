@@ -1,0 +1,37 @@
+$tool-button-side-length: 2.5em;
+$toolbar-widescreen-margin-bottom: 1em;
+$toolbar-widescreen-height: $tool-button-side-length +
+  $toolbar-widescreen-margin-bottom;
+
+#toolbar {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  pointer-events: none;
+
+  @include from($tablet) {
+    width: 100%;
+    margin-bottom: $toolbar-widescreen-margin-bottom;
+  }
+
+  @include until($tablet) {
+    padding: 0.8rem;
+  }
+
+  .tool-button {
+    box-shadow: 0 0 0.5em -0.125em rgba(10, 10, 10, 0.1);
+    width: $tool-button-side-length;
+    height: $tool-button-side-length;
+    pointer-events: auto;
+  }
+
+  .tools {
+    display: flex;
+    gap: 0.2rem;
+
+    @include until($tablet) {
+      flex-direction: column;
+      justify-content: end;
+    }
+  }
+}

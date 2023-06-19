@@ -4,10 +4,27 @@ import {
   faEraser,
   faObjectGroup,
   faPencil,
-  faTimes
+  faShareNodes,
+  faTimes,
+  faUser,
+  faArrowsUpDownLeftRight,
+  faPalette
 } from '@fortawesome/free-solid-svg-icons'
 
-const usedIcons = [faPencil, faCheck, faTimes, faEraser, faObjectGroup]
+import { faCircleXmark } from '@fortawesome/free-regular-svg-icons'
+
+const usedIcons = [
+  faPencil,
+  faCheck,
+  faTimes,
+  faEraser,
+  faObjectGroup,
+  faShareNodes,
+  faCircleXmark,
+  faUser,
+  faArrowsUpDownLeftRight,
+  faPalette
+]
 
 export default {
   initializeIcons() {

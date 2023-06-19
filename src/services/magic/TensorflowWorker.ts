@@ -26,9 +26,12 @@ LoggerHelper.initializeLogger()
 const logger = Logger.get(self.name)
 
 const queue: MessageEvent[] = []
-self.onmessage = (message) => queue.push(message)
+self.onmessage = (message: MessageEvent) => queue.push(message)
 
-const model = await tf.loadLayersModel(`/models/${self.name}/model.json`)
+const currenUrl = new URL(import.meta.url)
+const modelUrl =
+  currenUrl.origin + import.meta.env.BASE_URL + `models/${self.name}/model.json`
+const model = await tf.loadLayersModel(modelUrl)
 logger.debug('Model initialized!', model)
 queue.map(handleMessage)
 self.onmessage = handleMessage

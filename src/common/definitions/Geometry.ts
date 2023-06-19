@@ -136,10 +136,12 @@ export class Rectangle {
   }
 
   public move(xOffset: number, yOffset: number) {
-    this.left += xOffset
-    this.right += xOffset
-    this.top += yOffset
-    this.bottom += yOffset
+    /* Cannot use setters here because rectange can become temporarily invalid
+     * between those assignments */
+    this._left += xOffset
+    this._right += xOffset
+    this._top += yOffset
+    this._bottom += yOffset
   }
 
   public encloses(rectangle: Rectangle) {

@@ -50,7 +50,7 @@ async function commitRecognition() {
   }
 
   loaderState.value.wasCorrectionSuccessful = true
-  canvasStore.drawnShapes.push(prediction)
+  canvasStore.addDrawnShape(prediction)
   eraseComplexShape(shapeBeingRecognized!)
   shapeBeingRecognized = null
 }

@@ -49,7 +49,12 @@ export default class ShapeCorrector {
 
     if (shapeLabel == ShapeClassification.OTHER) return null
 
-    const newShape = new Polyline(newPoints)
+    const newShape = new Polyline(
+      newPoints,
+      shape.strokeColor,
+      shape.fillColor,
+      shape.strokeWidth
+    )
     normalizedShape.shape.fragments = [newShape]
     const denormalizedShape = this.shapeTranslator.denormalize(normalizedShape)
     return this.recognitionToShape(
@@ -65,11 +70,26 @@ export default class ShapeCorrector {
     switch (shapeLabel) {
       case ShapeClassification.RECTANGLE:
       case ShapeClassification.TRIANGLE:
-        return new Polygon(shape.pointList)
+        return new Polygon(
+          shape.pointList,
+          shape.strokeColor,
+          shape.fillColor,
+          shape.strokeWidth
+        )
       case ShapeClassification.ELLIPSE:
-        return new RoundShape(shape.pointList)
+        return new RoundShape(
+          shape.pointList,
+          shape.strokeColor,
+          shape.fillColor,
+          shape.strokeWidth
+        )
       default:
-        return new Polygon(shape.pointList)
+        return new Polygon(
+          shape.pointList,
+          shape.strokeColor,
+          shape.fillColor,
+          shape.strokeWidth
+        )
     }
   }
 
