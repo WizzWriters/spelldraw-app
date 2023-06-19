@@ -1,13 +1,8 @@
 import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
 import lodash from 'lodash'
-import TensorflowModel from './TensorflowModel'
 import { Point } from '@/common/definitions/Geometry'
-import {
-  AsyncInit,
-  AsyncInitialized,
-  RequiresAsyncInit
-} from '@/utils/decorators/AsyncInit'
+import TensorflowModel from './TensorflowModel'
 
 export enum ShapeClassification {
   OTHER = 'other',
@@ -21,13 +16,12 @@ const shapes = lodash.values(ShapeClassification)
 const path_name = 'ShapeWizard'
 
 class Classifier extends TensorflowModel {
-  public classify(image: tf.Tensor4D): [ShapeClassification, number] {
-    const dist = this.call(image)[0]
-    const shape = shapes[tf.argMax(dist, 1).dataSync()[0]]
+  public async classify(
+    image: tf.Tensor3D
+  ): Promise<[ShapeClassification, number]> {
+    const dist = await this.call(await image.array())
+    const shape = shapes[tf.argMax(dist).dataSync()[0]]
     const certainty = tf.max(dist).dataSync()[0]
-    this.logger.debug(
-      `Classified as ${shape} with ${(100 * certainty).toFixed(2)} certainty`
-    )
     return [shape, certainty]
   }
 }
@@ -48,13 +42,13 @@ class Regressor extends TensorflowModel {
     return this.sortByKeys(vsarr, angles)
   }
 
-  public async vertices(image: tf.Tensor4D) {
-    const vs = this.call(image)[0].reshape([-1, 2]) as tf.Tensor2D
+  public async vertices(image: tf.Tensor3D) {
+    const output = await this.call(await image.array())
+    const vs = tf.reshape(output, [-1, 2]) as tf.Tensor2D
     return await this.sortClockwise(vs)
   }
 }
 
-@AsyncInitialized
 export default class ShapeWizard {
   public static readonly INPUT_WIDTH = 70
   public static readonly INPUT_HEIGHT = 70
@@ -78,27 +72,16 @@ export default class ShapeWizard {
     pin('shapes', this)
   }
 
-  @AsyncInit
-  public async init() {
-    const childInits = shapes.slice(1).map((shape) => {
-      return this.regressors[shape].init()
-    })
-    childInits.push(this.classifier.init())
-    await Promise.all(childInits)
-  }
-
-  @RequiresAsyncInit
   public async call(
     image: tf.Tensor3D
   ): Promise<[ShapeClassification, Array<Point>]> {
-    const batch = tf.expandDims(image) as tf.Tensor4D
-    const [shape, certainty] = this.classifier.classify(batch)
+    const [shape, certainty] = await this.classifier.classify(image)
 
     if (!this.regressors[shape]) return [shape, []]
     if (certainty < this.uncertaintyTolerance)
       return [ShapeClassification.OTHER, []]
 
-    const vertices = await this.regressors[shape].vertices(batch)
+    const vertices = await this.regressors[shape].vertices(image)
     const points = vertices.map(
       (vertice) =>
         new Point(

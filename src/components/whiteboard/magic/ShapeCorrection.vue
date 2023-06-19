@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import Logger from 'js-logger'
 import type { Shape } from '@/common/definitions/Shape'
@@ -36,7 +36,6 @@ function startCorrection() {
 
 async function commitCorrection() {
   loaderState.value.isTrackingPointer = false
-  loaderState.value.isLoading = false
   let correction = await correctionPromise
 
   if (!correction) {
@@ -46,6 +45,7 @@ async function commitCorrection() {
   }
 
   loaderState.value.wasCorrectionSuccessful = true
+  loaderState.value.isLoading = false
   canvasStore.currentlyDrawnShape = null
   canvasStore.addDrawnShape(correction)
   logger.debug('Shape correction commited')
@@ -75,13 +75,13 @@ function handleTransitionFromIdle(nextState: ECorrectionRequestState) {
   }
 }
 
-function handleTransitionFromStarted(nextState: ECorrectionRequestState) {
+async function handleTransitionFromStarted(nextState: ECorrectionRequestState) {
   switch (nextState) {
     case ECorrectionRequestState.IDLE:
       hideLoader()
       break
     case ECorrectionRequestState.COMMIT:
-      commitCorrection()
+      await commitCorrection()
       setTimeout(hideLoader, 300)
       break
     default:
@@ -120,10 +120,6 @@ watch(correctionRequestState, (nextState, previousState) => {
       handleUnexpectedTransition(previousState, nextState)
       break
   }
-})
-
-onMounted(async () => {
-  await shapeCorrector.init()
 })
 </script>
 

@@ -40,7 +40,6 @@ function showLoadingLoader() {
 
 async function commitRecognition() {
   loaderState.value.isTrackingPointer = false
-  loaderState.value.isLoading = false
   const prediction = await recognitionPromise
 
   if (!prediction) {
@@ -50,6 +49,7 @@ async function commitRecognition() {
   }
 
   loaderState.value.wasCorrectionSuccessful = true
+  loaderState.value.isLoading = false
   canvasStore.addDrawnShape(prediction)
   eraseComplexShape(shapeBeingRecognized!)
   shapeBeingRecognized = null
@@ -90,14 +90,14 @@ function handleTransitionFromIdle(nextState: ECorrectionRequestState) {
   }
 }
 
-function handleTransitionFromStarted(nextState: ECorrectionRequestState) {
+async function handleTransitionFromStarted(nextState: ECorrectionRequestState) {
   switch (nextState) {
     case ECorrectionRequestState.IDLE:
       hideLoader()
       shapeBeingRecognized = null
       break
     case ECorrectionRequestState.COMMIT:
-      commitRecognition()
+      await commitRecognition()
       setTimeout(hideLoader, 300)
       break
     default:
