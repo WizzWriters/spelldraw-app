@@ -10,6 +10,7 @@ import {
   AsyncInitialized
 } from '@/utils/decorators/AsyncInit'
 import { MissingMetadata } from '@/utils/exceptions/MissingMetadata'
+import TfModel from './TfModel'
 
 class CtcDecoder {
   private classes: string
@@ -48,29 +49,27 @@ class CtcDecoder {
 
 @AsyncInitialized
 export default class TextOracle {
-  public model: TensorflowModel
+  public model: TfModel
   public ctc!: CtcDecoder
   protected logger: ILogger
 
   constructor() {
-    this.model = new TensorflowModel('TextOracle/oracle')
+    this.model = new TfModel('TextOracle/oracle')
     this.logger = Logger.get('Oracle')
     pin('oracle', this)
   }
 
   @AsyncInit
   public async init() {
-    await this.model.init()
-
-    if (!this.model.meta().characters) throw new MissingMetadata()
-    this.ctc = new CtcDecoder(this.model.meta().characters)
+    const chars = (await this.model.meta()).characters
+    if (!chars) throw new MissingMetadata()
+    this.ctc = new CtcDecoder(chars)
   }
 
   @RequiresAsyncInit
   public async call(image: tf.Tensor3D): Promise<string> {
-    const preds = this.model.call(tf.expandDims(image))
-    const codes = await tf.squeeze(preds[0]).array()
-    const text = this.ctc.decode(codes as number[][])
+    const codes = await this.model.call(await image.array())
+    const text = this.ctc.decode(codes as unknown as number[][])
     this.logger.debug(text)
     return text
   }

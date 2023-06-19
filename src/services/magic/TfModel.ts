@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs'
 import type { Dictionary } from 'lodash'
 
-type Tensor = number | Tensor[]
+export type Tensor = number[] | Tensor[]
 
 export default class TfModel {
   protected worker: Worker
@@ -12,10 +12,11 @@ export default class TfModel {
   }
 
   protected async post(message: null | Tensor) {
+    const { port1, port2 } = new MessageChannel()
     return new Promise((resolve, reject) => {
-      this.worker.onmessage = (event) => resolve(event.data)
+      port1.onmessage = (event) => resolve(event.data)
       this.worker.onerror = (error) => reject(error)
-      this.worker.postMessage(message)
+      this.worker.postMessage(message, [port2])
     })
   }
 
@@ -23,7 +24,7 @@ export default class TfModel {
     return (await this.post(null)) as Dictionary<any>
   }
 
-  public async call(x: Tensor) {
-    return (await this.post(x)) as Tensor
+  public async call(x: Tensor): Promise<Tensor> {
+    return ((await this.post(x)) as Tensor[])[0]
   }
 }

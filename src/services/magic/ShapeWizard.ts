@@ -112,4 +112,4 @@ export default class ShapeWizard {
 }
 
 pin('tf', tf) //TODO: move this somewhere else in the future
-window.wrk = new TfModel('ShapeWizard/rectangle')
+// window.wrk = new TfModel('TextOracle/oracle')
