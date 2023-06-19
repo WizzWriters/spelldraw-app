@@ -10,7 +10,7 @@ export const useToolbarStore = defineStore('toolbar', () => {
   const selectedShapesIds = ref(new Set<string>())
   const selectedStrokeColor = ref(new RgbColor(0, 0, 0, 1))
   const selectedFillColor = ref(new RgbColor(0, 0, 0, 0))
-  const selectedStrokeWidth = ref(1)
+  const selectedStrokeWidth = ref(1.5)
 
   function addShapeId(id: string, idSet: Ref<Set<string>>) {
     idSet.value.add(id)
