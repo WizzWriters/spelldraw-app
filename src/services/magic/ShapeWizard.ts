@@ -14,14 +14,13 @@ export enum ShapeClassification {
 type point = [number, number]
 const shapes = lodash.values(ShapeClassification)
 const path_name = 'ShapeWizard'
-const argmax = (array: number[]) => lodash.indexOf(array, lodash.max(array))
 
 class Classifier extends TensorflowModel {
   public async classify(
     image: tf.Tensor3D
   ): Promise<[ShapeClassification, number]> {
     const dist = await this.call(await image.array())
-    const shape = shapes[argmax(dist as number[])]
+    const shape = shapes[tf.argMax(dist).dataSync()[0]]
     const certainty = tf.max(dist).dataSync()[0]
     return [shape, certainty]
   }
