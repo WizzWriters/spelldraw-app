@@ -8,6 +8,7 @@ import {
   AsyncInitialized,
   RequiresAsyncInit
 } from '@/utils/decorators/AsyncInit'
+import TfModel from './TfModel'
 
 export enum ShapeClassification {
   OTHER = 'other',
@@ -111,3 +112,4 @@ export default class ShapeWizard {
 }
 
 pin('tf', tf) //TODO: move this somewhere else in the future
+window.wrk = new TfModel('ShapeWizard/rectangle')

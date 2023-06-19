@@ -6,6 +6,9 @@ export default {
 
     let logLevel: ILogLevel
     switch (import.meta.env.VITE_LOG_LEVEL) {
+      case 'TRACE':
+        logLevel = Logger.TRACE
+        break
       case 'DEBUG':
         logLevel = Logger.DEBUG
         break
