@@ -44,6 +44,7 @@ async function commitRecognition() {
 
   if (!prediction) {
     loaderState.value.wasCorrectionSuccessful = false
+    loaderState.value.isLoading = false
     logger.debug('No words recognized')
     return
   }
