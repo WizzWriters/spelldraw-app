@@ -2,7 +2,7 @@ import * as tf from '@tensorflow/tfjs'
 import Logger from 'js-logger'
 import type { Dictionary } from 'lodash'
 import LoggerHelper from '@/helpers/LoggerHelper'
-import type { Tensor } from './TfModel'
+import type { Tensor } from './TensorflowModel'
 
 async function call(x: Tensor) {
   const input = tf.expandDims(x)

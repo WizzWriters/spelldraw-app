@@ -1,9 +1,8 @@
 import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
 import lodash from 'lodash'
-import TensorflowModel from './TensorflowModel'
 import { Point } from '@/common/definitions/Geometry'
-import TfModel from './TfModel'
+import TensorflowModel from './TensorflowModel'
 
 export enum ShapeClassification {
   OTHER = 'other',
@@ -17,7 +16,7 @@ const shapes = lodash.values(ShapeClassification)
 const path_name = 'ShapeWizard'
 const argmax = (array: number[]) => lodash.indexOf(array, lodash.max(array))
 
-class Classifier extends TfModel {
+class Classifier extends TensorflowModel {
   public async classify(
     image: tf.Tensor3D
   ): Promise<[ShapeClassification, number]> {
@@ -28,7 +27,7 @@ class Classifier extends TfModel {
   }
 }
 
-class Regressor extends TfModel {
+class Regressor extends TensorflowModel {
   private sortByKeys(arr: point[], keys: number[]) {
     const pairs: Array<[point, number]> = arr.map((a, i) => [a, keys[i]])
     pairs.sort((a, b) => a[1] - b[1])

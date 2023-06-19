@@ -1,37 +1,29 @@
-import Logger from 'js-logger'
-import type { ILogger } from 'js-logger'
-import * as tf from '@tensorflow/tfjs'
-import {
-  AsyncInit,
-  RequiresAsyncInit,
-  AsyncInitialized
-} from '@/utils/decorators/AsyncInit'
 import type { Dictionary } from 'lodash'
 
-@AsyncInitialized
+export type Tensor = number[] | Tensor[]
+
 export default class TensorflowModel {
-  private name: string
-  protected logger: ILogger
-  protected layers!: tf.LayersModel
+  protected worker: Worker
 
   constructor(name: string) {
-    this.logger = Logger.get(name)
-    this.name = name
+    const path = '/src/services/magic/TensorflowWorker.ts'
+    this.worker = new Worker(path, { type: 'module', name })
   }
 
-  @AsyncInit
-  public async init() {
-    this.layers = await tf.loadLayersModel(`./models/${this.name}/model.json`)
-    this.logger.debug('Model initialized!', this.layers)
+  protected async post(message: null | Tensor) {
+    const { port1, port2 } = new MessageChannel()
+    return new Promise((resolve, reject) => {
+      port1.onmessage = (event) => resolve(event.data)
+      this.worker.onerror = (error) => reject(error)
+      this.worker.postMessage(message, [port2])
+    })
   }
 
-  @RequiresAsyncInit
-  public meta(): Dictionary<any> {
-    return this.layers.getConfig().name as Dictionary<any>
+  public async meta(): Promise<Dictionary<any>> {
+    return (await this.post(null)) as Dictionary<any>
   }
 
-  @RequiresAsyncInit
-  public call(x: tf.Tensor<tf.Rank>) {
-    return this.layers.call(x, {}) as [tf.Tensor<tf.Rank>]
+  public async call(x: Tensor): Promise<Tensor> {
+    return ((await this.post(x)) as Tensor[])[0]
   }
 }

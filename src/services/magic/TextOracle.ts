@@ -3,14 +3,13 @@ import Logger from 'js-logger'
 import type { ILogger } from 'js-logger'
 import lodash from 'lodash'
 import pin from '@/helpers/Pinner'
-import TensorflowModel from './TensorflowModel'
 import {
   AsyncInit,
   RequiresAsyncInit,
   AsyncInitialized
 } from '@/utils/decorators/AsyncInit'
 import { MissingMetadata } from '@/utils/exceptions/MissingMetadata'
-import TfModel from './TfModel'
+import TensorflowModel from './TensorflowModel'
 
 class CtcDecoder {
   private classes: string
@@ -49,12 +48,12 @@ class CtcDecoder {
 
 @AsyncInitialized
 export default class TextOracle {
-  public model: TfModel
+  public model: TensorflowModel
   public ctc!: CtcDecoder
   protected logger: ILogger
 
   constructor() {
-    this.model = new TfModel('TextOracle/oracle')
+    this.model = new TensorflowModel('TextOracle/oracle')
     this.logger = Logger.get('Oracle')
     pin('oracle', this)
   }

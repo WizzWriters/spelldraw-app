@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
-import { onMounted, ref, watch } from 'vue'
+import { ref, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import Logger from 'js-logger'
 import type { Shape } from '@/common/definitions/Shape'
