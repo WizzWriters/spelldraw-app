@@ -8,6 +8,8 @@ For now we only support running this project under Linux operating system.
 
 ### Environment setup
 
+First install and run the server: https://github.com/WizzWriters/spelldraw-server.
+
 Because we are using TensorFlow.js which requires specific version of Tensorflow
 and python, there are some additional steps needed first.
 
