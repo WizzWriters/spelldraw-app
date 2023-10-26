@@ -56,6 +56,7 @@ async function handleModelCallRequest(
 async function handleInitRequest(
   model: tf.LayersModel
 ): Promise<TensorflowWorkerInitResponse> {
+  /* Feed the model with dummy data to load it eagerly */
   const shape = model.inputs[0].shape.slice(1) as number[]
   model.call(tf.zeros([1, ...shape]), {})
   logger.debug('Model initialized!', model)

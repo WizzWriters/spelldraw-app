@@ -8,16 +8,26 @@ import {
   type TensorflowWorkerRequest,
   type TensorflowWorkerResponse
 } from './TensorflowWorkerMessage'
+import {
+  AsyncInit,
+  AsyncInitialized,
+  RequiresAsyncInit
+} from '@/utils/decorators/AsyncInit'
 
+@AsyncInitialized
 export default class TensorflowModel {
   protected worker: Worker
 
   constructor(name: string) {
     this.worker = new Worker(WorkerPath, { type: 'module', name })
-    this.postRequest({ type: TensorflowWorkerMessageType.INIT_REQUEST })
   }
 
-  protected async postRequest(
+  @AsyncInit
+  public async init() {
+    await this.postRequest({ type: TensorflowWorkerMessageType.INIT_REQUEST })
+  }
+
+  private async postRequest(
     message: TensorflowWorkerRequest
   ): Promise<TensorflowWorkerResponse> {
     const { port1, port2 } = new MessageChannel()
@@ -28,6 +38,7 @@ export default class TensorflowModel {
     })
   }
 
+  @RequiresAsyncInit
   public async meta(): Promise<Dictionary<any>> {
     const response = (await this.postRequest({
       type: TensorflowWorkerMessageType.META_REQUEST
@@ -35,6 +46,7 @@ export default class TensorflowModel {
     return response.meta
   }
 
+  @RequiresAsyncInit
   public async call(tensor: Tensor): Promise<Tensor> {
     const response = (await this.postRequest({
       type: TensorflowWorkerMessageType.CALL_REQUEST,
