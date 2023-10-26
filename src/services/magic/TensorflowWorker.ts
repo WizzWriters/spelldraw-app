@@ -34,8 +34,8 @@ tf.loadLayersModel(modelUrl).then((model) => {
   }
 
   logger.debug('Model initialized!', model)
-  const shape = model.inputs[0].shape.slice(1)
-  if (!shape) model.call(tf.zeros([1, ...shape]), {})
+  const shape = model.inputs[0].shape.slice(1) as number[]
+  model.call(tf.zeros([1, ...shape]), {})
   queue.map(handleMessage)
   self.onmessage = handleMessage
 })
