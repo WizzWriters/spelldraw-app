@@ -2,10 +2,20 @@ import type { Tensor } from '@/common/definitions/Tensor'
 import type { Dictionary } from 'lodash'
 
 export enum TensorflowWorkerMessageType {
+  INIT_REQUEST,
+  INIT_RESPONSE,
   META_REQUEST,
   META_RESPONSE,
   CALL_REQUEST,
   CALL_RESPONSE
+}
+
+export interface TensorflowWorkerInitRequest {
+  type: TensorflowWorkerMessageType.INIT_REQUEST
+}
+
+export interface TensorflowWorkerInitResponse {
+  type: TensorflowWorkerMessageType.INIT_RESPONSE
 }
 
 export interface TensorflowWorkerMetaRequest {
@@ -30,10 +40,12 @@ export interface TensorflowWorkerCallResponse {
 export type TensorflowWorkerRequest =
   | TensorflowWorkerCallRequest
   | TensorflowWorkerMetaRequest
+  | TensorflowWorkerInitRequest
 
 export type TensorflowWorkerResponse =
   | TensorflowWorkerMetaResponse
   | TensorflowWorkerCallResponse
+  | TensorflowWorkerInitResponse
 
 export type TensorflowWorkerMessage =
   | TensorflowWorkerRequest

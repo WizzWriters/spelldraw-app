@@ -14,6 +14,7 @@ export default class TensorflowModel {
 
   constructor(name: string) {
     this.worker = new Worker(WorkerPath, { type: 'module', name })
+    this.postRequest({ type: TensorflowWorkerMessageType.INIT_REQUEST })
   }
 
   protected async postRequest(

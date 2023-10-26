@@ -8,7 +8,8 @@ import {
   type TensorflowWorkerCallResponse,
   type TensorflowWorkerRequest,
   type TensorflowWorkerResponse,
-  type TensorflowWorkerMetaResponse
+  type TensorflowWorkerMetaResponse,
+  type TensorflowWorkerInitResponse
 } from './TensorflowWorkerMessage'
 
 async function call(model: tf.LayersModel, tensor: Tensor) {
@@ -52,6 +53,17 @@ async function handleModelCallRequest(
   }
 }
 
+async function handleInitRequest(
+  model: tf.LayersModel
+): Promise<TensorflowWorkerInitResponse> {
+  const shape = model.inputs[0].shape.slice(1) as number[]
+  model.call(tf.zeros([1, ...shape]), {})
+  logger.debug('Model initialized!', model)
+  return {
+    type: TensorflowWorkerMessageType.INIT_RESPONSE
+  }
+}
+
 function postResponse(port: MessagePort, response: TensorflowWorkerResponse) {
   port.postMessage(response)
 }
@@ -69,6 +81,9 @@ async function handleRequest(
     case TensorflowWorkerMessageType.META_REQUEST:
       response = handleModelMetaRequest(model)
       break
+    case TensorflowWorkerMessageType.INIT_REQUEST:
+      response = await handleInitRequest(model)
+      break
   }
   postResponse(port, response)
 }
@@ -82,9 +97,6 @@ function handleMessage(model: tf.LayersModel) {
 }
 
 tf.loadLayersModel(modelUrl).then((model) => {
-  logger.debug('Model initialized!', model)
-  const shape = model.inputs[0].shape.slice(1) as number[]
-  model.call(tf.zeros([1, ...shape]), {})
   queue.map(handleMessage(model))
   self.onmessage = handleMessage(model)
 })
