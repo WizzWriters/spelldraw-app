@@ -3,6 +3,11 @@ import * as tf from '@tensorflow/tfjs'
 import lodash from 'lodash'
 import { Point } from '@/common/definitions/Geometry'
 import TensorflowModel from './TensorflowModel'
+import {
+  AsyncInit,
+  AsyncInitialized,
+  RequiresAsyncInit
+} from '@/utils/decorators/AsyncInit'
 
 export enum ShapeClassification {
   OTHER = 'other',
@@ -15,7 +20,14 @@ type point = [number, number]
 const shapes = lodash.values(ShapeClassification)
 const path_name = 'ShapeWizard'
 
+@AsyncInitialized
 class Classifier extends TensorflowModel {
+  @AsyncInit
+  public async init() {
+    await super.init()
+  }
+
+  @RequiresAsyncInit
   public async classify(
     image: tf.Tensor3D
   ): Promise<[ShapeClassification, number]> {
@@ -26,7 +38,13 @@ class Classifier extends TensorflowModel {
   }
 }
 
+@AsyncInitialized
 class Regressor extends TensorflowModel {
+  @AsyncInit
+  public async init() {
+    await super.init()
+  }
+
   private sortByKeys(arr: point[], keys: number[]) {
     const pairs: Array<[point, number]> = arr.map((a, i) => [a, keys[i]])
     pairs.sort((a, b) => a[1] - b[1])
@@ -42,6 +60,7 @@ class Regressor extends TensorflowModel {
     return this.sortByKeys(vsarr, angles)
   }
 
+  @RequiresAsyncInit
   public async vertices(image: tf.Tensor3D) {
     const output = await this.call(await image.array())
     const vs = tf.reshape(output, [-1, 2]) as tf.Tensor2D
@@ -49,6 +68,7 @@ class Regressor extends TensorflowModel {
   }
 }
 
+@AsyncInitialized
 export default class ShapeWizard {
   public static readonly INPUT_WIDTH = 70
   public static readonly INPUT_HEIGHT = 70
@@ -72,6 +92,16 @@ export default class ShapeWizard {
     pin('shapes', this)
   }
 
+  @AsyncInit
+  public async init() {
+    const promises = [
+      this.classifier.init(),
+      ...lodash.values(this.regressors).map((regressor) => regressor.init())
+    ]
+    await Promise.all(promises)
+  }
+
+  @RequiresAsyncInit
   public async call(
     image: tf.Tensor3D
   ): Promise<[ShapeClassification, Array<Point>]> {

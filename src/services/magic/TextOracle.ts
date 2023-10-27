@@ -60,6 +60,7 @@ export default class TextOracle {
 
   @AsyncInit
   public async init() {
+    await this.model.init()
     const chars = (await this.model.meta()).characters
     if (!chars) throw new MissingMetadata()
     this.ctc = new CtcDecoder(chars)
