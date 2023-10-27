@@ -140,7 +140,7 @@ watch(correctionRequestState, (nextState, previousState) => {
 
 onMounted(async () => {
   await handwritingRecognizer.init()
-  logger.debug('Hand recognition initialized!')
+  logger.debug('Handwriting recognition initialized!')
 })
 </script>
 
