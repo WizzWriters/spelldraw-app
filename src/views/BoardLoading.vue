@@ -2,6 +2,7 @@
 import { useBoardStore } from '@/store/BoardStore'
 import { onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import PageLoader from '@/components/loading/PageLoader.vue'
 
 const router = useRouter()
 
@@ -13,19 +14,5 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="pageloader is-active">
-    <span class="title">Loading...</span>
-  </div>
+  <PageLoader> Prepering the board... </PageLoader>
 </template>
-
-<style scoped lang="scss">
-.pageloader {
-  bottom: unset;
-  top: unset;
-  left: unset;
-  right: unset;
-  position: relative;
-  width: 100%;
-  height: 100%;
-}
-</style>
