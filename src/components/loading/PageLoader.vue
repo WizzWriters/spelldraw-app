@@ -12,7 +12,6 @@
   top: unset;
   left: unset;
   right: unset;
-  position: relative;
   width: 100%;
   height: 100%;
 }

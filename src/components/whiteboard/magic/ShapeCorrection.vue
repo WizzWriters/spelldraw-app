@@ -14,6 +14,8 @@ const shapeCorrector = new ShapeCorrector()
 const magicStore = useMagicStore()
 const canvasStore = useCanvasStore()
 
+const emit = defineEmits<{ (e: 'shapeCorrectionReady'): void }>()
+
 const loaderState = ref({
   isShown: false,
   isLoading: true,
@@ -126,6 +128,7 @@ watch(correctionRequestState, (nextState, previousState) => {
 onMounted(async () => {
   await shapeCorrector.init()
   logger.debug('Shape corrector initialized!')
+  emit('shapeCorrectionReady')
 })
 </script>
 

@@ -12,7 +12,6 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, watch, type Ref } from 'vue'
-import HandwritingRecognition from '../../magic/HandwritingRecognition.vue'
 import ToolButton from './ToolButton.vue'
 
 const SELECT_BOX_FILL = new RgbColor(37, 150, 190, 0.2)
@@ -141,7 +140,6 @@ onMounted(() => {
     >
       <FontAwesomeIcon id="select-icon" icon="fa-object-group" />
     </ToolButton>
-    <HandwritingRecognition />
   </div>
 </template>
 

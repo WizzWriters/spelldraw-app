@@ -14,7 +14,6 @@ import { onMounted, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
 import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
 import StallDetector from '@/services/canvas/StallDetector'
-import ShapeCorrection from '../../magic/ShapeCorrection.vue'
 
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
@@ -92,5 +91,4 @@ onMounted(() => {
   <ToolButton name="Draw" :is-active="props.isActive" @click="emit('click')">
     <FontAwesomeIcon icon="fa-pencil" />
   </ToolButton>
-  <ShapeCorrection />
 </template>

@@ -11,6 +11,9 @@ import { onMounted, ref, watch } from 'vue'
 import CorrectionLoader from './CorrectionLoader.vue'
 
 const logger = Logger.get('TextPrediction.vue')
+
+const emit = defineEmits<{ (e: 'handwritingRecognitionReady'): void }>()
+
 const handwritingRecognizer = new HandwritingRecognizer()
 const magicStore = useMagicStore()
 const toolbarStore = useToolbarStore()
@@ -141,6 +144,7 @@ watch(correctionRequestState, (nextState, previousState) => {
 onMounted(async () => {
   await handwritingRecognizer.init()
   logger.debug('Handwriting recognition initialized!')
+  emit('handwritingRecognitionReady')
 })
 </script>
 
