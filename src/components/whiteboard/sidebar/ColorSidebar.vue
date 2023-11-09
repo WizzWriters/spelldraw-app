@@ -8,6 +8,8 @@ import { ColorPicker } from 'vue-color-kit'
 const toolbarStore = useToolbarStore()
 
 const settingStroke = ref(true)
+let shouldBeCommited = true
+
 const color = computed(() => {
   if (settingStroke.value) {
     return rgbColorToString(toolbarStore.selectedStrokeColor)
@@ -21,17 +23,29 @@ const strokeWidth = computed({
     return toolbarStore.selectedStrokeWidth.toFixed(1)
   },
   set(value) {
-    toolbarStore.setStrokeWidth(parseFloat(value))
+    toolbarStore.setStrokeWidth(parseFloat(value), shouldBeCommited)
   }
 })
 
 function colorChanged(newColor: any) {
   const { r, g, b, a } = newColor.rgba
+  const rgbColor = new RgbColor(r, g, b, a)
   if (settingStroke.value) {
-    toolbarStore.setStrokeColor(new RgbColor(r, g, b, a))
+    toolbarStore.setStrokeColor(rgbColor, shouldBeCommited)
   } else {
-    toolbarStore.setFillColor(new RgbColor(r, g, b, a))
+    toolbarStore.setFillColor(rgbColor, shouldBeCommited)
   }
+}
+
+function handleAdjustmentStop() {
+  document.removeEventListener('pointerup', handleAdjustmentStop)
+  shouldBeCommited = true
+  toolbarStore.commitSelectedShapes()
+}
+
+function handleAdjustmentStarted() {
+  shouldBeCommited = false
+  document.addEventListener('pointerup', handleAdjustmentStop)
 }
 </script>
 
@@ -59,6 +73,7 @@ function colorChanged(newColor: any) {
         :color="color"
         :colors-default="[]"
         @changeColor="colorChanged"
+        @pointerdown="handleAdjustmentStarted"
       />
       <div class="mt-4">Stroke width</div>
       <div class="is-flex is-align-items-self-end">
@@ -69,6 +84,7 @@ function colorChanged(newColor: any) {
           min="1"
           max="10"
           v-model="strokeWidth"
+          @pointerdown="handleAdjustmentStarted"
           type="range"
         />
         <div class="mx-2">{{ strokeWidth }}</div>
@@ -83,6 +99,7 @@ function colorChanged(newColor: any) {
         :color="color"
         :colors-default="[]"
         @changeColor="colorChanged"
+        @pointerdown="handleAdjustmentStarted"
       />
     </div>
   </div>
