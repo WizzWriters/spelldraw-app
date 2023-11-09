@@ -3,6 +3,7 @@ import type { ITool } from '@/common/definitions/Tool'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
 import { useCanvasStore } from './CanvasStore'
+import type { Shape } from '@/common/definitions/Shape'
 
 export const useToolbarStore = defineStore('toolbar', () => {
   const activeTool: Ref<ITool | null> = ref(null)
@@ -48,37 +49,47 @@ export const useToolbarStore = defineStore('toolbar', () => {
     clearShapeIds(intersectingShapesIds)
   }
 
-  function setStrokeColor(color: RgbColor) {
+  function foreachSelectedShape(callback: (shape: Shape) => void) {
+    const canvasStore = useCanvasStore()
+    for (const shapeId of selectedShapesIds.value) {
+      const shape = canvasStore.getShapeById(shapeId)
+      if (!shape) continue
+      callback(shape)
+    }
+  }
+
+  function setStrokeColor(color: RgbColor, commit = true) {
     const canvasStore = useCanvasStore()
     selectedStrokeColor.value = color
-    for (const shapeId of selectedShapesIds.value) {
-      const shape = canvasStore.getShapeById(shapeId)
-      if (!shape) continue
+    foreachSelectedShape((shape) => {
       shape.strokeColor = color
-      canvasStore.updateShape(shape)
-    }
+      canvasStore.updateShape(shape, commit)
+    })
   }
 
-  function setFillColor(color: RgbColor) {
+  function setFillColor(color: RgbColor, commit = true) {
     const canvasStore = useCanvasStore()
     selectedFillColor.value = color
-    for (const shapeId of selectedShapesIds.value) {
-      const shape = canvasStore.getShapeById(shapeId)
-      if (!shape) continue
+    foreachSelectedShape((shape) => {
       shape.fillColor = color
-      canvasStore.updateShape(shape)
-    }
+      canvasStore.updateShape(shape, commit)
+    })
   }
 
-  function setStrokeWidth(strokeWidth: number) {
+  function setStrokeWidth(strokeWidth: number, commit = true) {
     const canvasStore = useCanvasStore()
     selectedStrokeWidth.value = strokeWidth
-    for (const shapeId of selectedShapesIds.value) {
-      const shape = canvasStore.getShapeById(shapeId)
-      if (!shape) continue
+    foreachSelectedShape((shape) => {
       shape.strokeWidth = strokeWidth
-      canvasStore.updateShape(shape)
-    }
+      canvasStore.updateShape(shape, commit)
+    })
+  }
+
+  function commitSelectedShapes() {
+    const canvasStore = useCanvasStore()
+    foreachSelectedShape((shape) => {
+      canvasStore.updateShape(shape, true)
+    })
   }
 
   return {
@@ -96,6 +107,7 @@ export const useToolbarStore = defineStore('toolbar', () => {
     clearIntersectingShapes,
     setStrokeColor,
     setFillColor,
-    setStrokeWidth
+    setStrokeWidth,
+    commitSelectedShapes
   }
 })
