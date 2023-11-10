@@ -17,6 +17,7 @@ import EventBus, { EShapeEvent } from '@/services/bus/EventBus'
 
 const props = defineProps<{
   isActive: Boolean
+  isDisabled: Boolean
 }>()
 
 const logger = Logger.get('EraserTool')
@@ -102,7 +103,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Erase" :is-active="props.isActive">
+  <ToolButton
+    name="Erase"
+    :is-active="props.isActive"
+    :is-disabled="props.isDisabled"
+  >
     <FontAwesomeIcon icon="fa-eraser" />
   </ToolButton>
 </template>

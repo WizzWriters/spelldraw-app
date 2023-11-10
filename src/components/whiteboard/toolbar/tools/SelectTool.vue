@@ -20,6 +20,7 @@ const SELECT_BOX_STROKE = new RgbColor(51, 173, 255)
 const emit = defineEmits<{ (e: 'click'): void }>()
 const props = defineProps<{
   isActive: Boolean
+  isDisabled: Boolean
 }>()
 
 const logger = Logger.get('SelectTool')
@@ -136,6 +137,7 @@ onMounted(() => {
     <ToolButton
       name="Select"
       :is-active="props.isActive"
+      :is-disabled="props.isDisabled"
       @click="emit('click')"
     >
       <FontAwesomeIcon id="select-icon" icon="fa-object-group" />

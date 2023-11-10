@@ -23,6 +23,7 @@ const magicStore = useMagicStore()
 const emit = defineEmits<{ (e: 'drawToolReady'): void; (e: 'click'): void }>()
 const props = defineProps<{
   isActive: Boolean
+  isDisabled: Boolean
 }>()
 
 const handlePointerEvent =
@@ -88,7 +89,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Draw" :is-active="props.isActive" @click="emit('click')">
+  <ToolButton
+    name="Draw"
+    :is-active="props.isActive"
+    @click="emit('click')"
+    :is-disabled="props.isDisabled"
+  >
     <FontAwesomeIcon icon="fa-pencil" />
   </ToolButton>
 </template>
