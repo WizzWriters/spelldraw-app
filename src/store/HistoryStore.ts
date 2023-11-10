@@ -26,9 +26,6 @@ export const useHistoryStore = defineStore('history', () => {
 
   function popEvent(): HistoryEvent {
     const event = undoBuffer.value.pop()!
-    if (event === undefined) {
-      console.log('Empty!')
-    }
     redoBuffer.value.push(event)
     return event
   }
