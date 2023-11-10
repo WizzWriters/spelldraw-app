@@ -1,16 +1,23 @@
+import type { Shape } from '@/common/definitions/Shape'
 import { defineStore } from 'pinia'
 import { computed, ref, type Ref } from 'vue'
 
 export enum HistoryEventType {
-  SHAPE_DRAWN
+  SHAPE_DRAWN,
+  SHAPE_DELETED
 }
 
 export interface ShapeDrawnEvent {
   type: HistoryEventType.SHAPE_DRAWN
-  shapeId: string
+  shape: Shape
 }
 
-type HistoryEvent = ShapeDrawnEvent
+export interface ShapeDeletedEvent {
+  type: HistoryEventType.SHAPE_DELETED
+  shape: Shape
+}
+
+type HistoryEvent = ShapeDrawnEvent | ShapeDeletedEvent
 
 export const useHistoryStore = defineStore('history', () => {
   const undoBuffer: Ref<Array<HistoryEvent>> = ref([])

@@ -18,9 +18,10 @@ export const useCanvasStore = defineStore('canvas', () => {
     if (commit) commitShapeCreation(shape)
   }
 
-  function removeDrawnShapeById(id: string, commit = true) {
+  function removeDrawnShapeById(id: string, commit = true, record = true) {
     const shapeIndex = drawnShapes.value.findIndex((shape) => shape.id == id)
     if (shapeIndex < 0) return
+    if (record) recordShapeDeletion(drawnShapes.value[shapeIndex])
     drawnShapes.value.splice(shapeIndex, 1)
     if (commit) commitShapeDeletion(id)
   }
@@ -43,7 +44,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     const historyStore = useHistoryStore()
     historyStore.pushEvent({
       type: HistoryEventType.SHAPE_DRAWN,
-      shapeId: shape.id
+      shape: shape
     })
   }
 
@@ -52,6 +53,14 @@ export const useCanvasStore = defineStore('canvas', () => {
     IoConnection.emit('shape_create', {
       board_id: boardStore.boardId,
       shape: ShapeSerializer.toJson(shape)
+    })
+  }
+
+  function recordShapeDeletion(shape: Shape) {
+    const historyStore = useHistoryStore()
+    historyStore.pushEvent({
+      type: HistoryEventType.SHAPE_DELETED,
+      shape: shape
     })
   }
 
