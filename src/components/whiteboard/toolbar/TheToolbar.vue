@@ -6,7 +6,8 @@ import DrawTool from './tools/DrawTool.vue'
 import EraserTool from './tools/EraserTool.vue'
 import MoveTool from './tools/MoveTool.vue'
 import SelectTool from './tools/SelectTool.vue'
-import UndoTool from './tools/UndoTool.vue'
+import UndoButton from './tools/UndoButton.vue'
+import RedoButton from './tools/RedoButton.vue'
 
 // const logger = Logger.get('Toolbar')
 const tools = ref([
@@ -38,7 +39,8 @@ function toggleActive(idx: number) {
         @click="toggleActive(idx)"
       />
       <ColorPicker />
-      <UndoTool />
+      <UndoButton />
+      <RedoButton />
     </div>
   </div>
 </template>
