@@ -29,12 +29,6 @@ const loaderState = ref({
   wasCorrectionSuccessful: false
 })
 
-function eraseComplexShape(shape: ComplexShape) {
-  for (const fragment of shape.fragments) {
-    canvasStore.removeDrawnShapeById(fragment.id)
-  }
-}
-
 function showLoadingLoader() {
   loaderState.value.isTrackingPointer = true
   loaderState.value.isLoading = true
@@ -54,8 +48,7 @@ async function commitRecognition() {
 
   loaderState.value.wasCorrectionSuccessful = true
   loaderState.value.isLoading = false
-  canvasStore.addDrawnShape(prediction)
-  eraseComplexShape(shapeBeingRecognized!)
+  canvasStore.replaceShapes(shapeBeingRecognized!.fragments, prediction)
   shapeBeingRecognized = null
 }
 

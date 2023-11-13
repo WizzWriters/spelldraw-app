@@ -4,7 +4,8 @@ import { computed, ref, type Ref } from 'vue'
 
 export enum HistoryEventType {
   SHAPE_DRAWN,
-  SHAPE_DELETED
+  SHAPE_DELETED,
+  SHAPES_REPLACED
 }
 
 export interface ShapeDrawnEvent {
@@ -17,7 +18,16 @@ export interface ShapeDeletedEvent {
   shape: Shape
 }
 
-type HistoryEvent = ShapeDrawnEvent | ShapeDeletedEvent
+export interface ShapesReplacedEvent {
+  type: HistoryEventType.SHAPES_REPLACED
+  oldShapes: Array<Shape>
+  newShape: Shape
+}
+
+export type HistoryEvent =
+  | ShapeDrawnEvent
+  | ShapeDeletedEvent
+  | ShapesReplacedEvent
 
 export const useHistoryStore = defineStore('history', () => {
   const undoBuffer: Ref<Array<HistoryEvent>> = ref([])

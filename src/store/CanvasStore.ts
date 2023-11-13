@@ -40,6 +40,19 @@ export const useCanvasStore = defineStore('canvas', () => {
     if (commit) commitShapeUpdate(updatedShape)
   }
 
+  function replaceShapes(
+    oldShapes: Array<Shape>,
+    newShape: Shape,
+    commit = true,
+    record = true
+  ) {
+    addDrawnShape(newShape, commit, false)
+    for (const fragment of oldShapes) {
+      removeDrawnShapeById(fragment.id, commit, false)
+    }
+    if (record) recordShapesReplacement(oldShapes, newShape)
+  }
+
   function recordShapeCreation(shape: Shape) {
     const historyStore = useHistoryStore()
     historyStore.pushEvent({
@@ -77,6 +90,15 @@ export const useCanvasStore = defineStore('canvas', () => {
     IoConnection.emit('shape_update', {
       board_id: boardStore.boardId,
       shape: ShapeSerializer.toJson(shape)
+    })
+  }
+
+  function recordShapesReplacement(oldShapes: Array<Shape>, newShape: Shape) {
+    const historyStore = useHistoryStore()
+    historyStore.pushEvent({
+      type: HistoryEventType.SHAPES_REPLACED,
+      oldShapes: oldShapes,
+      newShape: newShape
     })
   }
 
@@ -122,6 +144,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     removeDrawnShapeById,
     addDrawnShape,
     getShapeById,
-    updateShape
+    updateShape,
+    replaceShapes
   }
 })

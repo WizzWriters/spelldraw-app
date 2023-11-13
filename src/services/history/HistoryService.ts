@@ -3,7 +3,9 @@ import {
   useHistoryStore,
   type ShapeDrawnEvent,
   HistoryEventType,
-  type ShapeDeletedEvent
+  type ShapeDeletedEvent,
+  type HistoryEvent,
+  type ShapesReplacedEvent
 } from '@/store/HistoryStore'
 
 class HistoryService {
@@ -11,28 +13,40 @@ class HistoryService {
     const historyStore = useHistoryStore()
     const lastEvent = historyStore.popEvent()
     if (!lastEvent) return
-
-    switch (lastEvent.type) {
-      case HistoryEventType.SHAPE_DRAWN:
-        this.undoShapeDrawnEvent(lastEvent)
-        break
-      case HistoryEventType.SHAPE_DELETED:
-        this.undoShapeDeletedEvent(lastEvent)
-        break
-    }
+    this.undoEvent(lastEvent)
   }
 
   public redo() {
     const historyStore = useHistoryStore()
     const revertedEvent = historyStore.unpopEvent()
     if (!revertedEvent) return
+    this.redoEvent(revertedEvent)
+  }
 
-    switch (revertedEvent.type) {
+  private undoEvent(event: HistoryEvent) {
+    switch (event.type) {
       case HistoryEventType.SHAPE_DRAWN:
-        this.redoShapeDrawnEvent(revertedEvent)
+        this.undoShapeDrawnEvent(event)
         break
       case HistoryEventType.SHAPE_DELETED:
-        this.redoShapeDeletedEvent(revertedEvent)
+        this.undoShapeDeletedEvent(event)
+        break
+      case HistoryEventType.SHAPES_REPLACED:
+        this.undoShapesReplacement(event)
+        break
+    }
+  }
+
+  private redoEvent(event: HistoryEvent) {
+    switch (event.type) {
+      case HistoryEventType.SHAPE_DRAWN:
+        this.redoShapeDrawnEvent(event)
+        break
+      case HistoryEventType.SHAPE_DELETED:
+        this.redoShapeDeletedEvent(event)
+        break
+      case HistoryEventType.SHAPES_REPLACED:
+        this.redoShapesReplacement(event)
         break
     }
   }
@@ -57,6 +71,19 @@ class HistoryService {
     const canvasStore = useCanvasStore()
     const deletedShapeId = event.shape.id
     canvasStore.removeDrawnShapeById(deletedShapeId, true, false)
+  }
+
+  private undoShapesReplacement(event: ShapesReplacedEvent) {
+    const canvasStore = useCanvasStore()
+    canvasStore.removeDrawnShapeById(event.newShape.id, true, false)
+    for (const shape of event.oldShapes) {
+      canvasStore.addDrawnShape(shape, true, false)
+    }
+  }
+
+  private redoShapesReplacement(event: ShapesReplacedEvent) {
+    const canvasStore = useCanvasStore()
+    canvasStore.replaceShapes(event.oldShapes, event.newShape, true, false)
   }
 }
 
