@@ -6,7 +6,8 @@ export enum HistoryEventType {
   SHAPE_DRAWN,
   SHAPE_DELETED,
   SHAPE_UPDATED,
-  SHAPES_REPLACED
+  SHAPES_REPLACED,
+  AGGREGATE
 }
 
 export interface ShapeDrawnEvent {
@@ -31,15 +32,25 @@ export interface ShapeUpdatedEvent {
   newShape: Shape
 }
 
+export interface AggragateEvent {
+  type: HistoryEventType.AGGREGATE
+  events: Array<HistoryEvent>
+}
+
 export type HistoryEvent =
   | ShapeDrawnEvent
   | ShapeDeletedEvent
   | ShapeUpdatedEvent
   | ShapesReplacedEvent
+  | AggragateEvent
 
 export const useHistoryStore = defineStore('history', () => {
   const undoBuffer: Ref<Array<HistoryEvent>> = ref([])
   const redoBuffer: Ref<Array<HistoryEvent>> = ref([])
+
+  let aggregating = false
+  let aggragateBuffer: Array<HistoryEvent> = []
+
   const isUndoPossible = computed(() => {
     return undoBuffer.value.length > 0
   })
@@ -48,6 +59,7 @@ export const useHistoryStore = defineStore('history', () => {
   })
 
   function pushEvent(event: HistoryEvent) {
+    if (aggregating) return pushToAggragateBuffer(event)
     redoBuffer.value.length = 0 /* clears the array */
     undoBuffer.value.push(event)
   }
@@ -66,11 +78,34 @@ export const useHistoryStore = defineStore('history', () => {
     return event
   }
 
+  function startAggregating() {
+    aggregating = true
+  }
+
+  function stopAggregating() {
+    aggregating = false
+    pushAggragateBuffer()
+  }
+
+  function pushToAggragateBuffer(event: HistoryEvent) {
+    aggragateBuffer.push(event)
+  }
+
+  function pushAggragateBuffer() {
+    pushEvent({
+      type: HistoryEventType.AGGREGATE,
+      events: aggragateBuffer
+    })
+    aggragateBuffer = []
+  }
+
   return {
     isUndoPossible,
     isRedoPossible,
     pushEvent,
     popEvent,
-    unpopEvent
+    unpopEvent,
+    startAggregating,
+    stopAggregating
   }
 })

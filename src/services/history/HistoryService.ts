@@ -6,7 +6,8 @@ import {
   type ShapeDeletedEvent,
   type HistoryEvent,
   type ShapesReplacedEvent,
-  type ShapeUpdatedEvent
+  type ShapeUpdatedEvent,
+  type AggragateEvent
 } from '@/store/HistoryStore'
 
 class HistoryService {
@@ -33,10 +34,14 @@ class HistoryService {
         this.undoShapeDeletedEvent(event)
         break
       case HistoryEventType.SHAPES_REPLACED:
-        this.undoShapesReplacement(event)
+        this.undoShapesReplacementEvent(event)
         break
       case HistoryEventType.SHAPE_UPDATED:
         this.undoShapeUpdatedEvent(event)
+        break
+      case HistoryEventType.AGGREGATE:
+        this.undoAggregateEvent(event)
+        break
     }
   }
 
@@ -52,7 +57,10 @@ class HistoryService {
         this.redoShapeUpdatedEvent(event)
         break
       case HistoryEventType.SHAPES_REPLACED:
-        this.redoShapesReplacement(event)
+        this.redoShapesReplacementEvent(event)
+        break
+      case HistoryEventType.AGGREGATE:
+        this.redoAggregateEvent(event)
         break
     }
   }
@@ -89,7 +97,7 @@ class HistoryService {
     canvasStore.updateShape(event.newShape, false)
   }
 
-  private undoShapesReplacement(event: ShapesReplacedEvent) {
+  private undoShapesReplacementEvent(event: ShapesReplacedEvent) {
     const canvasStore = useCanvasStore()
     canvasStore.removeDrawnShapeById(event.newShape.id, false)
     for (const shape of event.oldShapes) {
@@ -97,9 +105,21 @@ class HistoryService {
     }
   }
 
-  private redoShapesReplacement(event: ShapesReplacedEvent) {
+  private redoShapesReplacementEvent(event: ShapesReplacedEvent) {
     const canvasStore = useCanvasStore()
     canvasStore.replaceShapes(event.oldShapes, event.newShape, false)
+  }
+
+  private undoAggregateEvent(event: AggragateEvent) {
+    for (let i = event.events.length - 1; i >= 0; i--) {
+      this.undoEvent(event.events[i])
+    }
+  }
+
+  private redoAggregateEvent(event: AggragateEvent) {
+    for (const e of event.events) {
+      this.redoEvent(e)
+    }
   }
 }
 
