@@ -6,11 +6,11 @@ import BezierShapeSmoother, {
   type BezierCurve
 } from '@/services/smoothing/BezierShapeSmoother'
 import { useCollisionDetection } from './composables/useCollisionDetection'
+import type ISvgShapeProperties from '../SvgShapeInterface'
 
 const props = defineProps<{
   shapeProp: any
-  highlighted: Boolean
-  collisionsEnabled: Boolean
+  shapeProperties: ISvgShapeProperties
 }>()
 
 const shape = toRef(props, 'shapeProp') as Ref<Polyline>
@@ -60,7 +60,7 @@ let pathCommand = computed(() => {
 useCollisionDetection(
   polylineElementRef,
   toRef(props, 'shapeProp'),
-  toRef(props, 'collisionsEnabled')
+  toRef(props.shapeProperties, 'subjectsToCollisionDetection')
 )
 </script>
 
@@ -71,14 +71,14 @@ useCollisionDetection(
     :cx="shape.pointList[0].xCoordinate"
     :cy="shape.pointList[0].yCoordinate"
     r="1"
-    :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+    :filter="props.shapeProperties.highlighted ? 'url(#neon-glow)' : ''"
   >
   </circle>
   <path
     v-else
     ref="polylineElementRef"
     :d="pathCommand"
-    :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+    :filter="props.shapeProperties.highlighted ? 'url(#neon-glow)' : ''"
     :stroke-width="shape.strokeWidth"
     stroke-linecap="round"
     shape-rendering="geometricPrecision"

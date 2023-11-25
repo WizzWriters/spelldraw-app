@@ -7,12 +7,17 @@ const props = defineProps<{
   shapes: Array<Shape>
   currentlyDrawnShape: Shape | null
 }>()
-const toolbarStore = useToolbarStore()
 
-function shouldBeHighlighted(shapeId: string) {
+function getShapeProperties(shapeId: string) {
+  const toolbarStore = useToolbarStore()
   const intersecting = toolbarStore.intersectingShapesIds.has(shapeId)
   const selected = toolbarStore.selectedShapesIds.has(shapeId)
-  return intersecting || selected
+  return {
+    selected,
+    intersecting,
+    highlighted: selected || intersecting,
+    subjectsToCollisionDetection: shapeId != props.currentlyDrawnShape?.id
+  }
 }
 </script>
 
@@ -20,14 +25,12 @@ function shouldBeHighlighted(shapeId: string) {
   <SvgShape
     v-if="currentlyDrawnShape"
     :shape="currentlyDrawnShape"
-    :highlighted="false"
-    :collisions-enabled="false"
+    :shape-properties="getShapeProperties(currentlyDrawnShape.id)"
   />
   <SvgShape
     v-for="shape in props.shapes"
     :key="shape.id"
     :shape="shape"
-    :highlighted="shouldBeHighlighted(shape.id)"
-    :collisions-enabled="true"
+    :shape-properties="getShapeProperties(shape.id)"
   />
 </template>

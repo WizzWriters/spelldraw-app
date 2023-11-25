@@ -2,11 +2,11 @@
 import { computed, ref, toRef, type Ref } from 'vue'
 import type { Polygon } from '@/common/definitions/Shape'
 import { useCollisionDetection } from './composables/useCollisionDetection'
+import type ISvgShapeProperties from '../SvgShapeInterface'
 
 const props = defineProps<{
   shapeProp: any
-  highlighted: Boolean
-  collisionsEnabled: Boolean
+  shapeProperties: ISvgShapeProperties
 }>()
 
 const shape = toRef(props, 'shapeProp') as Ref<Polygon>
@@ -24,7 +24,7 @@ let pointsListStr = computed(() => {
 useCollisionDetection(
   polygonElementRef,
   toRef(props, 'shapeProp'),
-  toRef(props, 'collisionsEnabled')
+  toRef(props.shapeProperties, 'subjectsToCollisionDetection')
 )
 </script>
 
@@ -32,7 +32,7 @@ useCollisionDetection(
   <polygon
     ref="polygonElementRef"
     :points="pointsListStr"
-    :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+    :filter="props.shapeProperties.highlighted ? 'url(#neon-glow)' : ''"
     :stroke-width="shape.strokeWidth"
   />
 </template>

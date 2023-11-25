@@ -11,11 +11,11 @@ import SvgPolylineShape from './shapes/SvgPolyline.vue'
 import SvgPolygonShape from './shapes/SvgPolygon.vue'
 import SvgRoundShape from './shapes/SvgRoundShape.vue'
 import SvgTextbox from './shapes/SvgTextbox.vue'
+import type SvgShapeProperties from './SvgShapeInterface'
 
 const props = defineProps<{
   shape: Shape
-  highlighted: Boolean
-  collisionsEnabled: Boolean
+  shapeProperties: SvgShapeProperties
 }>()
 
 function getShapeComponent(shape: Shape) {
@@ -31,8 +31,7 @@ function getShapeComponent(shape: Shape) {
   <component
     :is="getShapeComponent(props.shape)"
     :shape-prop="props.shape"
-    :highlighted="props.highlighted"
-    :collisionsEnabled="props.collisionsEnabled"
+    :shape-properties="props.shapeProperties"
     :stroke="rgbColorToString(props.shape.strokeColor)"
     :stroke-opacity="props.shape.strokeColor.opacity"
     :fill="rgbColorToString(props.shape.fillColor)"
