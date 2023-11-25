@@ -7,6 +7,9 @@ import BezierShapeSmoother, {
 } from '@/services/smoothing/BezierShapeSmoother'
 import { useCollisionDetection } from './composables/useCollisionDetection'
 import type ISvgShapeProperties from '../SvgShapeInterface'
+import { useColorStore } from '@/store/ColorStore'
+
+const colorStore = useColorStore()
 
 const props = defineProps<{
   shapeProp: any
@@ -57,6 +60,12 @@ let pathCommand = computed(() => {
   return result
 })
 
+let strokeWidth = computed(() => {
+  if (colorStore.adjustedStrokeWidth && props.shapeProperties.selected)
+    return colorStore.adjustedStrokeWidth
+  return shape.value.strokeWidth
+})
+
 useCollisionDetection(
   polylineElementRef,
   toRef(props, 'shapeProp'),
@@ -79,7 +88,7 @@ useCollisionDetection(
     ref="polylineElementRef"
     :d="pathCommand"
     :filter="props.shapeProperties.highlighted ? 'url(#neon-glow)' : ''"
-    :stroke-width="shape.strokeWidth"
+    :stroke-width="strokeWidth"
     stroke-linecap="round"
     shape-rendering="geometricPrecision"
   />

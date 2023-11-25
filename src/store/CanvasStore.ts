@@ -12,18 +12,18 @@ export const useCanvasStore = defineStore('canvas', () => {
   const canvasPosition = ref({ left: 0, top: 0 })
   const canvasOffset = ref({ x: 0, y: 0 })
 
-  function addDrawnShape(shape: Shape, commit = true, record = true) {
+  function addDrawnShape(shape: Shape, record = true) {
     drawnShapes.value.push(shape)
     if (record) recordShapeCreation(shape)
-    if (commit) commitShapeCreation(shape)
+    commitShapeCreation(shape)
   }
 
-  function removeDrawnShapeById(id: string, commit = true, record = true) {
+  function removeDrawnShapeById(id: string, record = true) {
     const shapeIndex = drawnShapes.value.findIndex((shape) => shape.id == id)
     if (shapeIndex < 0) return
     if (record) recordShapeDeletion(drawnShapes.value[shapeIndex])
     drawnShapes.value.splice(shapeIndex, 1)
-    if (commit) commitShapeDeletion(id)
+    commitShapeDeletion(id)
   }
 
   function getShapeById(id: string) {
@@ -31,24 +31,24 @@ export const useCanvasStore = defineStore('canvas', () => {
     return shape
   }
 
-  function updateShape(updatedShape: Shape, commit = true) {
+  function updateShape(updatedShape: Shape, record = true) {
     const shapeIndex = drawnShapes.value.findIndex(
       (shape) => shape.id == updatedShape.id
     )
+    if (record) recordShapeUpdate(drawnShapes.value[shapeIndex], updatedShape)
     if (shapeIndex < 0) return
     drawnShapes.value[shapeIndex] = updatedShape
-    if (commit) commitShapeUpdate(updatedShape)
+    commitShapeUpdate(updatedShape)
   }
 
   function replaceShapes(
     oldShapes: Array<Shape>,
     newShape: Shape,
-    commit = true,
     record = true
   ) {
-    addDrawnShape(newShape, commit, false)
+    addDrawnShape(newShape, false)
     for (const fragment of oldShapes) {
-      removeDrawnShapeById(fragment.id, commit, false)
+      removeDrawnShapeById(fragment.id, false)
     }
     if (record) recordShapesReplacement(oldShapes, newShape)
   }
@@ -82,6 +82,15 @@ export const useCanvasStore = defineStore('canvas', () => {
     IoConnection.emit('shape_delete', {
       board_id: boardStore.boardId,
       shape_id: shapeId
+    })
+  }
+
+  function recordShapeUpdate(previousShape: Shape, newShape: Shape) {
+    const historyStore = useHistoryStore()
+    historyStore.pushEvent({
+      type: HistoryEventType.SHAPE_UPDATED,
+      oldShape: previousShape,
+      newShape: newShape
     })
   }
 

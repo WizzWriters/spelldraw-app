@@ -3,6 +3,9 @@ import { computed, ref, toRef, type Ref } from 'vue'
 import type { Polygon } from '@/common/definitions/Shape'
 import { useCollisionDetection } from './composables/useCollisionDetection'
 import type ISvgShapeProperties from '../SvgShapeInterface'
+import { useColorStore } from '@/store/ColorStore'
+
+const colorStore = useColorStore()
 
 const props = defineProps<{
   shapeProp: any
@@ -21,6 +24,12 @@ let pointsListStr = computed(() => {
   return pointListstr
 })
 
+let strokeWidth = computed(() => {
+  if (colorStore.adjustedStrokeWidth && props.shapeProperties.selected)
+    return colorStore.adjustedStrokeWidth
+  return shape.value.strokeWidth
+})
+
 useCollisionDetection(
   polygonElementRef,
   toRef(props, 'shapeProp'),
@@ -33,6 +42,6 @@ useCollisionDetection(
     ref="polygonElementRef"
     :points="pointsListStr"
     :filter="props.shapeProperties.highlighted ? 'url(#neon-glow)' : ''"
-    :stroke-width="shape.strokeWidth"
+    :stroke-width="strokeWidth"
   />
 </template>

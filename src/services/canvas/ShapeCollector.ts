@@ -2,7 +2,7 @@ import { PointCollector } from './PointCollector'
 import type { Point } from '@/common/definitions/Geometry'
 import { Polyline, Shape } from '@/common/definitions/Shape'
 import { useCanvasStore } from '@/store/CanvasStore'
-import { useToolbarStore } from '@/store/ToolbarStore'
+import { useColorStore } from '@/store/ColorStore'
 import type { ILogger } from 'js-logger'
 import Logger from 'js-logger'
 
@@ -12,7 +12,6 @@ export type DrawingStartedCallback = () => void
 export default class ShapeCollector {
   private logger: ILogger
   private canvasStore = useCanvasStore()
-  private toolbarStore = useToolbarStore()
   private pointCollector: PointCollector
 
   constructor() {
@@ -47,11 +46,13 @@ export default class ShapeCollector {
   }
 
   public startCollecting(startpoint?: Point) {
+    const colorStore = useColorStore()
+
     this.canvasStore.currentlyDrawnShape = new Polyline(
       [],
-      this.toolbarStore.selectedStrokeColor,
-      this.toolbarStore.selectedFillColor,
-      this.toolbarStore.selectedStrokeWidth
+      colorStore.selectedStrokeColor,
+      colorStore.selectedFillColor,
+      colorStore.selectedStrokeWidth
     )
     if (startpoint) this.handlePointCollected(startpoint)
     this.pointCollector.startCollecting()

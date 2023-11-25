@@ -5,6 +5,7 @@ import { computed, ref, type Ref } from 'vue'
 export enum HistoryEventType {
   SHAPE_DRAWN,
   SHAPE_DELETED,
+  SHAPE_UPDATED,
   SHAPES_REPLACED
 }
 
@@ -24,9 +25,16 @@ export interface ShapesReplacedEvent {
   newShape: Shape
 }
 
+export interface ShapeUpdatedEvent {
+  type: HistoryEventType.SHAPE_UPDATED
+  oldShape: Shape
+  newShape: Shape
+}
+
 export type HistoryEvent =
   | ShapeDrawnEvent
   | ShapeDeletedEvent
+  | ShapeUpdatedEvent
   | ShapesReplacedEvent
 
 export const useHistoryStore = defineStore('history', () => {

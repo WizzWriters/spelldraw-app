@@ -1,51 +1,55 @@
 <script setup lang="ts">
 import { RgbColor } from '@/common/definitions/Color'
 import { rgbColorToString } from '@/helpers/Svg'
-import { useToolbarStore } from '@/store/ToolbarStore'
+import { useColorStore } from '@/store/ColorStore'
 import { computed, ref } from 'vue'
 import { ColorPicker } from 'vue-color-kit'
 
-const toolbarStore = useToolbarStore()
-
+const colorStore = useColorStore()
 const settingStroke = ref(true)
-let shouldBeCommited = true
 
 const color = computed(() => {
   if (settingStroke.value) {
-    return rgbColorToString(toolbarStore.selectedStrokeColor)
+    return rgbColorToString(colorStore.selectedStrokeColor)
   } else {
-    return rgbColorToString(toolbarStore.selectedFillColor)
+    return rgbColorToString(colorStore.selectedFillColor)
   }
 })
 
 const strokeWidth = computed({
   get() {
-    return toolbarStore.selectedStrokeWidth.toFixed(1)
+    if (colorStore.adjustedStrokeWidth)
+      return colorStore.adjustedStrokeWidth.toFixed(1)
+    return colorStore.selectedStrokeWidth.toFixed(1)
   },
   set(value) {
-    toolbarStore.setStrokeWidth(parseFloat(value), shouldBeCommited)
+    colorStore.adjustedStrokeWidth = parseFloat(value)
   }
 })
 
-function colorChanged(newColor: any) {
+function colorAdjusted(newColor: any) {
   const { r, g, b, a } = newColor.rgba
   const rgbColor = new RgbColor(r, g, b, a)
-  if (settingStroke.value) {
-    toolbarStore.setStrokeColor(rgbColor, shouldBeCommited)
-  } else {
-    toolbarStore.setFillColor(rgbColor, shouldBeCommited)
-  }
+  if (settingStroke.value) colorStore.adjustedStrokeColor = rgbColor
+  else colorStore.adjustedFillColor = rgbColor
 }
 
 function handleAdjustmentStop() {
   document.removeEventListener('pointerup', handleAdjustmentStop)
-  shouldBeCommited = true
-  toolbarStore.commitSelectedShapes()
+  commitAdjustments()
 }
 
 function handleAdjustmentStarted() {
-  shouldBeCommited = false
   document.addEventListener('pointerup', handleAdjustmentStop)
+}
+
+function commitAdjustments() {
+  if (colorStore.adjustedStrokeColor)
+    colorStore.setStrokeColor(colorStore.adjustedStrokeColor)
+  if (colorStore.adjustedFillColor)
+    colorStore.setFillColor(colorStore.adjustedFillColor)
+  if (colorStore.adjustedStrokeWidth)
+    colorStore.setStrokeWidth(colorStore.adjustedStrokeWidth)
 }
 </script>
 
@@ -72,7 +76,7 @@ function handleAdjustmentStarted() {
         theme="light"
         :color="color"
         :colors-default="[]"
-        @changeColor="colorChanged"
+        @changeColor="colorAdjusted"
         @pointerdown="handleAdjustmentStarted"
       />
       <div class="mt-4">Stroke width</div>
@@ -98,7 +102,7 @@ function handleAdjustmentStarted() {
         theme="light"
         :color="color"
         :colors-default="[]"
-        @changeColor="colorChanged"
+        @changeColor="colorAdjusted"
         @pointerdown="handleAdjustmentStarted"
       />
     </div>
