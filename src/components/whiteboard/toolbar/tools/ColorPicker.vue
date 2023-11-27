@@ -1,11 +1,19 @@
 <script setup lang="ts">
 import { ESidebarContent, useSidebarStore } from '@/store/SidebarStore'
 import ToolButton from './ToolButton.vue'
+import { computed } from 'vue'
 
 const sidebarStore = useSidebarStore()
+const colorPickerActive = computed(() => {
+  return (
+    sidebarStore.sidebarExpanded &&
+    sidebarStore.sidebarContent == ESidebarContent.COLOR
+  )
+})
 
-function showColorPicker() {
-  sidebarStore.expandSidebar(ESidebarContent.COLOR)
+function toggleColorPicker() {
+  if (colorPickerActive.value) sidebarStore.collapseSidebar()
+  else sidebarStore.expandSidebar(ESidebarContent.COLOR)
 }
 </script>
 
@@ -14,8 +22,9 @@ function showColorPicker() {
     <ToolButton
       id="picker-icon"
       name="Color picker"
-      :is-active="false"
-      @click="showColorPicker()"
+      :is-active="colorPickerActive"
+      :is-disabled="false"
+      @click="toggleColorPicker()"
     >
       <FontAwesomeIcon id="tool-icon" :icon="['fas', 'palette']" />
     </ToolButton>

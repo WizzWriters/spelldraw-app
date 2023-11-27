@@ -7,21 +7,22 @@ import {
 } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import { useToolbarStore } from '@/store/ToolbarStore'
-import { useCanvasStore } from '@/store/CanvasStore'
 import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
 import eraserPointerUrl from '@/assets/pointers/eraser-solid.svg'
 import EventBus, { EShapeEvent } from '@/services/bus/EventBus'
+import CanvasService from '@/services/canvas/CanvasService'
 
 const props = defineProps<{
   isActive: Boolean
+  isDisabled: Boolean
 }>()
 
 const logger = Logger.get('EraserTool')
 const toolbarStore = useToolbarStore()
-const canvasStore = useCanvasStore()
+const canvasService = new CanvasService()
 const { intersectingShapesIds } = storeToRefs(toolbarStore)
 
 const isErasing = ref(false)
@@ -70,7 +71,7 @@ watch(
   ([newIntersectingShapeIds, newIsErasing]) => {
     if (newIntersectingShapeIds.size == 0 || !newIsErasing) return
     for (const id of newIntersectingShapeIds) {
-      canvasStore.removeDrawnShapeById(id)
+      canvasService.removeShapeById(id)
     }
     toolbarStore.clearIntersectingShapes()
   },
@@ -102,7 +103,11 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Erase" :is-active="props.isActive">
+  <ToolButton
+    name="Erase"
+    :is-active="props.isActive"
+    :is-disabled="props.isDisabled"
+  >
     <FontAwesomeIcon icon="fa-eraser" />
   </ToolButton>
 </template>

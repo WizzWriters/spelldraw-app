@@ -5,14 +5,14 @@ import { storeToRefs } from 'pinia'
 import Logger from 'js-logger'
 import type { Shape } from '@/common/definitions/Shape'
 import ShapeCorrector from '@/services/correction/ShapeCorrector'
-import { useCanvasStore } from '@/store/CanvasStore'
 import CorrectionLoader from './CorrectionLoader.vue'
+import CanvasService from '@/services/canvas/CanvasService'
 
 const logger = Logger.get('ShapeCorrection.vue')
 const shapeCorrector = new ShapeCorrector()
 
 const magicStore = useMagicStore()
-const canvasStore = useCanvasStore()
+const canvasService = new CanvasService()
 
 const emit = defineEmits<{ (e: 'shapeCorrectionReady'): void }>()
 
@@ -29,7 +29,7 @@ function startCorrection() {
   loaderState.value.isTrackingPointer = true
   loaderState.value.isLoading = true
   loaderState.value.isShown = true
-  let currentlyDrawnShape = canvasStore.currentlyDrawnShape
+  let currentlyDrawnShape = canvasService.getCurrentlyDrawnShape()
   if (currentlyDrawnShape) {
     correctionPromise = shapeCorrector.correct(currentlyDrawnShape)
     logger.debug('Shape correction started')
@@ -49,8 +49,8 @@ async function commitCorrection() {
 
   loaderState.value.wasCorrectionSuccessful = true
   loaderState.value.isLoading = false
-  canvasStore.currentlyDrawnShape = null
-  canvasStore.addDrawnShape(correction)
+  canvasService.setCurrentlyDrawnShape(null)
+  canvasService.drawShape(correction)
   logger.debug('Shape correction commited')
 }
 

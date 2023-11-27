@@ -6,7 +6,6 @@ import {
 } from '@/common/definitions/Pointer'
 import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import ShapeCollector from '@/services/canvas/ShapeCollector'
-import { useCanvasStore } from '@/store/CanvasStore'
 import { ECorrectionRequestState, useMagicStore } from '@/store/MagicStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
@@ -14,15 +13,17 @@ import { onMounted, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
 import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
 import StallDetector from '@/services/canvas/StallDetector'
+import CanvasService from '@/services/canvas/CanvasService'
 
 const logger = Logger.get('DrawTool')
 const toolbarStore = useToolbarStore()
-const canvasStore = useCanvasStore()
+const canvasService = new CanvasService()
 const magicStore = useMagicStore()
 
 const emit = defineEmits<{ (e: 'drawToolReady'): void; (e: 'click'): void }>()
 const props = defineProps<{
   isActive: Boolean
+  isDisabled: Boolean
 }>()
 
 const handlePointerEvent =
@@ -44,7 +45,7 @@ const handlePointerEvent =
         magicStore.correctionRequestState = ECorrectionRequestState.IDLE
         const collectedShape = shapeCollector.collectShape(point)
         stallDetector.stopDetecting()
-        if (collectedShape) canvasStore.addDrawnShape(collectedShape)
+        if (collectedShape) canvasService.drawShape(collectedShape)
         break
       }
       case EPointerEvent.POINTER_MOVED:
@@ -88,7 +89,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton name="Draw" :is-active="props.isActive" @click="emit('click')">
+  <ToolButton
+    name="Draw"
+    :is-active="props.isActive"
+    @click="emit('click')"
+    :is-disabled="props.isDisabled"
+  >
     <FontAwesomeIcon icon="fa-pencil" />
   </ToolButton>
 </template>

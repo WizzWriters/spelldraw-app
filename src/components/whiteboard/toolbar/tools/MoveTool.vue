@@ -10,6 +10,7 @@ import { useCanvasStore } from '@/store/CanvasStore'
 
 const props = defineProps<{
   isActive: Boolean
+  isDisabled: Boolean
 }>()
 
 const logger = Logger.get('MoveTool')
@@ -76,7 +77,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <ToolButton id="move-tool" name="Move" :is-active="props.isActive">
+  <ToolButton
+    id="move-tool"
+    name="Move"
+    :is-active="props.isActive"
+    :is-disabled="props.isDisabled"
+  >
     <FontAwesomeIcon :icon="['fas', 'arrows-up-down-left-right']" />
   </ToolButton>
 </template>

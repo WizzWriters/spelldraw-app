@@ -1,4 +1,3 @@
-import { RgbColor } from '@/common/definitions/Color'
 import type { ITool } from '@/common/definitions/Tool'
 import { defineStore } from 'pinia'
 import { ref, type Ref } from 'vue'
@@ -9,9 +8,6 @@ export const useToolbarStore = defineStore('toolbar', () => {
   const activeTool: Ref<ITool | null> = ref(null)
   const intersectingShapesIds = ref(new Set<string>())
   const selectedShapesIds = ref(new Set<string>())
-  const selectedStrokeColor = ref(new RgbColor(0, 0, 0, 1))
-  const selectedFillColor = ref(new RgbColor(0, 0, 0, 0))
-  const selectedStrokeWidth = ref(1.5)
 
   function addShapeId(id: string, idSet: Ref<Set<string>>) {
     idSet.value.add(id)
@@ -58,46 +54,9 @@ export const useToolbarStore = defineStore('toolbar', () => {
     }
   }
 
-  function setStrokeColor(color: RgbColor, commit = true) {
-    const canvasStore = useCanvasStore()
-    selectedStrokeColor.value = color
-    foreachSelectedShape((shape) => {
-      shape.strokeColor = color
-      canvasStore.updateShape(shape, commit)
-    })
-  }
-
-  function setFillColor(color: RgbColor, commit = true) {
-    const canvasStore = useCanvasStore()
-    selectedFillColor.value = color
-    foreachSelectedShape((shape) => {
-      shape.fillColor = color
-      canvasStore.updateShape(shape, commit)
-    })
-  }
-
-  function setStrokeWidth(strokeWidth: number, commit = true) {
-    const canvasStore = useCanvasStore()
-    selectedStrokeWidth.value = strokeWidth
-    foreachSelectedShape((shape) => {
-      shape.strokeWidth = strokeWidth
-      canvasStore.updateShape(shape, commit)
-    })
-  }
-
-  function commitSelectedShapes() {
-    const canvasStore = useCanvasStore()
-    foreachSelectedShape((shape) => {
-      canvasStore.updateShape(shape, true)
-    })
-  }
-
   return {
     activeTool,
     selectedShapesIds,
-    selectedStrokeColor,
-    selectedFillColor,
-    selectedStrokeWidth,
     addToSelectedShapes,
     removeFromSelectedShapes,
     clearSelectedShapes,
@@ -105,9 +64,6 @@ export const useToolbarStore = defineStore('toolbar', () => {
     addToIntersectingShapes,
     removeFromIntersectingShapes,
     clearIntersectingShapes,
-    setStrokeColor,
-    setFillColor,
-    setStrokeWidth,
-    commitSelectedShapes
+    foreachSelectedShape
   }
 })

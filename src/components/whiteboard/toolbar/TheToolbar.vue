@@ -6,13 +6,15 @@ import DrawTool from './tools/DrawTool.vue'
 import EraserTool from './tools/EraserTool.vue'
 import MoveTool from './tools/MoveTool.vue'
 import SelectTool from './tools/SelectTool.vue'
+import UndoButton from './tools/UndoButton.vue'
+import RedoButton from './tools/RedoButton.vue'
 
 // const logger = Logger.get('Toolbar')
 const tools = ref([
-  { isActive: true, component: markRaw(DrawTool) },
-  { isActive: false, component: markRaw(EraserTool) },
-  { isActive: false, component: markRaw(SelectTool) },
-  { isActive: false, component: markRaw(MoveTool) }
+  { isActive: true, isDisabled: false, component: markRaw(DrawTool) },
+  { isActive: false, isDisabled: false, component: markRaw(EraserTool) },
+  { isActive: false, isDisabled: false, component: markRaw(SelectTool) },
+  { isActive: false, isDisabled: false, component: markRaw(MoveTool) }
 ])
 
 const activeTool = computed(() => {
@@ -33,9 +35,12 @@ function toggleActive(idx: number) {
         :key="idx"
         :is="tool.component"
         :is-active="tool.isActive"
+        :is-disabled="tool.isDisabled"
         @click="toggleActive(idx)"
       />
       <ColorPicker />
+      <UndoButton />
+      <RedoButton />
     </div>
   </div>
 </template>

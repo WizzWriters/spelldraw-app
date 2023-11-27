@@ -11,11 +11,11 @@ import {
   type SVGAttributes
 } from 'vue'
 import { useIntersectionDetection } from './composables/useIntersectionDetection'
+import type ISvgShapeProperties from '../SvgShapeInterface'
 
 const props = defineProps<{
   shapeProp: any
-  highlighted: Boolean
-  collisionsEnabled: Boolean
+  shapeProperties: ISvgShapeProperties
 }>()
 
 const shape = toRef(props, 'shapeProp') as Ref<TextBox>
@@ -56,7 +56,7 @@ onMounted(() => {
 useIntersectionDetection(
   textElementRef,
   toRef(props, 'shapeProp'),
-  toRef(props, 'collisionsEnabled')
+  toRef(props.shapeProperties, 'subjectsToCollisionDetection')
 )
 </script>
 
@@ -64,7 +64,7 @@ useIntersectionDetection(
   <g>
     <!-- This rect will be used in Text tool -->
     <rect
-      v-if="props.highlighted"
+      v-if="props.shapeProperties.highlighted"
       :x="shape.box.left"
       :y="shape.box.top"
       :width="shape.box.width"
@@ -81,7 +81,7 @@ useIntersectionDetection(
       ref="textElementRef"
       :fill="rgbColorToString(shape.text.fillColor)"
       :stroke="rgbColorToString(shape.text.strokeColor)"
-      :filter="props.highlighted ? 'url(#neon-glow)' : ''"
+      :filter="props.shapeProperties.highlighted ? 'url(#neon-glow)' : ''"
     >
       <tspan :alignment-baseline="getBaselineAlignment(shape.textAlignment)">
         {{ shape.text.textValue }}

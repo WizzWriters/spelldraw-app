@@ -4,11 +4,14 @@ import type { RoundShape } from '@/common/definitions/Shape'
 import Logger from 'js-logger'
 import { computed, ref, toRef, type Ref } from 'vue'
 import { useCollisionDetection } from './composables/useCollisionDetection'
+import type ISvgShapeProperties from '../SvgShapeInterface'
+import { useColorStore } from '@/store/ColorStore'
+
+const colorStore = useColorStore()
 
 const props = defineProps<{
   shapeProp: any
-  highlighted: Boolean
-  collisionsEnabled: Boolean
+  shapeProperties: ISvgShapeProperties
 }>()
 
 const shape = toRef(props, 'shapeProp') as Ref<RoundShape>
@@ -45,10 +48,16 @@ let pathCommand = computed(() => {
   return command
 })
 
+let strokeWidth = computed(() => {
+  if (colorStore.adjustedStrokeWidth && props.shapeProperties.selected)
+    return colorStore.adjustedStrokeWidth
+  return shape.value.strokeWidth
+})
+
 useCollisionDetection(
   roundShapeElementRef,
   toRef(props, 'shapeProp'),
-  toRef(props, 'collisionsEnabled')
+  toRef(props.shapeProperties, 'subjectsToCollisionDetection')
 )
 </script>
 
@@ -56,7 +65,7 @@ useCollisionDetection(
   <path
     ref="roundShapeElementRef"
     :d="pathCommand"
-    :filter="props.highlighted ? 'url(#neon-glow)' : ''"
-    :stroke-width="shape.strokeWidth"
+    :filter="props.shapeProperties.highlighted ? 'url(#neon-glow)' : ''"
+    :stroke-width="strokeWidth"
   />
 </template>

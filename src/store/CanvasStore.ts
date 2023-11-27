@@ -6,8 +6,6 @@ import ShapeSerializer from '@/common/serializers/ShapeSerializer'
 import { useBoardStore } from './BoardStore'
 
 export const useCanvasStore = defineStore('canvas', () => {
-  const boardStore = useBoardStore()
-
   const drawnShapes: Ref<Array<Shape>> = ref([])
   const currentlyDrawnShape: Ref<Shape | null> = ref(null)
   const canvasPosition = ref({ left: 0, top: 0 })
@@ -15,20 +13,14 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   function addDrawnShape(shape: Shape) {
     drawnShapes.value.push(shape)
-    IoConnection.emit('shape_create', {
-      board_id: boardStore.boardId,
-      shape: ShapeSerializer.toJson(shape)
-    })
+    commitShapeCreation(shape)
   }
 
   function removeDrawnShapeById(id: string) {
     const shapeIndex = drawnShapes.value.findIndex((shape) => shape.id == id)
     if (shapeIndex < 0) return
     drawnShapes.value.splice(shapeIndex, 1)
-    IoConnection.emit('shape_delete', {
-      board_id: boardStore.boardId,
-      shape_id: id
-    })
+    commitShapeDeletion(id)
   }
 
   function getShapeById(id: string) {
@@ -36,17 +28,36 @@ export const useCanvasStore = defineStore('canvas', () => {
     return shape
   }
 
-  function updateShape(updatedShape: Shape, commit: Boolean) {
+  function updateShape(updatedShape: Shape) {
     const shapeIndex = drawnShapes.value.findIndex(
       (shape) => shape.id == updatedShape.id
     )
     if (shapeIndex < 0) return
     drawnShapes.value[shapeIndex] = updatedShape
-    if (!commit) return
+    commitShapeUpdate(updatedShape)
+  }
 
+  function commitShapeCreation(shape: Shape) {
+    const boardStore = useBoardStore()
+    IoConnection.emit('shape_create', {
+      board_id: boardStore.boardId,
+      shape: ShapeSerializer.toJson(shape)
+    })
+  }
+
+  function commitShapeDeletion(shapeId: string) {
+    const boardStore = useBoardStore()
+    IoConnection.emit('shape_delete', {
+      board_id: boardStore.boardId,
+      shape_id: shapeId
+    })
+  }
+
+  function commitShapeUpdate(shape: Shape) {
+    const boardStore = useBoardStore()
     IoConnection.emit('shape_update', {
       board_id: boardStore.boardId,
-      shape: ShapeSerializer.toJson(updatedShape)
+      shape: ShapeSerializer.toJson(shape)
     })
   }
 
