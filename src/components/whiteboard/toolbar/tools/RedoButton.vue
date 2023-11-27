@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { useHistoryStore } from '@/store/HistoryStore'
+import { useHistoryStore } from '@/store/history/HistoryStore'
 import ToolButton from './ToolButton.vue'
 import HistoryService from '@/services/history/HistoryService'
 

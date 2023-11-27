@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import ToolButton from './ToolButton.vue'
-import { useHistoryStore } from '@/store/HistoryStore'
+import { useHistoryStore } from '@/store/history/HistoryStore'
 import HistoryService from '@/services/history/HistoryService'
 
 const historyStore = useHistoryStore()

@@ -1,11 +1,13 @@
 <script setup lang="ts">
 import { RgbColor } from '@/common/definitions/Color'
 import { rgbColorToString } from '@/helpers/Svg'
+import ColorService from '@/services/color/ColorService'
 import { useColorStore } from '@/store/ColorStore'
 import { computed, ref } from 'vue'
 import { ColorPicker } from 'vue-color-kit'
 
 const colorStore = useColorStore()
+const colorService = new ColorService()
 const settingStroke = ref(true)
 
 const color = computed(() => {
@@ -45,11 +47,11 @@ function handleAdjustmentStarted() {
 
 function commitAdjustments() {
   if (colorStore.adjustedStrokeColor)
-    colorStore.setStrokeColor(colorStore.adjustedStrokeColor)
+    colorService.setStrokeColor(colorStore.adjustedStrokeColor)
   if (colorStore.adjustedFillColor)
-    colorStore.setFillColor(colorStore.adjustedFillColor)
+    colorService.setFillColor(colorStore.adjustedFillColor)
   if (colorStore.adjustedStrokeWidth)
-    colorStore.setStrokeWidth(colorStore.adjustedStrokeWidth)
+    colorService.setStrokeWidth(colorStore.adjustedStrokeWidth)
 }
 </script>
 

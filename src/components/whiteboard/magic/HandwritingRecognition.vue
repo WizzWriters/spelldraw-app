@@ -9,6 +9,7 @@ import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
 import CorrectionLoader from './CorrectionLoader.vue'
+import CanvasService from '@/services/canvas/CanvasService'
 
 const logger = Logger.get('TextPrediction.vue')
 
@@ -17,6 +18,7 @@ const emit = defineEmits<{ (e: 'handwritingRecognitionReady'): void }>()
 const handwritingRecognizer = new HandwritingRecognizer()
 const magicStore = useMagicStore()
 const toolbarStore = useToolbarStore()
+const canvasService = new CanvasService()
 const canvasStore = useCanvasStore()
 
 let recognitionPromise: Promise<TextBox | null>
@@ -48,7 +50,7 @@ async function commitRecognition() {
 
   loaderState.value.wasCorrectionSuccessful = true
   loaderState.value.isLoading = false
-  canvasStore.replaceShapes(shapeBeingRecognized!.fragments, prediction)
+  canvasService.replaceShapes(shapeBeingRecognized!.fragments, prediction)
   shapeBeingRecognized = null
 }
 
