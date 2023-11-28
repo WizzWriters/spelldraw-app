@@ -55,10 +55,9 @@ class GlobalKeyboardService {
     if (event.ctrlKey && event.key != 'Control') keySequence.push('Control')
     keySequence.push(event.key)
 
-    if (this.selectedKeyspace) {
-      const service = this.get(this.selectedKeyspace)
-      service.handleClick(keySequence)
-    }
+    if (!this.selectedKeyspace) return
+    const service = this.get(this.selectedKeyspace)
+    service.handleClick(keySequence)
   }
 }
 

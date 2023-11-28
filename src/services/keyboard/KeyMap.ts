@@ -37,22 +37,17 @@ export default class KeyMap {
     keyTree: KeyTree,
     leaf: KeyCallback
   ): KeyTree {
-    if (keySequence.length < 1) {
+    if (keySequence.length < 1)
       /* Reached bottom of the sequence */
       return leaf
-    }
 
-    if (!(keyTree instanceof Map)) {
+    if (!(keyTree instanceof Map))
       /* Reached bottom of the tree */
       throw new InvalidArguments('KeyMap.set - conflicting shortcuts')
-    }
 
     const firstKey = keySequence[0]
-    if (keyTree.has(firstKey))
-      return this.setLeaf(keySequence.slice(1), keyTree.get(firstKey)!, leaf)
-    return keyTree.set(
-      firstKey,
-      this.setLeaf(keySequence.slice(1), new Map(), leaf)
-    )
+    const recSequence = keySequence.slice(1)
+    const recTree = keyTree.has(firstKey) ? keyTree.get(firstKey)! : new Map()
+    return keyTree.set(firstKey, this.setLeaf(recSequence, recTree, leaf))
   }
 }
