@@ -1,10 +1,17 @@
 import { useHistoryStore } from '@/store/history/HistoryStore'
 import type IHistoryEvent from './IHistoryEvent'
 import AggregateEvent from '@/store/history/event/AggregateEvent'
+import KeyboardService from '../keyboard/KeyboardService'
 
 class HistoryService {
   private aggregating = false
   private aggragateBuffer: Array<IHistoryEvent> = []
+
+  constructor() {
+    const canvasKeyboard = KeyboardService.get('canvas')
+    canvasKeyboard.registerCallback(['Control', 'z'], () => this.undo())
+    canvasKeyboard.registerCallback(['Control', 'y'], () => this.redo())
+  }
 
   public undo() {
     const historyStore = useHistoryStore()
