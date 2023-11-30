@@ -4,8 +4,17 @@ import HistoryService from '../history/HistoryService'
 import ShapeDrawnEvent from '@/store/history/event/ShapeDrawn'
 import ShapeDeletedEvent from '@/store/history/event/ShapeDeleted'
 import ShapeUpdatedEvent from '@/store/history/event/ShapeUpdated'
+import { useToolbarStore } from '@/store/ToolbarStore'
+import KeyboardService from '../keyboard/KeyboardService'
 
 export default class CanvasService {
+  constructor() {
+    const canvasKeyboard = KeyboardService.get('canvas')
+    canvasKeyboard.registerCallback(['Delete'], () =>
+      this.deleteSelectedShapes()
+    )
+  }
+
   public getShapeById(id: string) {
     const canvasStore = useCanvasStore()
     return canvasStore.getShapeById(id)
@@ -50,5 +59,14 @@ export default class CanvasService {
   public setCurrentlyDrawnShape(shape: Shape | null) {
     const canvasStore = useCanvasStore()
     canvasStore.currentlyDrawnShape = shape
+  }
+
+  private deleteSelectedShapes() {
+    const toolbarStore = useToolbarStore()
+    HistoryService.startAggregating()
+    toolbarStore.foreachSelectedShape((shape) => {
+      this.removeShapeById(shape.id)
+    })
+    HistoryService.stopAggregating()
   }
 }

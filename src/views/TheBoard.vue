@@ -12,6 +12,7 @@ import TheSidebar from '@/components/whiteboard/sidebar/TheSidebar.vue'
 import { useSidebarStore } from '@/store/SidebarStore'
 import PageLoader from '@/components/loading/PageLoader.vue'
 import TheMagic from '@/components/whiteboard/magic/TheMagic.vue'
+import KeyboardService from '@/services/keyboard/KeyboardService'
 
 const logger = Logger.get('MainWhiteboard.vue')
 
@@ -47,6 +48,7 @@ watch(
 function handleCanvasReady() {
   initState.canvasReady = true
   logger.debug('Canvas ready indication received!')
+  KeyboardService.activateKeyspace('canvas')
 }
 
 function handleMagicReady() {

@@ -34,8 +34,8 @@ function toggleActive(idx: number) {
         v-for="(tool, idx) in tools"
         :key="idx"
         :is="tool.component"
-        :is-active="tool.isActive"
-        :is-disabled="tool.isDisabled"
+        :isActive="tool.isActive"
+        :isDisabled="tool.isDisabled"
         @click="toggleActive(idx)"
       />
       <ColorPicker />
