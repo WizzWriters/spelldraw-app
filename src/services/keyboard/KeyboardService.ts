@@ -51,8 +51,9 @@ class GlobalKeyboardService {
 
   public handleClick(event: KeyboardEvent) {
     const keySequence: Array<string> = []
-    /* For now support only combinations with ctrl */
+    /* For now support only combinations with ctrl and ctrl + shift */
     if (event.ctrlKey && event.key != 'Control') keySequence.push('Control')
+    if (event.shiftKey && event.key != 'Shift') keySequence.push('Shift')
     keySequence.push(event.key)
 
     if (!this.selectedKeyspace) return

@@ -10,6 +10,9 @@ class HistoryService {
   constructor() {
     const canvasKeyboard = KeyboardService.get('canvas')
     canvasKeyboard.registerCallback(['Control', 'z'], () => this.undo())
+    canvasKeyboard.registerCallback(['Control', 'Shift', 'Z'], () =>
+      this.redo()
+    )
     canvasKeyboard.registerCallback(['Control', 'y'], () => this.redo())
   }
 
