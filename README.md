@@ -11,11 +11,12 @@ For now we only support running this project under Linux operating system.
 First install and run the server: https://github.com/WizzWriters/spelldraw-server.
 
 Because we are using TensorFlow.js which requires specific version of Tensorflow
-and python, there are some additional steps needed first.
+and python, there are some additional steps needed first. In case of any problems
+make sure you are not using the latest python version (try 3.10).
 
 1. Create and activate virtual environment
 ```sh
-virtualenv venv
+python -m venv "venv"
 . venv/bin/activate
 ```
 2. Install python dependencies
