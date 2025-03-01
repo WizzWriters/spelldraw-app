@@ -85,7 +85,7 @@ function commitAdjustments() {
       <div class="is-flex is-align-items-self-end">
         <input
           id="stroke-width-slider"
-          class="slider is-fullwidth is-info is-circle my-0"
+          class="slider my-0"
           step="0.5"
           min="1"
           max="10"
