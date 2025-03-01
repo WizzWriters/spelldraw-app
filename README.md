@@ -1,3 +1,5 @@
+<img src="https://github.com/user-attachments/assets/17b73e5f-cea4-4bd4-91d8-68dba417e6c0" alt="drawing" width="400"/>
+
 # Spelldraw app
 
 Frontend for our whiteboard.
