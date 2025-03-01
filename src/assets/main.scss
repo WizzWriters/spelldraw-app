@@ -1,7 +1,10 @@
+@use './components';
+@use './elements';
+@use './logo';
+
 @import 'bulma/sass/utilities/_all.sass';
 @import 'bulma/sass/base/_all.sass';
 @import 'bulma/sass/helpers/_all.sass';
-@import 'bulma/sass/components/navbar.sass';
 @import 'bulma/sass/components/tabs.sass';
 @import 'bulma/sass/elements/button.sass';
 @import 'bulma/sass/elements/box.sass';
@@ -10,9 +13,6 @@
 @import 'bulma/sass/form/all';
 @import 'bulma-slider';
 @import 'bulma-pageloader';
-
-@import './elements/all';
-@import './components/all';
 
 html {
   height: 100%;

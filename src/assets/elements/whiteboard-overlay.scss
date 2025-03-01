@@ -1,3 +1,13 @@
+@use 'bulma/sass/utilities/mixins';
+@use 'bulma/sass/utilities/initial-variables';
+
+#the-main-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  width: 100%;
+}
+
 #the-whiteboard-overlay {
   position: absolute;
   top: 0;
@@ -8,14 +18,13 @@
   pointer-events: none;
 }
 
-#main-overlay-content {
-  height: 100%;
+#toolbar-overlay {
   width: 100%;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
 
-  @include until($tablet) {
+  @include mixins.until(initial-variables.$tablet) {
     flex-direction: row;
   }
 }
