@@ -35,6 +35,16 @@ const ready = computed(() => {
   return initState.canvasReady && initState.boardReady && initState.magicReady
 })
 
+const loadingPrompt = computed(() => {
+  if (!initState.canvasReady) return 'Preparing the canvas...'
+
+  if (!initState.boardReady) return 'Joining the board...'
+
+  if (!initState.magicReady) return 'Initializing AI models...'
+
+  return 'Preparing the board....'
+})
+
 watch(
   pointerPosition,
   (newValue) => {
@@ -70,7 +80,9 @@ onMounted(async () => {
 </script>
 
 <template>
-  <PageLoader v-if="!ready">Loading board...</PageLoader>
+  <PageLoader v-if="!ready">
+    {{ loadingPrompt }}
+  </PageLoader>
   <div id="the-whiteboard">
     <SvgCanvas @canvas-ready="handleCanvasReady"></SvgCanvas>
     <div id="the-whiteboard-overlay">
