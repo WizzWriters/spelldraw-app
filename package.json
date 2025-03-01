@@ -36,7 +36,7 @@
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.10.5",
     "@types/lodash": "^4.17.15",
-    "@types/node": "^18.14.2",
+    "@types/node": "^22.13.7",
     "@vitejs/plugin-vue": "^5.2.1",
     "@vue/eslint-config-prettier": "^7.1.0",
     "@vue/eslint-config-typescript": "^11.0.2",
