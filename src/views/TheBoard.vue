@@ -4,6 +4,7 @@ import { usePointerStore } from '@/store/PointerStore'
 import { useBoardStore } from '@/store/BoardStore'
 import Logger from 'js-logger'
 import { computed, onMounted, reactive, watch } from 'vue'
+import TheLogo from '@/components/logo/TheLogo.vue'
 import SvgCanvas from '@/components/whiteboard/canvas/svg/SvgCanvas.vue'
 import TheToolbar from '@/components/whiteboard/toolbar/TheToolbar.vue'
 import { useRoute, useRouter } from 'vue-router'
@@ -73,9 +74,14 @@ onMounted(async () => {
   <div id="the-whiteboard">
     <SvgCanvas @canvas-ready="handleCanvasReady"></SvgCanvas>
     <div id="the-whiteboard-overlay">
-      <div id="main-overlay-content">
-        <SidebarControl />
-        <TheToolbar />
+      <div id="the-main-overlay">
+        <div class="is-flex is-justify-content-space-between">
+          <TheLogo />
+          <SidebarControl />
+        </div>
+        <div id="toolbar-overlay">
+          <TheToolbar />
+        </div>
       </div>
       <TheSidebar v-if="sidebarStore.sidebarExpanded" />
     </div>
