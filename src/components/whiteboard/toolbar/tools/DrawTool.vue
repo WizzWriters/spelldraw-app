@@ -57,7 +57,6 @@ const handlePointerEvent =
   }
 
 onMounted(() => {
-  console.log(`url("${pencilPointerUrl}")`)
   let shapeCollector = new ShapeCollector()
   let stallDetector = new StallDetector()
   const pointerIcon = new ExternalPointerIcon(pencilPointerUrl, new Point(0, 0))
