@@ -1,3 +1,6 @@
+@use 'bulma/sass/utilities/mixins';
+@use 'bulma/sass/utilities/initial-variables';
+
 #sidebar {
   min-width: 20rem;
   pointer-events: auto;
@@ -7,7 +10,7 @@
     width: 100%;
   }
 
-  @include until($tablet) {
+  @include mixins.until(initial-variables.$tablet) {
     width: 100%;
     position: absolute;
   }

@@ -1,3 +1,6 @@
+@use './components';
+@use './elements';
+
 @import 'bulma/sass/utilities/_all.sass';
 @import 'bulma/sass/base/_all.sass';
 @import 'bulma/sass/helpers/_all.sass';
@@ -9,9 +12,6 @@
 @import 'bulma/sass/form/all';
 @import 'bulma-slider';
 @import 'bulma-pageloader';
-
-@import './elements/all';
-@import './components/all';
 
 html {
   height: 100%;

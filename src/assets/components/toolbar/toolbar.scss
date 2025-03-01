@@ -1,3 +1,6 @@
+@use 'bulma/sass/utilities/mixins';
+@use 'bulma/sass/utilities/initial-variables';
+
 $tool-button-side-length: 2.5em;
 $toolbar-widescreen-margin-bottom: 1em;
 $toolbar-widescreen-height: $tool-button-side-length +
@@ -9,12 +12,12 @@ $toolbar-widescreen-height: $tool-button-side-length +
   justify-content: center;
   pointer-events: none;
 
-  @include from($tablet) {
+  @include mixins.from(initial-variables.$tablet) {
     width: 100%;
     margin-bottom: $toolbar-widescreen-margin-bottom;
   }
 
-  @include until($tablet) {
+  @include mixins.until(initial-variables.$tablet) {
     padding: 0.8rem;
   }
 
@@ -32,7 +35,7 @@ $toolbar-widescreen-height: $tool-button-side-length +
     display: flex;
     gap: 0.2rem;
 
-    @include until($tablet) {
+    @include mixins.until(initial-variables.$tablet) {
       flex-direction: column;
       justify-content: end;
     }

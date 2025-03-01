@@ -1,3 +1,6 @@
+@use 'bulma/sass/utilities/mixins';
+@use 'bulma/sass/utilities/initial-variables';
+
 #the-whiteboard-overlay {
   position: absolute;
   top: 0;
@@ -15,7 +18,7 @@
   flex-direction: column;
   justify-content: space-between;
 
-  @include until($tablet) {
+  @include mixins.until(initial-variables.$tablet) {
     flex-direction: row;
   }
 }
