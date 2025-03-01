@@ -10,7 +10,10 @@ export enum EPointerEvent {
 type BuitInIcon = 'crosshair' | 'grab' | 'default'
 
 export class ExternalPointerIcon {
-  constructor(public url: string, public hotspot: Point) {}
+  constructor(
+    public url: string,
+    public hotspot: Point
+  ) {}
 }
 
 export class BuiltinPointerIcon {

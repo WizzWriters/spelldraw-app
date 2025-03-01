@@ -2,7 +2,10 @@ import { InvalidArguments } from '@/utils/exceptions/InvalidArguments'
 import type { IPointerPosition } from './Pointer'
 
 export class Point {
-  constructor(public xCoordinate: number, public yCoordinate: number) {}
+  constructor(
+    public xCoordinate: number,
+    public yCoordinate: number
+  ) {}
 
   public equals(point: Point) {
     return (
@@ -39,7 +42,10 @@ export class Point {
 }
 
 export class Segment {
-  constructor(public start: Point, public end: Point) {}
+  constructor(
+    public start: Point,
+    public end: Point
+  ) {}
 
   public get midpoint() {
     return this.start.add(this.end).divide(2)
