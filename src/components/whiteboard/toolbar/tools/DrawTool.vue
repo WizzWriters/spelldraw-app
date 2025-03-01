@@ -11,7 +11,7 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { onMounted, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
-import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg'
+import pencilPointerUrl from '@/assets/pointers/pencil-solid.svg?no-inline'
 import StallDetector from '@/services/canvas/StallDetector'
 import CanvasService from '@/services/canvas/CanvasService'
 

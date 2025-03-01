@@ -3,7 +3,10 @@ import type { Shape } from '@/common/definitions/Shape'
 import HistoryEvent from './HistoryEvent'
 
 export default class ShapeUpdatedEvent extends HistoryEvent {
-  constructor(private oldShape: Shape, private newShape: Shape) {
+  constructor(
+    private oldShape: Shape,
+    private newShape: Shape
+  ) {
     super()
   }
 

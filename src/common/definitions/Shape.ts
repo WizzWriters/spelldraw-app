@@ -76,9 +76,12 @@ export class Polygon extends PointListBasedShape {}
 export class RoundShape extends PointListBasedShape {
   public get centroid() {
     const numberOfPoints = this.pointList.length
-    return this.pointList.reduce((result, point) => {
-      return result.add(point.divide(numberOfPoints))
-    }, new Point(0, 0))
+    return this.pointList.reduce(
+      (result, point) => {
+        return result.add(point.divide(numberOfPoints))
+      },
+      new Point(0, 0)
+    )
   }
 }
 

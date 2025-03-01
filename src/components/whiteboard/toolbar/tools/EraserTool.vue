@@ -11,7 +11,7 @@ import Logger from 'js-logger'
 import { storeToRefs } from 'pinia'
 import { onMounted, ref, watch } from 'vue'
 import ToolButton from './ToolButton.vue'
-import eraserPointerUrl from '@/assets/pointers/eraser-solid.svg'
+import eraserPointerUrl from '@/assets/pointers/eraser-solid.svg?no-inline'
 import EventBus, { EShapeEvent } from '@/services/bus/EventBus'
 import CanvasService from '@/services/canvas/CanvasService'
 
