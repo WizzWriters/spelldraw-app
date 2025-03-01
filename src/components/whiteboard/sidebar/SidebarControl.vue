@@ -13,7 +13,7 @@ const expandSidebar = (contentType: ESidebarContent) => {
   <div class="is-flex is-justify-content-end p-2">
     <button
       title="Share"
-      class="sidebar-control-button button is-outlined is-rounded"
+      class="sidebar-control-button button is-rounded"
       @click="expandSidebar(ESidebarContent.SHARE)"
     >
       <FontAwesomeIcon icon="fa-share-nodes"></FontAwesomeIcon>
