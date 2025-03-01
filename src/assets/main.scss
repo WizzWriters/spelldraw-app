@@ -1,16 +1,17 @@
+@use 'bulma/sass/utilities';
+@use 'bulma/sass/base';
+@use 'bulma/sass/themes';
+@use 'bulma/sass/helpers';
+@use 'bulma/sass/components/tabs';
+@use 'bulma/sass/elements/button';
+@use 'bulma/sass/elements/box';
+@use 'bulma/sass/elements/progress';
+@use 'bulma/sass/layout/container';
+@use 'bulma/sass/form';
+
 @use './components';
 @use './elements';
 @use './logo';
-
-@import 'bulma/sass/utilities/_all.sass';
-@import 'bulma/sass/base/_all.sass';
-@import 'bulma/sass/helpers/_all.sass';
-@import 'bulma/sass/components/tabs.sass';
-@import 'bulma/sass/elements/button.sass';
-@import 'bulma/sass/elements/box.sass';
-@import 'bulma/sass/elements/progress.sass';
-@import 'bulma/sass/elements/container.sass';
-@import 'bulma/sass/form/all';
 
 html {
   height: 100%;
