@@ -4,6 +4,11 @@ export enum EShapeEvent {
   CHECK_INTERSECTION = 'check-intersection',
   CHECK_SELECTION = 'check-selection'
 }
+export enum EMouseEvent {
+  MOUSE_WHEEL_PRESSED = 'mouse-wheel-pressed',
+  MOUSE_WHEEL_RELEASED = 'mouse-wheel-released'
+}
+type EEventType = EShapeEvent | EMouseEvent
 
 export interface ICheckIntersectionPayload {
   pointerHitline: Segment
@@ -13,7 +18,14 @@ export interface ICheckSelectionPayload {
   selectBox: Rectangle
 }
 
-type ShapeEventPayload = ICheckIntersectionPayload | ICheckSelectionPayload
+export interface IMouseWheelPayload {
+  event: PointerEvent
+}
+
+type EventPayload =
+  | ICheckIntersectionPayload
+  | ICheckSelectionPayload
+  | IMouseWheelPayload
 
 export class EventCallback<PayloadT> {
   private wrappedCallback: (event: Event) => void
@@ -34,9 +46,10 @@ export class EventCallback<PayloadT> {
   }
 }
 
-type ShapeEventCallback =
+type EventCallbacks =
   | EventCallback<ICheckIntersectionPayload>
   | EventCallback<ICheckSelectionPayload>
+  | EventCallback<IMouseWheelPayload>
 
 class EventBus {
   public emit(
@@ -47,7 +60,11 @@ class EventBus {
     event: EShapeEvent.CHECK_SELECTION,
     payload: ICheckSelectionPayload
   ): void
-  public emit(event: EShapeEvent, payload: ShapeEventPayload) {
+  public emit(
+    event: EMouseEvent.MOUSE_WHEEL_PRESSED | EMouseEvent.MOUSE_WHEEL_RELEASED,
+    payload: IMouseWheelPayload
+  ): void
+  public emit(event: EEventType, payload: EventPayload) {
     this.dispatchEvent(event, payload)
   }
 
@@ -59,11 +76,15 @@ class EventBus {
     event: EShapeEvent.CHECK_SELECTION,
     callback: EventCallback<ICheckSelectionPayload>
   ): void
-  public subscribe(event: EShapeEvent, callback: ShapeEventCallback) {
+  public subscribe(
+    event: EMouseEvent.MOUSE_WHEEL_PRESSED | EMouseEvent.MOUSE_WHEEL_RELEASED,
+    callback: EventCallback<IMouseWheelPayload>
+  ): void
+  public subscribe(event: EEventType, callback: EventCallbacks) {
     this.registerCallback(event, callback)
   }
 
-  public unsubscribe(event: EShapeEvent, callback: ShapeEventCallback) {
+  public unsubscribe(event: EEventType, callback: EventCallbacks) {
     this.unregisterCallback(event, callback)
   }
 
