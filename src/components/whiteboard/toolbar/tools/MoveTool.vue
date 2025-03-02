@@ -46,6 +46,7 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
       /* Restore previous tool if it was is saved */
       if (savedTool) {
         toolbarStore.activeTool = savedTool
+        savedTool = null
       }
       break
     case EPointerEvent.POINTER_MOVED: {
