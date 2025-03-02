@@ -12,7 +12,7 @@ import EventBus, {
   EventCallback,
   type IMouseWheelPayload
 } from '@/services/bus/EventBus'
-import { type ITool } from '@/common/definitions/Tool'
+import type { ITool } from '@/common/definitions/Tool'
 
 const props = defineProps<{
   isActive: Boolean
