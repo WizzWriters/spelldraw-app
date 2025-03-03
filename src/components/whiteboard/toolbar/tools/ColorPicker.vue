@@ -2,6 +2,8 @@
 import { ESidebarContent, useSidebarStore } from '@/store/SidebarStore'
 import ToolButton from './ToolButton.vue'
 import { computed } from 'vue'
+import { onMounted } from 'vue'
+import KeyboardService from '@/services/keyboard/KeyboardService'
 
 const sidebarStore = useSidebarStore()
 const colorPickerActive = computed(() => {
@@ -15,6 +17,12 @@ function toggleColorPicker() {
   if (colorPickerActive.value) sidebarStore.collapseSidebar()
   else sidebarStore.expandSidebar(ESidebarContent.COLOR)
 }
+
+onMounted(() => {
+  const canvasKeyboard = KeyboardService.get('canvas')
+  canvasKeyboard.registerCallback(['c'], toggleColorPicker)
+  canvasKeyboard.registerCallback(['C'], toggleColorPicker)
+})
 </script>
 
 <template>
