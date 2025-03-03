@@ -7,6 +7,12 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import Logger from 'js-logger'
 import { Point } from '@/common/definitions/Geometry'
 import { useCanvasStore } from '@/store/CanvasStore'
+import EventBus, {
+  EMouseEvent,
+  EventCallback,
+  type IMouseWheelPayload
+} from '@/services/bus/EventBus'
+import type { ITool } from '@/common/definitions/Tool'
 
 const props = defineProps<{
   isActive: Boolean
@@ -19,6 +25,7 @@ const canvasStore = useCanvasStore()
 let startingPosition: Point | null = null
 let startingOffset: Point | null = null
 let moving = false
+let savedTool: ITool | null = null
 
 const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
   switch (eventType) {
@@ -35,6 +42,12 @@ const handlePointerEvent = (eventType: EPointerEvent, event: PointerEvent) => {
       startingPosition = null
       startingOffset = null
       moving = false
+
+      /* Restore previous tool if it was is saved */
+      if (savedTool) {
+        toolbarStore.activeTool = savedTool
+        savedTool = null
+      }
       break
     case EPointerEvent.POINTER_MOVED: {
       if (!moving) return
@@ -64,6 +77,18 @@ onMounted(() => {
   function deactivateTool() {
     logger.debug('Tool deactivated')
   }
+
+  /* Add support for moving around with mouse wheel press */
+  const wheelPressedCallback = new EventCallback<IMouseWheelPayload>((p) => {
+    handlePointerEvent(EPointerEvent.POINTER_DOWN, p.event)
+    savedTool = toolbarStore.activeTool
+    toolbarStore.activeTool = { pointerIcon, handlePointerEvent }
+  })
+  const wheelReleasedCallback = new EventCallback<IMouseWheelPayload>((p) => {
+    handlePointerEvent(EPointerEvent.POINTER_UP, p.event)
+  })
+  EventBus.subscribe(EMouseEvent.MOUSE_WHEEL_PRESSED, wheelPressedCallback)
+  EventBus.subscribe(EMouseEvent.MOUSE_WHEEL_RELEASED, wheelReleasedCallback)
 
   watch(
     () => props.isActive,

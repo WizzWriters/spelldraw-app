@@ -16,6 +16,7 @@ import { getPositionOnCanvas } from '@/helpers/CanvasHelper'
 import { Point } from '@/common/definitions/Geometry'
 import SvgNeonGlow from './filters/SvgNeonGlow.vue'
 import { Polyline, type Shape } from '@/common/definitions/Shape'
+import EventBus, { EMouseEvent } from '@/services/bus/EventBus'
 
 type CanvasElement = HTMLElement & SVGSVGElement
 
@@ -98,14 +99,34 @@ function initializeCanvas(
   new ResizeObserver(resizeCallback).observe(wrapperElement)
 }
 
+function wasMouseWheelPressed(eventType: EPointerEvent, event: PointerEvent) {
+  return eventType == EPointerEvent.POINTER_DOWN && event.button == 1
+}
+
+function wasMouseWheelReleased(eventType: EPointerEvent, event: PointerEvent) {
+  return eventType == EPointerEvent.POINTER_UP && event.button == 1
+}
+
+function handledPointerEvent(eventType: EPointerEvent) {
+  return (event: PointerEvent) => {
+    if (wasMouseWheelPressed(eventType, event)) {
+      EventBus.emit(EMouseEvent.MOUSE_WHEEL_PRESSED, { event })
+      return
+    }
+
+    if (wasMouseWheelReleased(eventType, event)) {
+      EventBus.emit(EMouseEvent.MOUSE_WHEEL_RELEASED, { event })
+      return
+    }
+
+    toolbarStore.activeTool?.handlePointerEvent(eventType, event)
+  }
+}
+
 function installPointerEventHandlers(canvasElement: CanvasElement) {
   const handledPointerEvents = lodash.values(EPointerEvent)
-  const callPointerEventHandler =
-    (eventType: EPointerEvent) => (event: PointerEvent) =>
-      toolbarStore.activeTool?.handlePointerEvent(eventType, event)
-
   for (const event of handledPointerEvents) {
-    canvasElement.addEventListener(event, callPointerEventHandler(event))
+    canvasElement.addEventListener(event, handledPointerEvent(event))
   }
 }
 
