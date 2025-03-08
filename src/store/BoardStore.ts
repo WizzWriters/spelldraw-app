@@ -32,6 +32,7 @@ export const useBoardStore = defineStore('board', () => {
 
   async function publishBoard() {
     const response = await IoConnection.request('create_board', undefined)
+    if (response.status != 0) throw new Error('Failed to publish the board')
     boardId.value = response.data.id
     localBoard.value = false
   }

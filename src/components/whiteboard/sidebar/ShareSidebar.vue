@@ -1,14 +1,19 @@
 <script setup lang="ts">
 import { hslColorToString } from '@/helpers/Svg'
 import { ConnectedUser, useBoardStore } from '@/store/BoardStore'
+import Logger from 'js-logger'
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
 
+const logger = Logger.get('ShareSidebar')
+
 const router = useRouter()
 const boardStore = useBoardStore()
-const boardUrl = ref('')
+const boardUrl = ref(window.location.href)
 const copied = ref(false)
 const creatingNewBoard = ref(false)
+
+const errorMessage = ref('')
 
 function resetCopied() {
   copied.value = false
@@ -26,9 +31,18 @@ function copyToClipboard() {
 
 async function publishBoard() {
   creatingNewBoard.value = true
-  await boardStore.publishBoard()
-  await router.push({ name: 'board', params: { boardId: boardStore.boardId } })
-  boardUrl.value = window.location.origin + router.currentRoute.value.path
+  try {
+    await boardStore.publishBoard()
+    await router.push({
+      name: 'board',
+      params: { boardId: boardStore.boardId }
+    })
+    boardUrl.value = window.location.origin + router.currentRoute.value.path
+  } catch (err) {
+    logger.error('Request to publish the board failed')
+    errorMessage.value = 'Failed to publish the board. Please try again later.'
+    creatingNewBoard.value = false
+  }
 }
 </script>
 
@@ -46,6 +60,7 @@ async function publishBoard() {
       >
         Share!
       </button>
+      <p class="pt-2 has-text-danger">{{ errorMessage }}</p>
     </div>
 
     <div v-if="!boardStore.localBoard">
