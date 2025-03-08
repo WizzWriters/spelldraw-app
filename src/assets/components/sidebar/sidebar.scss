@@ -6,8 +6,12 @@
   pointer-events: auto;
   border-radius: unset;
 
-  #copy-button {
+  button {
     width: 100%;
+  }
+
+  @include mixins.from(initial-variables.$tablet) {
+    max-width: 20rem;
   }
 
   @include mixins.until(initial-variables.$tablet) {

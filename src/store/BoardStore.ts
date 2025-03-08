@@ -21,13 +21,19 @@ export class ConnectedUser {
 }
 
 export const useBoardStore = defineStore('board', () => {
+  const localBoard: Ref<boolean> = ref(false)
   const boardId: Ref<string | null> = ref(null)
   const boardUserId: Ref<string | null> = ref(null)
   const connectedUsers: Ref<Array<ConnectedUser>> = ref([])
 
   async function createBoard() {
+    localBoard.value = true
+  }
+
+  async function publishBoard() {
     const response = await IoConnection.request('create_board', undefined)
     boardId.value = response.data.id
+    localBoard.value = false
   }
 
   async function joinBoard(id: string): Promise<Boolean> {
@@ -46,6 +52,11 @@ export const useBoardStore = defineStore('board', () => {
     const index = connectedUsers.value.findIndex((user) => user.id == userId)
     if (index < 0) return
     connectedUsers.value.splice(index, 1)
+  }
+
+  function emitEventIfConnected(name: string, payload: any) {
+    if (localBoard.value) return
+    IoConnection.emit(name, payload)
   }
 
   IoConnection.onEvent('user_joined', (data) => {
@@ -74,10 +85,13 @@ export const useBoardStore = defineStore('board', () => {
   })
 
   return {
+    localBoard,
     boardId,
     boardUserId,
     connectedUsers,
     createBoard,
-    joinBoard
+    publishBoard,
+    joinBoard,
+    emitEventIfConnected
   }
 })

@@ -39,7 +39,7 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   function commitShapeCreation(shape: Shape) {
     const boardStore = useBoardStore()
-    IoConnection.emit('shape_create', {
+    boardStore.emitEventIfConnected('shape_create', {
       board_id: boardStore.boardId,
       shape: ShapeSerializer.toJson(shape)
     })
@@ -47,7 +47,7 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   function commitShapeDeletion(shapeId: string) {
     const boardStore = useBoardStore()
-    IoConnection.emit('shape_delete', {
+    boardStore.emitEventIfConnected('shape_delete', {
       board_id: boardStore.boardId,
       shape_id: shapeId
     })
@@ -55,7 +55,7 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   function commitShapeUpdate(shape: Shape) {
     const boardStore = useBoardStore()
-    IoConnection.emit('shape_update', {
+    boardStore.emitEventIfConnected('shape_update', {
       board_id: boardStore.boardId,
       shape: ShapeSerializer.toJson(shape)
     })
@@ -74,7 +74,8 @@ export const useCanvasStore = defineStore('canvas', () => {
   })
 
   IoConnection.onEvent('shape_list_share_req', (data) => {
-    IoConnection.emit('shape_list_share_resp', {
+    const boardStore = useBoardStore()
+    boardStore.emitEventIfConnected('shape_list_share_resp', {
       ...data,
       shapes: drawnShapes.value.map((shape) => ShapeSerializer.toJson(shape))
     })

@@ -38,7 +38,7 @@ const ready = computed(() => {
 const loadingPrompt = computed(() => {
   if (!initState.canvasReady) return 'Preparing the canvas...'
 
-  if (!initState.boardReady) return 'Joining the board...'
+  if (!initState.boardReady) return 'Loading the board...'
 
   if (!initState.magicReady) return 'Initializing AI models...'
 
@@ -68,7 +68,15 @@ function handleMagicReady() {
 }
 
 onMounted(async () => {
-  const joined = await boardStore.joinBoard(route.params.id as string)
+  if (router.currentRoute.value.name == 'root') {
+    await boardStore.createBoard()
+    initState.boardReady = true
+    logger.debug(`Entered private board`)
+    return
+  }
+
+  /* If id given then join the remote board */
+  const joined = await boardStore.joinBoard(route.params.boardId as string)
   if (!joined) {
     router.push({ name: 'not-found' })
     return
