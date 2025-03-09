@@ -10,6 +10,7 @@ import TheToolbar from '@/components/whiteboard/toolbar/TheToolbar.vue'
 import { useRoute, useRouter } from 'vue-router'
 import SidebarControl from '@/components/whiteboard/sidebar/SidebarControl.vue'
 import TheSidebar from '@/components/whiteboard/sidebar/TheSidebar.vue'
+import ConnectionModal from '@/components/connection/ConnectionModal.vue'
 import { useSidebarStore } from '@/store/SidebarStore'
 import PageLoader from '@/components/loading/PageLoader.vue'
 import TheMagic from '@/components/whiteboard/magic/TheMagic.vue'
@@ -93,6 +94,7 @@ onMounted(async () => {
   </PageLoader>
   <div id="the-whiteboard">
     <SvgCanvas @canvas-ready="handleCanvasReady"></SvgCanvas>
+    <ConnectionModal />
     <div id="the-whiteboard-overlay">
       <div id="the-main-overlay">
         <div class="is-flex is-justify-content-space-between">

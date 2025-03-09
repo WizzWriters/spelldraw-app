@@ -22,6 +22,7 @@ export class ConnectedUser {
 
 export const useBoardStore = defineStore('board', () => {
   const localBoard: Ref<boolean> = ref(false)
+  const hostDisconnected: Ref<boolean> = ref(false)
   const boardId: Ref<string | null> = ref(null)
   const boardUserId: Ref<string | null> = ref(null)
   const connectedUsers: Ref<Array<ConnectedUser>> = ref([])
@@ -55,6 +56,10 @@ export const useBoardStore = defineStore('board', () => {
     connectedUsers.value.splice(index, 1)
   }
 
+  function removeAllConectedUsers() {
+    connectedUsers.value = []
+  }
+
   function emitEventIfConnected(name: string, payload: any) {
     if (localBoard.value) return
     IoConnection.emit(name, payload)
@@ -75,6 +80,13 @@ export const useBoardStore = defineStore('board', () => {
     removeConnectedUser(userId)
   })
 
+  IoConnection.onEvent('host_left', () => {
+    logger.debug(`Host has left the board`)
+    removeAllConectedUsers()
+    localBoard.value = true
+    hostDisconnected.value = true
+  })
+
   IoConnection.onEvent('position_update', (data) => {
     const userId = data.board_user_id
     let index = connectedUsers.value.findIndex((user) => user.id == userId)
@@ -87,6 +99,7 @@ export const useBoardStore = defineStore('board', () => {
 
   return {
     localBoard,
+    hostDisconnected,
     boardId,
     boardUserId,
     connectedUsers,
