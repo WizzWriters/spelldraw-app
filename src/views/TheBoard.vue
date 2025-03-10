@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { usePointerStore } from '@/store/PointerStore'
-import { useBoardStore } from '@/store/BoardStore'
 import Logger from 'js-logger'
 import { computed, onMounted, reactive, watch } from 'vue'
 import TheLogo from '@/components/logo/TheLogo.vue'
@@ -15,11 +14,11 @@ import { useSidebarStore } from '@/store/SidebarStore'
 import PageLoader from '@/components/loading/PageLoader.vue'
 import TheMagic from '@/components/whiteboard/magic/TheMagic.vue'
 import KeyboardService from '@/services/keyboard/KeyboardService'
+import BoardService from '@/services/board/BoardService'
 
 const logger = Logger.get('MainWhiteboard.vue')
 
 const poinerStore = usePointerStore()
-const boardStore = useBoardStore()
 const sidebarStore = useSidebarStore()
 const pointerPosition = usePointerTracker()
 
@@ -69,21 +68,20 @@ function handleMagicReady() {
 }
 
 onMounted(async () => {
+  const boardService = new BoardService()
+
   if (router.currentRoute.value.name == 'root') {
-    await boardStore.createBoard()
+    boardService.loadLocalBoard()
     initState.boardReady = true
-    logger.debug(`Entered private board`)
     return
   }
 
-  /* If id given then join the remote board */
-  const joined = await boardStore.joinBoard(route.params.boardId as string)
+  const boardId = route.params.boardId as string
+  const joined = await boardService.joinRemoteBoard(boardId)
   if (!joined) {
     router.push({ name: 'not-found' })
     return
   }
-
-  logger.debug(`Joined the board id=${route.params.id}`)
   initState.boardReady = true
 })
 </script>

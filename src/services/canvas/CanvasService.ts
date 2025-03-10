@@ -61,6 +61,11 @@ export default class CanvasService {
     canvasStore.currentlyDrawnShape = shape
   }
 
+  public clearCanvas() {
+    const canvasStore = useCanvasStore()
+    canvasStore.clearCanvas()
+  }
+
   private deleteSelectedShapes() {
     const toolbarStore = useToolbarStore()
     HistoryService.startAggregating()

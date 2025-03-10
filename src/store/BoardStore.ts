@@ -38,7 +38,7 @@ export const useBoardStore = defineStore('board', () => {
     localBoard.value = false
   }
 
-  async function joinBoard(id: string): Promise<Boolean> {
+  async function joinBoard(id: string): Promise<boolean> {
     const response = await IoConnection.request('join_board', { board_id: id })
     if (response.status != 0) return false
     boardId.value = response.data.board_id
