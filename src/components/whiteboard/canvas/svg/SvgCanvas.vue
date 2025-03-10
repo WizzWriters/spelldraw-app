@@ -17,6 +17,7 @@ import { Point } from '@/common/definitions/Geometry'
 import SvgNeonGlow from './filters/SvgNeonGlow.vue'
 import { Polyline, type Shape } from '@/common/definitions/Shape'
 import EventBus, { EMouseEvent } from '@/services/bus/EventBus'
+import CanvasService from '@/services/canvas/CanvasService'
 
 type CanvasElement = HTMLElement & SVGSVGElement
 
@@ -71,6 +72,10 @@ function initializeComponent() {
   }
 
   initializeCanvas(canvasElement, wrapperElement)
+
+  const canvasService = new CanvasService()
+  canvasService.registerKeyboardShortcuts()
+
   logger.debug('Canvas ready!')
   emit('canvasReady')
 }

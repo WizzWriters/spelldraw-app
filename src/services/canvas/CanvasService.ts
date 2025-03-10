@@ -8,7 +8,7 @@ import { useToolbarStore } from '@/store/ToolbarStore'
 import KeyboardService from '../keyboard/KeyboardService'
 
 export default class CanvasService {
-  constructor() {
+  public registerKeyboardShortcuts() {
     const canvasKeyboard = KeyboardService.get('canvas')
     canvasKeyboard.registerCallback(['Delete'], () =>
       this.deleteSelectedShapes()
