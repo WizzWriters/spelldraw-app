@@ -21,21 +21,21 @@ export class ConnectedUser {
 }
 
 export const useBoardStore = defineStore('board', () => {
-  const localBoard: Ref<boolean> = ref(false)
+  const isShared: Ref<boolean> = ref(false)
   const hostDisconnected: Ref<boolean> = ref(false)
   const boardId: Ref<string | null> = ref(null)
   const boardUserId: Ref<string | null> = ref(null)
   const connectedUsers: Ref<Array<ConnectedUser>> = ref([])
 
-  async function createBoard() {
-    localBoard.value = true
+  function setLocalBoard() {
+    isShared.value = false
   }
 
   async function publishBoard() {
     const response = await IoConnection.request('create_board', undefined)
     if (response.status != 0) throw new Error('Failed to publish the board')
     boardId.value = response.data.id
-    localBoard.value = false
+    isShared.value = true
   }
 
   async function joinBoard(id: string): Promise<boolean> {
@@ -43,6 +43,7 @@ export const useBoardStore = defineStore('board', () => {
     if (response.status != 0) return false
     boardId.value = response.data.board_id
     boardUserId.value = response.data.board_user_id
+    isShared.value = true
     return true
   }
 
@@ -61,7 +62,7 @@ export const useBoardStore = defineStore('board', () => {
   }
 
   function emitEventIfConnected(name: string, payload: any) {
-    if (localBoard.value) return
+    if (!isShared.value) return
     IoConnection.emit(name, payload)
   }
 
@@ -83,7 +84,6 @@ export const useBoardStore = defineStore('board', () => {
   IoConnection.onEvent('host_left', () => {
     logger.debug(`Host has left the board`)
     removeAllConectedUsers()
-    localBoard.value = true
     hostDisconnected.value = true
   })
 
@@ -98,12 +98,12 @@ export const useBoardStore = defineStore('board', () => {
   })
 
   return {
-    localBoard,
+    isShared,
     hostDisconnected,
     boardId,
     boardUserId,
     connectedUsers,
-    createBoard,
+    setLocalBoard,
     publishBoard,
     joinBoard,
     emitEventIfConnected

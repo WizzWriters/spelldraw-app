@@ -3,6 +3,7 @@ import { ref, watch } from 'vue'
 import { useBoardStore } from '@/store/BoardStore'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import BoardService from '@/services/board/BoardService'
 
 const modalShown = ref(false)
 const boardStore = useBoardStore()
@@ -16,10 +17,13 @@ watch(hostDisconnected, (nextState, previousState) => {
 })
 
 function closeModal() {
+  boardStore.setLocalBoard()
   modalShown.value = false
 }
 
-function leaveBoard() {
+async function leaveBoard() {
+  const boardService = new BoardService()
+  await boardService.loadLocalBoard()
   modalShown.value = false
   router.push({ name: 'root' })
 }

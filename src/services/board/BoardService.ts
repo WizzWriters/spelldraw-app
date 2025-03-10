@@ -10,7 +10,7 @@ export default class BoardService {
     const boardStore = useBoardStore()
 
     canvasService.clearCanvas()
-    await boardStore.createBoard()
+    boardStore.setLocalBoard()
 
     this.logger.debug(`Loaded local board`)
   }

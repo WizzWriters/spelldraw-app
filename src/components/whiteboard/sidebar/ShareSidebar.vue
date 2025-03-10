@@ -48,7 +48,7 @@ async function publishBoard() {
 
 <template>
   <div>
-    <div v-if="boardStore.localBoard">
+    <div v-if="!boardStore.isShared">
       <p class="mt-2">
         You are currently working on your private board. Share it with others by
         clicking the button below.
@@ -63,7 +63,7 @@ async function publishBoard() {
       <p class="pt-2 has-text-danger">{{ errorMessage }}</p>
     </div>
 
-    <div v-if="!boardStore.localBoard">
+    <div v-if="boardStore.isShared">
       <p class="mt-2">Anyone with this link can join:</p>
       <input class="input mt-1" type="text" :value="boardUrl" readonly />
       <button
@@ -76,7 +76,7 @@ async function publishBoard() {
       </button>
     </div>
 
-    <div v-if="!boardStore.localBoard">
+    <div v-if="boardStore.isShared">
       <p class="is-size-5 my-2">Connected users:</p>
       <div
         class="has-text-weight-semibold is-flex is-justify-content-space-between"
