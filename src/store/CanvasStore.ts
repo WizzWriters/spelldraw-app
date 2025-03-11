@@ -47,7 +47,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     const boardStore = useBoardStore()
     boardStore.emitEventIfConnected('shape_create', {
       board_id: boardStore.boardId,
-      shape: ShapeSerializer.toJson(shape)
+      shape: ShapeSerializer.toPlainObject(shape)
     })
   }
 
@@ -63,12 +63,12 @@ export const useCanvasStore = defineStore('canvas', () => {
     const boardStore = useBoardStore()
     boardStore.emitEventIfConnected('shape_update', {
       board_id: boardStore.boardId,
-      shape: ShapeSerializer.toJson(shape)
+      shape: ShapeSerializer.toPlainObject(shape)
     })
   }
 
   IoConnection.onEvent('shape_create', (data) => {
-    const receivedShape = ShapeSerializer.fromJson(data.shape)
+    const receivedShape = ShapeSerializer.fromPlainObject(data.shape)
     drawnShapes.value.push(receivedShape)
   })
 
@@ -83,18 +83,20 @@ export const useCanvasStore = defineStore('canvas', () => {
     const boardStore = useBoardStore()
     boardStore.emitEventIfConnected('shape_list_share_resp', {
       ...data,
-      shapes: drawnShapes.value.map((shape) => ShapeSerializer.toJson(shape))
+      shapes: drawnShapes.value.map((shape) =>
+        ShapeSerializer.toPlainObject(shape)
+      )
     })
   })
 
   IoConnection.onEvent('shape_list', (data) => {
-    for (const shapeJson of data.shapes) {
-      drawnShapes.value.push(ShapeSerializer.fromJson(shapeJson))
+    for (const shapePojo of data.shapes) {
+      drawnShapes.value.push(ShapeSerializer.fromPlainObject(shapePojo))
     }
   })
 
   IoConnection.onEvent('shape_update', (data) => {
-    const updatedShape = ShapeSerializer.fromJson(data.shape)
+    const updatedShape = ShapeSerializer.fromPlainObject(data.shape)
     const shapeIndex = drawnShapes.value.findIndex(
       (shape) => shape.id == updatedShape.id
     )

@@ -1,6 +1,6 @@
 import { Rectangle } from '../definitions/Geometry'
 
-export interface IRectangleJson {
+export interface IRectanglePlainObject {
   left: number
   right: number
   bottom: number
@@ -8,7 +8,7 @@ export interface IRectangleJson {
 }
 
 export class RectangleSerializer {
-  public static toJson(rectangle: Rectangle): IRectangleJson {
+  public static toPlainObject(rectangle: Rectangle): IRectanglePlainObject {
     return {
       left: rectangle.left,
       right: rectangle.right,
@@ -17,7 +17,7 @@ export class RectangleSerializer {
     }
   }
 
-  public static fromJson(rectangle: IRectangleJson) {
+  public static fromPlainObject(rectangle: IRectanglePlainObject) {
     return new Rectangle(
       rectangle.left,
       rectangle.right,

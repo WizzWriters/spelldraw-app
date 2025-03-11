@@ -1,6 +1,6 @@
 import { HslColor, RgbColor } from '../definitions/Color'
 
-export interface IRgbColorJson {
+export interface IRgbColorPlainObject {
   red: number
   green: number
   blue: number
@@ -8,7 +8,7 @@ export interface IRgbColorJson {
 }
 
 export class RgbColorSerializer {
-  public static toJson(color: RgbColor): IRgbColorJson {
+  public static toPlainObject(color: RgbColor): IRgbColorPlainObject {
     return {
       red: color.red,
       green: color.green,
@@ -17,7 +17,7 @@ export class RgbColorSerializer {
     }
   }
 
-  public static fromJson(color: IRgbColorJson) {
+  public static fromPlainObject(color: IRgbColorPlainObject) {
     return new RgbColor(color.red, color.green, color.blue, color.opacity)
   }
 }
@@ -29,7 +29,7 @@ export interface IHslColor {
 }
 
 export class HslColorSerializer {
-  public static toJson(color: HslColor): IHslColor {
+  public static toPlainObject(color: HslColor): IHslColor {
     return {
       hue: color.hue,
       saturation: color.saturation,
@@ -37,7 +37,7 @@ export class HslColorSerializer {
     }
   }
 
-  public static fromJson(color: IHslColor) {
+  public static fromPlainObject(color: IHslColor) {
     return new HslColor(color.hue, color.saturation, color.lightness)
   }
 }

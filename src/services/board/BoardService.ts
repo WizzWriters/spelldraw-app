@@ -1,6 +1,7 @@
 import { useBoardStore } from '@/store/BoardStore'
 import Logger from 'js-logger'
 import CanvasService from '../canvas/CanvasService'
+import { LocalRepository } from '@/repositories/LocalRepository'
 
 export default class BoardService {
   private logger = Logger.get('BoardService')

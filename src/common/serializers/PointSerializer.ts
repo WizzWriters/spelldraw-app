@@ -1,16 +1,16 @@
 import { Point } from '../definitions/Geometry'
 
-export interface IPointJson {
+export interface IPointPlainObject {
   xCoordinate: number
   yCoordinate: number
 }
 
 export class PointSerializer {
-  public static toJson(point: Point): IPointJson {
+  public static toPlainObject(point: Point): IPointPlainObject {
     return { xCoordinate: point.xCoordinate, yCoordinate: point.yCoordinate }
   }
 
-  public static fromJson(pointJson: IPointJson) {
-    return new Point(pointJson.xCoordinate, pointJson.yCoordinate)
+  public static fromPlainObject(pointPojo: IPointPlainObject) {
+    return new Point(pointPojo.xCoordinate, pointPojo.yCoordinate)
   }
 }

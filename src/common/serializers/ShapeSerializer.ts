@@ -9,9 +9,12 @@ import {
   type Shape
 } from '../definitions/Shape'
 import { RgbColorSerializer } from './ColorSerializer'
-import { PointSerializer, type IPointJson } from './PointSerializer'
-import { RectangleSerializer, type IRectangleJson } from './RectangleSerializer'
-import TextSerializer, { type ITextJson } from './TextSerializer'
+import { PointSerializer, type IPointPlainObject } from './PointSerializer'
+import {
+  RectangleSerializer,
+  type IRectanglePlainObject
+} from './RectangleSerializer'
+import TextSerializer, { type ITextPlainObject } from './TextSerializer'
 
 enum EShapeType {
   POLYLINE = 'polyline',
@@ -20,7 +23,7 @@ enum EShapeType {
   TEXT = 'text'
 }
 
-interface ICommonShapeJson {
+interface ICommonShapePlainObject {
   id: string
   type: EShapeType
   strokeColor: RgbColor
@@ -28,23 +31,25 @@ interface ICommonShapeJson {
   fillColor: RgbColor
 }
 
-interface IPointListBasedShapeJson extends ICommonShapeJson {
-  pointList: Array<IPointJson>
+interface IPointListBasedShapePlainObject extends ICommonShapePlainObject {
+  pointList: Array<IPointPlainObject>
 }
 
 class PointListBasedShapeSerializer {
-  public static toJson(shape: PointListBasedShape): IPointListBasedShapeJson {
+  public static toPlainObject(
+    shape: PointListBasedShape
+  ): IPointListBasedShapePlainObject {
     let type: EShapeType
     if (shape instanceof Polyline) type = EShapeType.POLYLINE
     else if (shape instanceof Polygon) type = EShapeType.POLYGON
     else if (shape instanceof RoundShape) type = EShapeType.ROUND_SHAPE
     else throw new NotImplemented()
 
-    const strokeColor = RgbColorSerializer.toJson(shape.strokeColor)
-    const fillColor = RgbColorSerializer.toJson(shape.fillColor)
+    const strokeColor = RgbColorSerializer.toPlainObject(shape.strokeColor)
+    const fillColor = RgbColorSerializer.toPlainObject(shape.fillColor)
 
     const pointList = shape.pointList.map((point) =>
-      PointSerializer.toJson(point)
+      PointSerializer.toPlainObject(point)
     )
 
     return {
@@ -57,17 +62,19 @@ class PointListBasedShapeSerializer {
     }
   }
 
-  public static fromJson(shapeJson: IPointListBasedShapeJson) {
+  public static fromPlainObject(shapePojo: IPointListBasedShapePlainObject) {
     let shape: PointListBasedShape
-    const pointList = shapeJson.pointList.map((pointJson) =>
-      PointSerializer.fromJson(pointJson)
+    const pointList = shapePojo.pointList.map((pointPojo) =>
+      PointSerializer.fromPlainObject(pointPojo)
     )
 
-    const strokeColor = RgbColorSerializer.fromJson(shapeJson.strokeColor)
-    const fillColor = RgbColorSerializer.fromJson(shapeJson.fillColor)
-    const strokeWidth = shapeJson.strokeWidth
+    const strokeColor = RgbColorSerializer.fromPlainObject(
+      shapePojo.strokeColor
+    )
+    const fillColor = RgbColorSerializer.fromPlainObject(shapePojo.fillColor)
+    const strokeWidth = shapePojo.strokeWidth
 
-    switch (shapeJson.type) {
+    switch (shapePojo.type) {
       case EShapeType.POLYLINE:
         shape = new Polyline(pointList, strokeColor, fillColor, strokeWidth)
         break
@@ -81,22 +88,22 @@ class PointListBasedShapeSerializer {
         throw new NotImplemented()
     }
 
-    Object.defineProperties(shape, { id: { value: shapeJson.id } })
+    Object.defineProperties(shape, { id: { value: shapePojo.id } })
 
     return shape
   }
 }
 
-interface ITextBoxJson extends ICommonShapeJson {
-  box: IRectangleJson
-  text: ITextJson
+interface ITextBoxPlainObject extends ICommonShapePlainObject {
+  box: IRectanglePlainObject
+  text: ITextPlainObject
   textAlignment: number
 }
 
 class TextBoxSerializer {
-  public static toJson(textBox: TextBox): ITextBoxJson {
-    const strokeColor = RgbColorSerializer.toJson(textBox.strokeColor)
-    const fillColor = RgbColorSerializer.toJson(textBox.fillColor)
+  public static toPlainObject(textBox: TextBox): ITextBoxPlainObject {
+    const strokeColor = RgbColorSerializer.toPlainObject(textBox.strokeColor)
+    const fillColor = RgbColorSerializer.toPlainObject(textBox.fillColor)
 
     return {
       type: EShapeType.TEXT,
@@ -104,52 +111,56 @@ class TextBoxSerializer {
       strokeColor,
       fillColor,
       strokeWidth: textBox.strokeWidth,
-      box: RectangleSerializer.toJson(textBox.box),
-      text: TextSerializer.toJson(textBox.text),
+      box: RectangleSerializer.toPlainObject(textBox.box),
+      text: TextSerializer.toPlainObject(textBox.text),
       textAlignment: textBox.textAlignment
     }
   }
 
-  public static fromJson(textBoxJson: ITextBoxJson) {
-    const strokeColor = RgbColorSerializer.fromJson(textBoxJson.strokeColor)
-    const fillColor = RgbColorSerializer.fromJson(textBoxJson.fillColor)
+  public static fromPlainObject(textBoxPojo: ITextBoxPlainObject) {
+    const strokeColor = RgbColorSerializer.fromPlainObject(
+      textBoxPojo.strokeColor
+    )
+    const fillColor = RgbColorSerializer.fromPlainObject(textBoxPojo.fillColor)
 
     const textBox = new TextBox(
-      RectangleSerializer.fromJson(textBoxJson.box),
-      TextSerializer.fromJson(textBoxJson.text),
-      textBoxJson.textAlignment,
+      RectangleSerializer.fromPlainObject(textBoxPojo.box),
+      TextSerializer.fromPlainObject(textBoxPojo.text),
+      textBoxPojo.textAlignment,
       strokeColor,
       fillColor
     )
 
-    Object.defineProperties(textBox, { id: { value: textBoxJson.id } })
+    Object.defineProperties(textBox, { id: { value: textBoxPojo.id } })
     return textBox
   }
 }
 
-export type IShapeJson = IPointListBasedShapeJson | ITextBoxJson
+export type IShapePlainObject =
+  | IPointListBasedShapePlainObject
+  | ITextBoxPlainObject
 
 export default class ShapeSerializer {
-  static toJson(shape: Shape): IShapeJson {
+  static toPlainObject(shape: Shape): IShapePlainObject {
     if (shape instanceof PointListBasedShape) {
-      return PointListBasedShapeSerializer.toJson(shape)
+      return PointListBasedShapeSerializer.toPlainObject(shape)
     }
     if (shape instanceof TextBox) {
-      return TextBoxSerializer.toJson(shape)
+      return TextBoxSerializer.toPlainObject(shape)
     }
     throw new NotImplemented()
   }
 
-  static fromJson(shape: IShapeJson): Shape {
+  static fromPlainObject(shape: IShapePlainObject): Shape {
     switch (shape.type) {
       case EShapeType.POLYLINE:
       case EShapeType.POLYGON:
       case EShapeType.ROUND_SHAPE:
-        return PointListBasedShapeSerializer.fromJson(
-          shape as IPointListBasedShapeJson
+        return PointListBasedShapeSerializer.fromPlainObject(
+          shape as IPointListBasedShapePlainObject
         )
       case EShapeType.TEXT:
-        return TextBoxSerializer.fromJson(shape as ITextBoxJson)
+        return TextBoxSerializer.fromPlainObject(shape as ITextBoxPlainObject)
       default:
         throw new NotImplemented()
     }
