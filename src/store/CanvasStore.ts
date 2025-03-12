@@ -4,12 +4,14 @@ import { ref, type Ref } from 'vue'
 import IoConnection from '@/services/connection/IoConnection'
 import ShapeSerializer from '@/common/serializers/ShapeSerializer'
 import { useBoardStore } from './BoardStore'
+import LocalShapeRepository from '@/repositories/local/ShapeRepository'
 
 export const useCanvasStore = defineStore('canvas', () => {
   const drawnShapes: Ref<Array<Shape>> = ref([])
   const currentlyDrawnShape: Ref<Shape | null> = ref(null)
   const canvasPosition = ref({ left: 0, top: 0 })
   const canvasOffset = ref({ x: 0, y: 0 })
+  const loadedLocalBoardId: Ref<number | undefined> = ref(undefined)
 
   function clearCanvas() {
     drawnShapes.value = []
@@ -17,9 +19,20 @@ export const useCanvasStore = defineStore('canvas', () => {
     canvasOffset.value = { x: 0, y: 0 }
   }
 
+  async function loadFromMemory(localBoardId: number) {
+    clearCanvas()
+    loadedLocalBoardId.value = localBoardId
+  }
+
   function addDrawnShape(shape: Shape) {
     drawnShapes.value.push(shape)
     commitShapeCreation(shape)
+
+    const localShapeRepository = new LocalShapeRepository()
+    localShapeRepository.insert(
+      loadedLocalBoardId.value!,
+      ShapeSerializer.toPlainObject(shape)
+    )
   }
 
   function removeDrawnShapeById(id: string) {
@@ -110,6 +123,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     canvasPosition,
     canvasOffset,
     clearCanvas,
+    loadFromMemory,
     removeDrawnShapeById,
     addDrawnShape,
     getShapeById,

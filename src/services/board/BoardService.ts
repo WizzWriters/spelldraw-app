@@ -1,19 +1,26 @@
 import { useBoardStore } from '@/store/BoardStore'
 import Logger from 'js-logger'
 import CanvasService from '../canvas/CanvasService'
-import { LocalRepository } from '@/repositories/LocalRepository'
+import BoardRepository from '@/repositories/local/BoardRepository'
 
 export default class BoardService {
   private logger = Logger.get('BoardService')
 
-  public async loadLocalBoard() {
+  public async loadLocalBoard(localBoardId: number) {
     const canvasService = new CanvasService()
     const boardStore = useBoardStore()
+    const boardRepository = new BoardRepository()
 
-    canvasService.clearCanvas()
+    const localBoard = await boardRepository.fetchById(localBoardId)
+    if (!localBoard) {
+      this.logger.debug('Local board not present. Creating new one')
+      await boardRepository.insert('Local')
+    } else {
+      this.logger.debug(`Local board will be loaded from memory`)
+    }
+
+    await canvasService.loadCanvasFromMemory(localBoardId)
     boardStore.setLocalBoard()
-
-    this.logger.debug(`Loaded local board`)
   }
 
   public async joinRemoteBoard(boardId: string): Promise<boolean> {

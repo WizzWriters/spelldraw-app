@@ -15,6 +15,11 @@ export default class CanvasService {
     )
   }
 
+  public async loadCanvasFromMemory(localBoardId: number) {
+    const canvasStore = useCanvasStore()
+    canvasStore.loadFromMemory(localBoardId)
+  }
+
   public getShapeById(id: string) {
     const canvasStore = useCanvasStore()
     return canvasStore.getShapeById(id)

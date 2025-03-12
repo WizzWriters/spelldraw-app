@@ -71,7 +71,8 @@ onMounted(async () => {
   const boardService = new BoardService()
 
   if (router.currentRoute.value.name == 'root') {
-    boardService.loadLocalBoard()
+    /* For now we support only one local board, so load the one with id = 1 */
+    await boardService.loadLocalBoard(1)
     initState.boardReady = true
     return
   }
