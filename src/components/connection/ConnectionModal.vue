@@ -23,7 +23,8 @@ function closeModal() {
 
 async function leaveBoard() {
   const boardService = new BoardService()
-  await boardService.loadLocalBoard()
+  /* For now we only support single local board, so load the one with id = 1 */
+  await boardService.loadLocalBoard(1)
   modalShown.value = false
   router.push({ name: 'root' })
 }
