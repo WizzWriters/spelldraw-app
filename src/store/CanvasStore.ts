@@ -20,26 +20,30 @@ export const useCanvasStore = defineStore('canvas', () => {
   }
 
   async function loadFromMemory(localBoardId: number) {
+    const shapeRepository = new LocalShapeRepository()
     clearCanvas()
+
+    const shapeEntries = await shapeRepository.fetchBoardShapes(localBoardId)
+    const shapes = shapeEntries.map((entry) =>
+      ShapeSerializer.fromPlainObject(entry.shape)
+    )
+    drawnShapes.value = shapes
+
     loadedLocalBoardId.value = localBoardId
   }
 
-  function addDrawnShape(shape: Shape) {
+  async function addDrawnShape(shape: Shape) {
     drawnShapes.value.push(shape)
-    commitShapeCreation(shape)
-
-    const localShapeRepository = new LocalShapeRepository()
-    localShapeRepository.insert(
-      loadedLocalBoardId.value!,
-      ShapeSerializer.toPlainObject(shape)
-    )
+    broadcastShapeCreation(shape)
+    addNewShapeToDatabase(shape)
   }
 
   function removeDrawnShapeById(id: string) {
     const shapeIndex = drawnShapes.value.findIndex((shape) => shape.id == id)
     if (shapeIndex < 0) return
     drawnShapes.value.splice(shapeIndex, 1)
-    commitShapeDeletion(id)
+    broadcastShapeDeletion(id)
+    deleteShapeFromDatabase(id)
   }
 
   function getShapeById(id: string) {
@@ -53,10 +57,11 @@ export const useCanvasStore = defineStore('canvas', () => {
     )
     if (shapeIndex < 0) return
     drawnShapes.value[shapeIndex] = updatedShape
-    commitShapeUpdate(updatedShape)
+    broadcastShapeUpdate(updatedShape)
+    updateShapeInDatabase(updatedShape)
   }
 
-  function commitShapeCreation(shape: Shape) {
+  function broadcastShapeCreation(shape: Shape) {
     const boardStore = useBoardStore()
     boardStore.emitEventIfConnected('shape_create', {
       board_id: boardStore.boardId,
@@ -64,7 +69,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     })
   }
 
-  function commitShapeDeletion(shapeId: string) {
+  function broadcastShapeDeletion(shapeId: string) {
     const boardStore = useBoardStore()
     boardStore.emitEventIfConnected('shape_delete', {
       board_id: boardStore.boardId,
@@ -72,7 +77,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     })
   }
 
-  function commitShapeUpdate(shape: Shape) {
+  function broadcastShapeUpdate(shape: Shape) {
     const boardStore = useBoardStore()
     boardStore.emitEventIfConnected('shape_update', {
       board_id: boardStore.boardId,
@@ -80,9 +85,34 @@ export const useCanvasStore = defineStore('canvas', () => {
     })
   }
 
+  function addNewShapeToDatabase(shape: Shape) {
+    if (!loadedLocalBoardId.value) return
+
+    const localShapeRepository = new LocalShapeRepository()
+    localShapeRepository.insert(
+      loadedLocalBoardId.value!,
+      ShapeSerializer.toPlainObject(shape)
+    )
+  }
+
+  function deleteShapeFromDatabase(shapeId: string) {
+    if (!loadedLocalBoardId.value) return
+
+    const localShapeRepository = new LocalShapeRepository()
+    localShapeRepository.delete(shapeId)
+  }
+
+  function updateShapeInDatabase(shape: Shape) {
+    if (!loadedLocalBoardId.value) return
+
+    const localShapeRepository = new LocalShapeRepository()
+    localShapeRepository.update(shape.id, ShapeSerializer.toPlainObject(shape))
+  }
+
   IoConnection.onEvent('shape_create', (data) => {
     const receivedShape = ShapeSerializer.fromPlainObject(data.shape)
     drawnShapes.value.push(receivedShape)
+    addNewShapeToDatabase(receivedShape)
   })
 
   IoConnection.onEvent('shape_delete', (data) => {
@@ -90,6 +120,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     const shapeIndex = drawnShapes.value.findIndex((shape) => shape.id == id)
     if (shapeIndex < 0) return
     drawnShapes.value.splice(shapeIndex, 1)
+    deleteShapeFromDatabase(id)
   })
 
   IoConnection.onEvent('shape_list_share_req', (data) => {
@@ -104,7 +135,9 @@ export const useCanvasStore = defineStore('canvas', () => {
 
   IoConnection.onEvent('shape_list', (data) => {
     for (const shapePojo of data.shapes) {
-      drawnShapes.value.push(ShapeSerializer.fromPlainObject(shapePojo))
+      const shape = ShapeSerializer.fromPlainObject(shapePojo)
+      drawnShapes.value.push(shape)
+      addNewShapeToDatabase(shape)
     }
   })
 
@@ -115,6 +148,7 @@ export const useCanvasStore = defineStore('canvas', () => {
     )
     if (shapeIndex < 0) return
     drawnShapes.value[shapeIndex] = updatedShape
+    updateShapeInDatabase(updatedShape)
   })
 
   return {

@@ -7,8 +7,8 @@ export interface IBoardDbEntry {
 }
 
 export interface IShapeDbEntry {
-  id: number
-  local_board_id: number
+  id: string
+  board_id: number
   shape: IShapePlainObject
 }
 
@@ -18,8 +18,8 @@ const db = new Dexie('SpelldrawDb') as Dexie & {
 }
 
 db.version(1).stores({
-  boards: 'id++, name',
-  shapes: 'id++, board_id'
+  boards: '++id, name',
+  shapes: 'id, board_id'
 })
 
 export default db
