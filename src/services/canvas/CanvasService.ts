@@ -17,6 +17,7 @@ export default class CanvasService {
 
   public async loadCanvasFromMemory(localBoardId: number) {
     const canvasStore = useCanvasStore()
+    canvasStore.resetPosition()
     canvasStore.loadFromMemory(localBoardId)
   }
 
@@ -64,11 +65,6 @@ export default class CanvasService {
   public setCurrentlyDrawnShape(shape: Shape | null) {
     const canvasStore = useCanvasStore()
     canvasStore.currentlyDrawnShape = shape
-  }
-
-  public clearCanvas() {
-    const canvasStore = useCanvasStore()
-    canvasStore.clearCanvas()
   }
 
   private deleteSelectedShapes() {

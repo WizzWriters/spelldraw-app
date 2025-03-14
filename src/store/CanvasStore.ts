@@ -5,6 +5,11 @@ import IoConnection from '@/services/connection/IoConnection'
 import ShapeSerializer from '@/common/serializers/ShapeSerializer'
 import { useBoardStore } from './BoardStore'
 import LocalShapeRepository from '@/repositories/local/ShapeRepository'
+import CanvasBroadcastChannel, {
+  ECanvasBroadcastEventType,
+  type IReloadMessagePayload,
+  MessageCallback
+} from '@/services/canvas/CanvasBroadcastChannel'
 
 export const useCanvasStore = defineStore('canvas', () => {
   const drawnShapes: Ref<Array<Shape>> = ref([])
@@ -13,15 +18,13 @@ export const useCanvasStore = defineStore('canvas', () => {
   const canvasOffset = ref({ x: 0, y: 0 })
   const loadedLocalBoardId: Ref<number | undefined> = ref(undefined)
 
-  function clearCanvas() {
-    drawnShapes.value = []
+  function resetPosition() {
     canvasPosition.value = { left: 0, top: 0 }
     canvasOffset.value = { x: 0, y: 0 }
   }
 
   async function loadFromMemory(localBoardId: number) {
     const shapeRepository = new LocalShapeRepository()
-    clearCanvas()
 
     const shapeEntries = await shapeRepository.fetchBoardShapes(localBoardId)
     const shapes = shapeEntries.map((entry) =>
@@ -93,6 +96,7 @@ export const useCanvasStore = defineStore('canvas', () => {
       loadedLocalBoardId.value!,
       ShapeSerializer.toPlainObject(shape)
     )
+    emitReloadRequest()
   }
 
   function deleteShapeFromDatabase(shapeId: string) {
@@ -100,6 +104,7 @@ export const useCanvasStore = defineStore('canvas', () => {
 
     const localShapeRepository = new LocalShapeRepository()
     localShapeRepository.delete(shapeId)
+    emitReloadRequest()
   }
 
   function updateShapeInDatabase(shape: Shape) {
@@ -107,6 +112,15 @@ export const useCanvasStore = defineStore('canvas', () => {
 
     const localShapeRepository = new LocalShapeRepository()
     localShapeRepository.update(shape.id, ShapeSerializer.toPlainObject(shape))
+    emitReloadRequest()
+  }
+
+  /* If the local board is opened on the other tab, ask it to reload */
+  function emitReloadRequest() {
+    if (!loadedLocalBoardId.value) return
+    CanvasBroadcastChannel.emit(ECanvasBroadcastEventType.RELOAD, {
+      localBoardId: loadedLocalBoardId.value
+    })
   }
 
   IoConnection.onEvent('shape_create', (data) => {
@@ -151,12 +165,20 @@ export const useCanvasStore = defineStore('canvas', () => {
     updateShapeInDatabase(updatedShape)
   })
 
+  const reloadCallback = new MessageCallback<IReloadMessagePayload>(
+    (payload) => {
+      if (loadedLocalBoardId.value == payload.localBoardId)
+        loadFromMemory(loadedLocalBoardId.value)
+    }
+  )
+  CanvasBroadcastChannel.on(ECanvasBroadcastEventType.RELOAD, reloadCallback)
+
   return {
     drawnShapes,
     currentlyDrawnShape,
     canvasPosition,
     canvasOffset,
-    clearCanvas,
+    resetPosition,
     loadFromMemory,
     removeDrawnShapeById,
     addDrawnShape,
