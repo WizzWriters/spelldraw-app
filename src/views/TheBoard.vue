@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { usePointerStore } from '@/store/PointerStore'
-import { useBoardStore } from '@/store/BoardStore'
 import Logger from 'js-logger'
 import { computed, onMounted, reactive, watch } from 'vue'
 import TheLogo from '@/components/logo/TheLogo.vue'
@@ -10,15 +9,16 @@ import TheToolbar from '@/components/whiteboard/toolbar/TheToolbar.vue'
 import { useRoute, useRouter } from 'vue-router'
 import SidebarControl from '@/components/whiteboard/sidebar/SidebarControl.vue'
 import TheSidebar from '@/components/whiteboard/sidebar/TheSidebar.vue'
+import ConnectionModal from '@/components/connection/ConnectionModal.vue'
 import { useSidebarStore } from '@/store/SidebarStore'
 import PageLoader from '@/components/loading/PageLoader.vue'
 import TheMagic from '@/components/whiteboard/magic/TheMagic.vue'
 import KeyboardService from '@/services/keyboard/KeyboardService'
+import BoardService from '@/services/board/BoardService'
 
 const logger = Logger.get('MainWhiteboard.vue')
 
 const poinerStore = usePointerStore()
-const boardStore = useBoardStore()
 const sidebarStore = useSidebarStore()
 const pointerPosition = usePointerTracker()
 
@@ -38,7 +38,7 @@ const ready = computed(() => {
 const loadingPrompt = computed(() => {
   if (!initState.canvasReady) return 'Preparing the canvas...'
 
-  if (!initState.boardReady) return 'Joining the board...'
+  if (!initState.boardReady) return 'Loading the board...'
 
   if (!initState.magicReady) return 'Initializing AI models...'
 
@@ -68,13 +68,21 @@ function handleMagicReady() {
 }
 
 onMounted(async () => {
-  const joined = await boardStore.joinBoard(route.params.id as string)
+  const boardService = new BoardService()
+
+  if (router.currentRoute.value.name == 'root') {
+    /* For now we support only one local board, so load the one with id = 1 */
+    await boardService.loadLocalBoard(1)
+    initState.boardReady = true
+    return
+  }
+
+  const boardId = route.params.boardId as string
+  const joined = await boardService.joinRemoteBoard(boardId)
   if (!joined) {
     router.push({ name: 'not-found' })
     return
   }
-
-  logger.debug(`Joined the board id=${route.params.id}`)
   initState.boardReady = true
 })
 </script>
@@ -85,6 +93,7 @@ onMounted(async () => {
   </PageLoader>
   <div id="the-whiteboard">
     <SvgCanvas @canvas-ready="handleCanvasReady"></SvgCanvas>
+    <ConnectionModal />
     <div id="the-whiteboard-overlay">
       <div id="the-main-overlay">
         <div class="is-flex is-justify-content-space-between">

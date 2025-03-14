@@ -1,29 +1,32 @@
 import Text from '../definitions/Text'
-import { RgbColorSerializer, type IRgbColorJson } from './ColorSerializer'
+import {
+  RgbColorSerializer,
+  type IRgbColorPlainObject
+} from './ColorSerializer'
 
-export interface ITextJson {
+export interface ITextPlainObject {
   textValue: string
   fontSize: number
-  strokeColor: IRgbColorJson
-  fillColor: IRgbColorJson
+  strokeColor: IRgbColorPlainObject
+  fillColor: IRgbColorPlainObject
 }
 
 export default class TextSerializer {
-  public static toJson(text: Text): ITextJson {
+  public static toPlainObject(text: Text): ITextPlainObject {
     return {
       textValue: text.textValue,
       fontSize: text.fontSize,
-      strokeColor: RgbColorSerializer.toJson(text.strokeColor),
-      fillColor: RgbColorSerializer.toJson(text.fillColor)
+      strokeColor: RgbColorSerializer.toPlainObject(text.strokeColor),
+      fillColor: RgbColorSerializer.toPlainObject(text.fillColor)
     }
   }
 
-  public static fromJson(text: ITextJson) {
+  public static fromPlainObject(text: ITextPlainObject) {
     return new Text(
       text.textValue,
       text.fontSize,
-      RgbColorSerializer.fromJson(text.strokeColor),
-      RgbColorSerializer.fromJson(text.fillColor)
+      RgbColorSerializer.fromPlainObject(text.strokeColor),
+      RgbColorSerializer.fromPlainObject(text.fillColor)
     )
   }
 }

@@ -21,20 +21,29 @@ export class ConnectedUser {
 }
 
 export const useBoardStore = defineStore('board', () => {
+  const isShared: Ref<boolean> = ref(false)
+  const hostDisconnected: Ref<boolean> = ref(false)
   const boardId: Ref<string | null> = ref(null)
   const boardUserId: Ref<string | null> = ref(null)
   const connectedUsers: Ref<Array<ConnectedUser>> = ref([])
 
-  async function createBoard() {
-    const response = await IoConnection.request('create_board', undefined)
-    boardId.value = response.data.id
+  function setLocalBoard() {
+    isShared.value = false
   }
 
-  async function joinBoard(id: string): Promise<Boolean> {
+  async function publishBoard() {
+    const response = await IoConnection.request('create_board', undefined)
+    if (response.status != 0) throw new Error('Failed to publish the board')
+    boardId.value = response.data.id
+    isShared.value = true
+  }
+
+  async function joinBoard(id: string): Promise<boolean> {
     const response = await IoConnection.request('join_board', { board_id: id })
     if (response.status != 0) return false
     boardId.value = response.data.board_id
     boardUserId.value = response.data.board_user_id
+    isShared.value = true
     return true
   }
 
@@ -46,6 +55,15 @@ export const useBoardStore = defineStore('board', () => {
     const index = connectedUsers.value.findIndex((user) => user.id == userId)
     if (index < 0) return
     connectedUsers.value.splice(index, 1)
+  }
+
+  function removeAllConectedUsers() {
+    connectedUsers.value = []
+  }
+
+  function emitEventIfConnected(name: string, payload: any) {
+    if (!isShared.value) return
+    IoConnection.emit(name, payload)
   }
 
   IoConnection.onEvent('user_joined', (data) => {
@@ -63,6 +81,12 @@ export const useBoardStore = defineStore('board', () => {
     removeConnectedUser(userId)
   })
 
+  IoConnection.onEvent('host_left', () => {
+    logger.debug(`Host has left the board`)
+    removeAllConectedUsers()
+    hostDisconnected.value = true
+  })
+
   IoConnection.onEvent('position_update', (data) => {
     const userId = data.board_user_id
     let index = connectedUsers.value.findIndex((user) => user.id == userId)
@@ -74,10 +98,14 @@ export const useBoardStore = defineStore('board', () => {
   })
 
   return {
+    isShared,
+    hostDisconnected,
     boardId,
     boardUserId,
     connectedUsers,
-    createBoard,
-    joinBoard
+    setLocalBoard,
+    publishBoard,
+    joinBoard,
+    emitEventIfConnected
   }
 })
