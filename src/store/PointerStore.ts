@@ -17,7 +17,7 @@ const PointerStore = (function () {
   function broadcastPosition() {
     const boardStore = useBoardStore()
     const relativePosition = getPositionOnCanvas(pointerStore!.pointerPosition)
-    boardStore.emitEventIfConnected('position_update', {
+    boardStore.emitVolatileEventIfConnected('position_update', {
       board_id: boardStore.boardId,
       board_user_id: boardStore.boardUserId,
       position: relativePosition

@@ -66,6 +66,11 @@ export const useBoardStore = defineStore('board', () => {
     IoConnection.emit(name, payload)
   }
 
+  function emitVolatileEventIfConnected(name: string, payload: unknown) {
+    if (!isShared.value) return
+    IoConnection.emitVolatile(name, payload)
+  }
+
   IoConnection.onEvent('user_joined', (data) => {
     const userId = data.board_user_id
     logger.debug(`User ${userId} just joined!`)
@@ -106,6 +111,7 @@ export const useBoardStore = defineStore('board', () => {
     setLocalBoard,
     publishBoard,
     joinBoard,
-    emitEventIfConnected
+    emitEventIfConnected,
+    emitVolatileEventIfConnected
   }
 })

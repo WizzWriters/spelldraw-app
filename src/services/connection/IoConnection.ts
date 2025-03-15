@@ -14,8 +14,12 @@ class IoConnection {
     })
   }
 
-  public emit(name: string, payload: any) {
+  public emit(name: string, payload: unknown) {
     this.socket.emit(name, payload)
+  }
+
+  public emitVolatile(name: string, payload: unknown) {
+    this.socket.volatile.emit(name, payload)
   }
 
   public request(name: string, payload: any) {
