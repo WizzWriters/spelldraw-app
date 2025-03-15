@@ -35,7 +35,7 @@ const toolbarStore = useToolbarStore()
 const pointerPosition = usePointerTracker()
 
 const pointerIcon = computed(() => {
-  let activeToolIcon = toolbarStore.activeTool?.pointerIcon
+  const activeToolIcon = toolbarStore.activeTool?.pointerIcon
   if (!activeToolIcon) return 'auto'
   if (activeToolIcon instanceof ExternalPointerIcon)
     return `url(${activeToolIcon.url}) ${activeToolIcon.hotspot.xCoordinate}
@@ -49,9 +49,9 @@ const currentlyDrawnShape: Ref<Shape | null> = computed(() => {
   const currentlyDrawnShape = canvasStore.currentlyDrawnShape
   if (!currentlyDrawnShape) return null
   if (!(currentlyDrawnShape instanceof Polyline)) return currentlyDrawnShape
-  let shapeCopy = cloneDeep(canvasStore.currentlyDrawnShape) as Polyline
-  let positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
-  let point = Point.fromPointerPosition(positionOnCanvas)
+  const shapeCopy = cloneDeep(canvasStore.currentlyDrawnShape) as Polyline
+  const positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
+  const point = Point.fromPointerPosition(positionOnCanvas)
   shapeCopy.addPoint(point)
   return shapeCopy
 })
@@ -64,8 +64,8 @@ const viewBox = computed(() => {
 })
 
 function initializeComponent() {
-  let canvasElement = canvasElementRef.value
-  let wrapperElement = canvasWrapperElementRef.value
+  const canvasElement = canvasElementRef.value
+  const wrapperElement = canvasWrapperElementRef.value
   if (!canvasElement || !wrapperElement) {
     logger.error('Canvas or canvas wrapper element not present!')
     return

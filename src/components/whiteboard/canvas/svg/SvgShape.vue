@@ -18,7 +18,7 @@ import { computed } from 'vue'
 const colorStore = useColorStore()
 
 const props = defineProps<{
-  shape: Shape
+  shape: any
   shapeProperties: SvgShapeProperties
 }>()
 
@@ -32,25 +32,25 @@ function getShapeComponent(shape: Shape) {
 
 /* Selected shapes react to user changing the color in real time, but the
    actual state of the shape objects is not mutated */
-let strokeColor = computed(() => {
+const strokeColor = computed(() => {
   if (colorStore.adjustedStrokeColor && props.shapeProperties.selected)
     return rgbColorToString(colorStore.adjustedStrokeColor)
   return rgbColorToString(props.shape.strokeColor)
 })
 
-let strokeColorOpacity = computed(() => {
+const strokeColorOpacity = computed(() => {
   if (colorStore.adjustedStrokeColor && props.shapeProperties.selected)
     return colorStore.adjustedStrokeColor.opacity
   return props.shape.strokeColor.opacity
 })
 
-let fillColor = computed(() => {
+const fillColor = computed(() => {
   if (colorStore.adjustedFillColor && props.shapeProperties.selected)
     return rgbColorToString(colorStore.adjustedFillColor)
   return rgbColorToString(props.shape.fillColor)
 })
 
-let fillColorOpacity = computed(() => {
+const fillColorOpacity = computed(() => {
   if (colorStore.adjustedFillColor && props.shapeProperties.selected)
     return colorStore.adjustedFillColor.opacity
   return props.shape.fillColor.opacity

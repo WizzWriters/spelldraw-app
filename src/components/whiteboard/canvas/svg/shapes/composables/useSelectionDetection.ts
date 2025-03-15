@@ -12,7 +12,7 @@ import { onMounted, onUnmounted, watch, type Ref } from 'vue'
 export function useSelectionDetection(
   elementRef: Ref<HTMLElement | null>,
   shape: Ref<Shape>,
-  enabled: Ref<Boolean>
+  enabled: Ref<boolean>
 ) {
   const canvasStore = useCanvasStore()
   const toolbarStore = useToolbarStore()

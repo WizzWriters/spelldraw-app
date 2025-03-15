@@ -7,7 +7,7 @@ export enum ESidebarContent {
 }
 
 export const useSidebarStore = defineStore('sidebar', () => {
-  const sidebarExpanded: Ref<Boolean> = ref(false)
+  const sidebarExpanded: Ref<boolean> = ref(false)
   const sidebarContent: Ref<ESidebarContent> = ref(ESidebarContent.SHARE)
 
   function expandSidebar(contentType: ESidebarContent) {

@@ -3,10 +3,10 @@ import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { computed, ref, type Ref } from 'vue'
 
 const props = defineProps<{
-  isShown: Boolean
-  isLoading: Boolean
-  isTrackingPointer: Boolean
-  status: Boolean
+  isShown: boolean
+  isLoading: boolean
+  isTrackingPointer: boolean
+  status: boolean
   value: number
   maxValue: number
 }>()

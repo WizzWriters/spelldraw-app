@@ -88,22 +88,16 @@ class EventBus {
     this.unregisterCallback(event, callback)
   }
 
-  private dispatchEvent(eventName: string, payload: any) {
+  private dispatchEvent(eventName: string, payload: unknown) {
     const intersectionEvent = new CustomEvent(eventName, { detail: payload })
     document.dispatchEvent(intersectionEvent)
   }
 
-  private registerCallback(
-    eventName: string,
-    eventCallback: EventCallback<any>
-  ) {
+  private registerCallback(eventName: string, eventCallback: EventCallbacks) {
     document.addEventListener(eventName, eventCallback.callback)
   }
 
-  private unregisterCallback(
-    eventName: string,
-    eventCallback: EventCallback<any>
-  ) {
+  private unregisterCallback(eventName: string, eventCallback: EventCallbacks) {
     document.removeEventListener(eventName, eventCallback.callback)
   }
 }

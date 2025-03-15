@@ -22,8 +22,8 @@ const magicStore = useMagicStore()
 
 const emit = defineEmits<{ (e: 'drawToolReady'): void; (e: 'click'): void }>()
 const props = defineProps<{
-  isActive: Boolean
-  isDisabled: Boolean
+  isActive: boolean
+  isDisabled: boolean
 }>()
 
 const handlePointerEvent =
@@ -57,8 +57,8 @@ const handlePointerEvent =
   }
 
 onMounted(() => {
-  let shapeCollector = new ShapeCollector()
-  let stallDetector = new StallDetector()
+  const shapeCollector = new ShapeCollector()
+  const stallDetector = new StallDetector()
   const pointerIcon = new ExternalPointerIcon(pencilPointerUrl, new Point(0, 0))
 
   function activateTool() {

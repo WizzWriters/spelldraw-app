@@ -6,7 +6,7 @@ import { useSelectionDetection } from './useSelectionDetection'
 export function useCollisionDetection(
   elementRef: Ref<(SVGGeometryElement & HTMLElement) | null>,
   shape: Ref<PointListBasedShape>,
-  enabled: Ref<Boolean>
+  enabled: Ref<boolean>
 ) {
   useIntersectionDetection(elementRef, shape, enabled)
   useSelectionDetection(elementRef, shape, enabled)

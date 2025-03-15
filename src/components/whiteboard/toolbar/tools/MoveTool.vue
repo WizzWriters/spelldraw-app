@@ -15,8 +15,8 @@ import EventBus, {
 import type { ITool } from '@/common/definitions/Tool'
 
 const props = defineProps<{
-  isActive: Boolean
-  isDisabled: Boolean
+  isActive: boolean
+  isDisabled: boolean
 }>()
 
 const logger = Logger.get('MoveTool')

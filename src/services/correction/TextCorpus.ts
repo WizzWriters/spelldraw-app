@@ -1,4 +1,4 @@
-// @ts-ignore
+// @ts-expect-error No type declarations for following package
 import { words } from 'popular-english-words'
 import { minBy } from 'lodash-es'
 
