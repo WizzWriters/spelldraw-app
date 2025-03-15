@@ -38,17 +38,33 @@ function isPointInStroke(
   return element.isPointInStroke(svgPoint)
 }
 
+function isPointInFill(
+  point: Point,
+  element: SVGGeometryElement,
+  canvas: SVGSVGElement
+) {
+  const svgPoint = canvas.createSVGPoint()
+  svgPoint.x = point.xCoordinate
+  svgPoint.y = point.yCoordinate
+  return element.isPointInFill(svgPoint)
+}
+
 function checkIntersectionWithGeometryElement(
   pointerHitline: Segment,
-  element: SVGGeometryElement
+  element: SVGGeometryElement,
+  hasFill: boolean
 ) {
   const canvasElement = document.getElementById(
     'main-canvas'
-  ) as unknown as SVGSVGElement | null
+  ) as SVGSVGElement | null
   if (!canvasElement) return false
 
   for (const point of splitHitline(pointerHitline)) {
-    if (isPointInStroke(point, element, canvasElement)) return true
+    const pointInStroke = isPointInStroke(point, element, canvasElement)
+    const pointInFill = hasFill
+      ? isPointInFill(point, element, canvasElement)
+      : false
+    if (pointInStroke || pointInFill) return true
   }
   return false
 }
@@ -86,7 +102,8 @@ export function useIntersectionDetection(
       if (element instanceof SVGGeometryElement) {
         isIntersecting = checkIntersectionWithGeometryElement(
           payload.pointerHitline,
-          element
+          element,
+          shape.value.fillColor.opacity != 0
         )
       }
 
