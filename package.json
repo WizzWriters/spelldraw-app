@@ -54,6 +54,9 @@
     "vite": "^6.2.2",
     "vue-tsc": "^2.2.8"
   },
+  "overrides": {
+    "cross-spawn": "^7.0.6"
+  },
   "description": "Frontend for our whiteboard.",
   "main": "index.js",
   "repository": {
