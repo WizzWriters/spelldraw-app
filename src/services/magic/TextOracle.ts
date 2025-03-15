@@ -1,7 +1,7 @@
 import * as tf from '@tensorflow/tfjs'
 import Logger from 'js-logger'
 import type { ILogger } from 'js-logger'
-import lodash from 'lodash'
+import { last } from 'lodash-es'
 import pin from '@/helpers/Pinner'
 import {
   AsyncInit,
@@ -31,7 +31,7 @@ class CtcDecoder {
 
   private mergePath(path: number[]) {
     return path.reduce(
-      (acc, token) => (lodash.last(acc) !== token ? [...acc, token] : acc),
+      (acc, token) => (last(acc) !== token ? [...acc, token] : acc),
       [] as number[]
     )
   }

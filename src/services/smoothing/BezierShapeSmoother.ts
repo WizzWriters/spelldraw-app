@@ -1,5 +1,5 @@
 import { Segment, type Point } from '@/common/definitions/Geometry'
-import lodash from 'lodash'
+import { cloneDeep, take } from 'lodash-es'
 
 abstract class AbstractBezierCurve<ControlPointType> {
   constructor(
@@ -21,7 +21,7 @@ export type BezierCurve =
 export default class BezierShapeSmoother {
   public static getBezierCurves(pointList: Point[]): BezierCurve[] {
     const bezierSegments: BezierCurve[] = []
-    let pointListCopy = lodash.cloneDeep(pointList)
+    let pointListCopy = cloneDeep(pointList)
     const pointListLength = pointListCopy.length
     this.makeSmoothBezierTransitions(pointListCopy)
 
@@ -30,7 +30,7 @@ export default class BezierShapeSmoother {
     }
 
     for (let i = 1; i <= Math.ceil((pointListLength - 1) / 3); i++) {
-      const chunk = lodash.take(pointListCopy, 4)
+      const chunk = take(pointListCopy, 4)
       bezierSegments.push(this.nextBezierCurve(chunk))
       pointListCopy = pointListCopy.slice(chunk.length - 1)
     }
