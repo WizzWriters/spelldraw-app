@@ -16,15 +16,15 @@ const shape = toRef(props, 'shapeProp') as Ref<Polygon>
 const polygonElementRef: Ref<(SVGGeometryElement & HTMLElement) | null> =
   ref(null)
 
-let pointsListStr = computed(() => {
-  let pointList = shape.value.pointList
-  let pointListstr = pointList.reduce((prev, point) => {
+const pointsListStr = computed(() => {
+  const pointList = shape.value.pointList
+  const pointListstr = pointList.reduce((prev, point) => {
     return prev + ' ' + point.xCoordinate + ',' + point.yCoordinate
   }, '')
   return pointListstr
 })
 
-let strokeWidth = computed(() => {
+const strokeWidth = computed(() => {
   if (colorStore.adjustedStrokeWidth && props.shapeProperties.selected)
     return colorStore.adjustedStrokeWidth
   return shape.value.strokeWidth

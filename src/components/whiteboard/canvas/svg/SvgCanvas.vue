@@ -5,7 +5,7 @@ import { usePointerTracker } from '@/common/composables/PointerTracker'
 import { useCanvasStore } from '@/store/CanvasStore'
 import SvgShapeDrawer from './SvgShapeDrawer.vue'
 import SvgUsers from './SvgUsers.vue'
-import lodash from 'lodash'
+import { cloneDeep, values } from 'lodash-es'
 import { useToolbarStore } from '@/store/ToolbarStore'
 import {
   EPointerEvent,
@@ -35,7 +35,7 @@ const toolbarStore = useToolbarStore()
 const pointerPosition = usePointerTracker()
 
 const pointerIcon = computed(() => {
-  let activeToolIcon = toolbarStore.activeTool?.pointerIcon
+  const activeToolIcon = toolbarStore.activeTool?.pointerIcon
   if (!activeToolIcon) return 'auto'
   if (activeToolIcon instanceof ExternalPointerIcon)
     return `url(${activeToolIcon.url}) ${activeToolIcon.hotspot.xCoordinate}
@@ -49,9 +49,9 @@ const currentlyDrawnShape: Ref<Shape | null> = computed(() => {
   const currentlyDrawnShape = canvasStore.currentlyDrawnShape
   if (!currentlyDrawnShape) return null
   if (!(currentlyDrawnShape instanceof Polyline)) return currentlyDrawnShape
-  let shapeCopy = lodash.cloneDeep(canvasStore.currentlyDrawnShape) as Polyline
-  let positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
-  let point = Point.fromPointerPosition(positionOnCanvas)
+  const shapeCopy = cloneDeep(canvasStore.currentlyDrawnShape) as Polyline
+  const positionOnCanvas = getPositionOnCanvas(pointerPosition.value)
+  const point = Point.fromPointerPosition(positionOnCanvas)
   shapeCopy.addPoint(point)
   return shapeCopy
 })
@@ -64,8 +64,8 @@ const viewBox = computed(() => {
 })
 
 function initializeComponent() {
-  let canvasElement = canvasElementRef.value
-  let wrapperElement = canvasWrapperElementRef.value
+  const canvasElement = canvasElementRef.value
+  const wrapperElement = canvasWrapperElementRef.value
   if (!canvasElement || !wrapperElement) {
     logger.error('Canvas or canvas wrapper element not present!')
     return
@@ -129,7 +129,7 @@ function handledPointerEvent(eventType: EPointerEvent) {
 }
 
 function installPointerEventHandlers(canvasElement: CanvasElement) {
-  const handledPointerEvents = lodash.values(EPointerEvent)
+  const handledPointerEvents = values(EPointerEvent)
   for (const event of handledPointerEvents) {
     canvasElement.addEventListener(event, handledPointerEvent(event))
   }

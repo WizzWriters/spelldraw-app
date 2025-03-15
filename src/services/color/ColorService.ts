@@ -1,7 +1,7 @@
 import type { RgbColor } from '@/common/definitions/Color'
 import { useColorStore } from '@/store/ColorStore'
 import { useToolbarStore } from '@/store/ToolbarStore'
-import lodash from 'lodash'
+import { cloneDeep } from 'lodash-es'
 import HistoryService from '../history/HistoryService'
 import CanvasService from '../canvas/CanvasService'
 
@@ -14,7 +14,7 @@ export default class ColorService {
 
     HistoryService.startAggregating()
     toolbarStore.foreachSelectedShape((shape) => {
-      const shapeCopy = lodash.cloneDeep(shape)
+      const shapeCopy = cloneDeep(shape)
       shapeCopy.strokeColor = color
       this.canvasService.updateShape(shapeCopy)
     })
@@ -29,7 +29,7 @@ export default class ColorService {
 
     HistoryService.startAggregating()
     toolbarStore.foreachSelectedShape((shape) => {
-      const shapeCopy = lodash.cloneDeep(shape)
+      const shapeCopy = cloneDeep(shape)
       shapeCopy.fillColor = color
       this.canvasService.updateShape(shapeCopy)
     })
@@ -44,7 +44,7 @@ export default class ColorService {
 
     HistoryService.startAggregating()
     toolbarStore.foreachSelectedShape((shape) => {
-      const shapeCopy = lodash.cloneDeep(shape)
+      const shapeCopy = cloneDeep(shape)
       shapeCopy.strokeWidth = width
       this.canvasService.updateShape(shapeCopy)
     })

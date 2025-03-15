@@ -44,9 +44,9 @@ function nextBezierSegment(bezierCurve: BezierCurve) {
   }
 }
 
-let pathCommand = computed(() => {
-  let pointList = shape.value.pointList
-  let bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
+const pathCommand = computed(() => {
+  const pointList = shape.value.pointList
+  const bezierCurves = BezierShapeSmoother.getBezierCurves(pointList)
   let result = ''
 
   if (bezierCurves.length == 0) {
@@ -54,13 +54,13 @@ let pathCommand = computed(() => {
   }
 
   result += `M ${pointToString(bezierCurves[0].start)}`
-  for (let bezierCurve of bezierCurves) {
+  for (const bezierCurve of bezierCurves) {
     result += nextBezierSegment(bezierCurve)
   }
   return result
 })
 
-let strokeWidth = computed(() => {
+const strokeWidth = computed(() => {
   if (colorStore.adjustedStrokeWidth && props.shapeProperties.selected)
     return colorStore.adjustedStrokeWidth
   return shape.value.strokeWidth

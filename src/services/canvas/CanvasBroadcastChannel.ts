@@ -61,7 +61,7 @@ class CanvasBroadcastChannel {
     this.callbacks[type] = callback
   }
 
-  private handleMessage(event: MessageEvent<any>) {
+  private handleMessage(event: MessageEvent) {
     const message: ICanvasBroadcastMessage = event.data
     if (!message.type) return
 

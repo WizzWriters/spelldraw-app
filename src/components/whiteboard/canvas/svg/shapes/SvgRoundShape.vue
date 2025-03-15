@@ -20,7 +20,7 @@ const roundShapeElementRef: Ref<(SVGGeometryElement & HTMLElement) | null> =
   ref(null)
 
 function getControlPoint(starPoint: Point, endPoint: Point): Point {
-  let centroid = shape.value.centroid
+  const centroid = shape.value.centroid
   return starPoint.add(endPoint).subtract(centroid)
 }
 
@@ -28,7 +28,7 @@ function pointToString(point: Point) {
   return `${point.xCoordinate} ${point.yCoordinate}`
 }
 
-let pathCommand = computed(() => {
+const pathCommand = computed(() => {
   const pointList = shape.value.pointList
   const numberOfPoints = pointList.length
   let command = ''
@@ -48,7 +48,7 @@ let pathCommand = computed(() => {
   return command
 })
 
-let strokeWidth = computed(() => {
+const strokeWidth = computed(() => {
   if (colorStore.adjustedStrokeWidth && props.shapeProperties.selected)
     return colorStore.adjustedStrokeWidth
   return shape.value.strokeWidth

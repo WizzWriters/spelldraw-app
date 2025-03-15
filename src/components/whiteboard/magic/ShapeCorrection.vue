@@ -29,7 +29,7 @@ function startCorrection() {
   loaderState.value.isTrackingPointer = true
   loaderState.value.isLoading = true
   loaderState.value.isShown = true
-  let currentlyDrawnShape = canvasService.getCurrentlyDrawnShape()
+  const currentlyDrawnShape = canvasService.getCurrentlyDrawnShape()
   if (currentlyDrawnShape) {
     correctionPromise = shapeCorrector.correct(currentlyDrawnShape)
     logger.debug('Shape correction started')
@@ -38,7 +38,7 @@ function startCorrection() {
 
 async function commitCorrection() {
   loaderState.value.isTrackingPointer = false
-  let correction = await correctionPromise
+  const correction = await correctionPromise
 
   if (!correction) {
     loaderState.value.wasCorrectionSuccessful = false

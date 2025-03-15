@@ -1,5 +1,5 @@
 import type ComplexShape from '@/common/definitions/ComplexShape'
-import lodash from 'lodash'
+import { cloneDeep } from 'lodash-es'
 
 export class NormalizedShape {
   constructor(
@@ -27,7 +27,7 @@ export default class ShapeNormalizer {
     const maxHeight = maxSize.height - 2 * topPadding
     const maxWidth = maxSize.width - 2 * leftPadding
 
-    const shapeCopy = lodash.cloneDeep(shape)
+    const shapeCopy = cloneDeep(shape)
     const boundingRect = shapeCopy.getBoundingRectangle()
     const [leftOffset, topOffset] = [boundingRect.left, boundingRect.top]
 

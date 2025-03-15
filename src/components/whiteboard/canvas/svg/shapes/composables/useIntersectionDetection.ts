@@ -63,17 +63,17 @@ function checkIntesectionWithBox(pointerHitline: Segment, box: Rectangle) {
 export function useIntersectionDetection(
   elementRef: Ref<SVGTextElement | null>,
   shape: Ref<TextBox>,
-  enabled: Ref<Boolean>
+  enabled: Ref<boolean>
 ): void
 export function useIntersectionDetection(
   elementRef: Ref<SVGGeometryElement | null>,
   shape: Ref<PointListBasedShape>,
-  enabled: Ref<Boolean>
+  enabled: Ref<boolean>
 ): void
 export function useIntersectionDetection(
   elementRef: Ref<SVGGeometryElement | SVGTextElement | null>,
   shape: Ref<Shape>,
-  enabled: Ref<Boolean>
+  enabled: Ref<boolean>
 ) {
   const toolbarStore = useToolbarStore()
 

@@ -39,7 +39,7 @@ async function publishBoard() {
     })
     boardUrl.value = window.location.origin + router.currentRoute.value.path
   } catch (err) {
-    logger.error('Request to publish the board failed')
+    logger.error('Request to publish the board failed: ', err)
     errorMessage.value = 'Failed to publish the board. Please try again later.'
     creatingNewBoard.value = false
   }

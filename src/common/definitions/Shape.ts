@@ -1,4 +1,4 @@
-import lodash from 'lodash'
+import { isEqual, last } from 'lodash-es'
 import { Rectangle, Point } from './Geometry'
 import type Text from './Text'
 import { RgbColor } from './Color'
@@ -66,7 +66,7 @@ export abstract class PointListBasedShape extends Shape {
 
 export class Polyline extends PointListBasedShape {
   public addPoint(point: Point) {
-    if (lodash.isEqual(point, lodash.last(this.pointList))) return
+    if (isEqual(point, last(this.pointList))) return
     this.pointList.push(point)
   }
 }

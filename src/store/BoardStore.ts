@@ -61,7 +61,7 @@ export const useBoardStore = defineStore('board', () => {
     connectedUsers.value = []
   }
 
-  function emitEventIfConnected(name: string, payload: any) {
+  function emitEventIfConnected(name: string, payload: unknown) {
     if (!isShared.value) return
     IoConnection.emit(name, payload)
   }

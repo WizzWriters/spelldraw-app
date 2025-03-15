@@ -1,8 +1,8 @@
 <script setup lang="ts">
 const props = defineProps<{
   name: string
-  isActive: Boolean
-  isDisabled: Boolean
+  isActive: boolean
+  isDisabled: boolean
 }>()
 </script>
 

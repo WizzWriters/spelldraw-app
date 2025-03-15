@@ -1,6 +1,6 @@
-// @ts-ignore
+// @ts-expect-error No type declarations for following package
 import { words } from 'popular-english-words'
-import lodash from 'lodash'
+import { minBy } from 'lodash-es'
 
 export default class TextCorpus {
   private words: string[]
@@ -11,9 +11,7 @@ export default class TextCorpus {
 
   findMostSimilar(word: string) {
     return (
-      lodash.minBy(this.words, (candidate) =>
-        this.similarity(word, candidate)
-      ) || word
+      minBy(this.words, (candidate) => this.similarity(word, candidate)) || word
     )
   }
 

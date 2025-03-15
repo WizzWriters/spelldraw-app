@@ -1,6 +1,6 @@
 import pin from '@/helpers/Pinner'
 import * as tf from '@tensorflow/tfjs'
-import lodash from 'lodash'
+import { values } from 'lodash-es'
 import { Point } from '@/common/definitions/Geometry'
 import TensorflowModel from './TensorflowModel'
 import {
@@ -17,7 +17,7 @@ export enum ShapeClassification {
 }
 
 type point = [number, number]
-const shapes = lodash.values(ShapeClassification)
+const shapes = values(ShapeClassification)
 const path_name = 'ShapeWizard'
 
 @AsyncInitialized
@@ -96,7 +96,7 @@ export default class ShapeWizard {
   public async init() {
     const promises = [
       this.classifier.init(),
-      ...lodash.values(this.regressors).map((regressor) => regressor.init())
+      ...values(this.regressors).map((regressor) => regressor.init())
     ]
     await Promise.all(promises)
   }

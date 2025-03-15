@@ -19,8 +19,8 @@ const SELECT_BOX_STROKE = new RgbColor(51, 173, 255)
 
 const emit = defineEmits<{ (e: 'click'): void }>()
 const props = defineProps<{
-  isActive: Boolean
-  isDisabled: Boolean
+  isActive: boolean
+  isDisabled: boolean
 }>()
 
 const logger = Logger.get('SelectTool')
@@ -32,7 +32,7 @@ const { currentlyDrawnShape } = storeToRefs(canvasStore)
 let startPoint: Point | null = null
 
 function getSelectBox(currentPoint: Point): Rectangle {
-  let start = startPoint!
+  const start = startPoint!
   return new Rectangle(
     Math.min(currentPoint.xCoordinate, start.xCoordinate),
     Math.max(currentPoint.xCoordinate, start.xCoordinate),

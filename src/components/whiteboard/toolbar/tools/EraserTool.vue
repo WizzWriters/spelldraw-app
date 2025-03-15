@@ -16,8 +16,8 @@ import EventBus, { EShapeEvent } from '@/services/bus/EventBus'
 import CanvasService from '@/services/canvas/CanvasService'
 
 const props = defineProps<{
-  isActive: Boolean
-  isDisabled: Boolean
+  isActive: boolean
+  isDisabled: boolean
 }>()
 
 const logger = Logger.get('EraserTool')
